@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useMemo } from 'react';
 import DataTableRowContext, { RowType } from './DataTableRowContext';
 
@@ -30,7 +31,9 @@ const DataTableBodyRow: CompType = (props) => {
 
   return (
     <DataTableRowContext.Provider value={context}>
-      <tr className="sinoui-data-table-body-row">{children}</tr>
+      <tr className="sinoui-data-table-body-row" data-testid="bodyRow">
+        {children}
+      </tr>
     </DataTableRowContext.Provider>
   );
 };

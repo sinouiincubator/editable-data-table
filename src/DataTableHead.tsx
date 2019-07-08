@@ -6,7 +6,9 @@ import React from 'react';
 const DataTableHead: React.SFC = function TableHead({ children }) {
   return (
     <thead>
-      <tr className="sinoui-data-table-head-row">{children}</tr>
+      <tr className="sinoui-data-table-head-row" data-testid="tableHead">
+        {children}
+      </tr>
     </thead>
   );
 };

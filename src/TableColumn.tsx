@@ -12,7 +12,7 @@ export interface Props<T, CellDataType> {
   /**
    * 标题
    */
-  title: string;
+  title?: React.ReactNode;
 
   /**
    * 是否显示序号

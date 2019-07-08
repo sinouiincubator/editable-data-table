@@ -10,5 +10,6 @@
     { "language": "typescript", "autoFix": true },
     { "language": "typescriptreact", "autoFix": true }
   ],
-  "jest.pathToJest": "npm test --"
+  "jest.pathToJest": "npm test --",
+  "files.eol": "\n"
 }

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useContext } from 'react';
 import EditableDataTableContext from './EditableDataTableContext';
 
@@ -32,18 +33,27 @@ interface DataCellProps<T, CellDataType> {
 /**
  * 数据单元格
  */
-function DataTableCell<T, CellDataType>(props: DataCellProps<T, CellDataType>) {
-  const { data, index = 0, order, render, name } = props;
+function DataTableBodyCell<T = any, CellDataType = string>(
+  props: DataCellProps<T, CellDataType>,
+) {
+  const { data, index, order, render, name } = props;
   const { idPropertyName } = useContext(EditableDataTableContext);
 
   if (order) {
-    return <td className="sinoui-data-table-body-td align_center">{index}</td>;
+    return (
+      <td className="sinoui-data-table-body-td align_center">{index + 1}</td>
+    );
   }
 
-  if (render && name) {
+  if (render) {
     return (
       <td className="sinoui-data-table-body-td">
-        {render(data[name], data, index, data[idPropertyName])}
+        {render(
+          name ? data[name] : undefined,
+          data,
+          index,
+          data[idPropertyName],
+        )}
       </td>
     );
   }
@@ -53,4 +63,4 @@ function DataTableCell<T, CellDataType>(props: DataCellProps<T, CellDataType>) {
   ) : null;
 }
 
-export default DataTableCell;
+export default DataTableBodyCell;

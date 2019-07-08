@@ -3,7 +3,7 @@ import classNames from 'classnames';
 
 interface Props {
   order?: boolean;
-  title: React.ReactNode;
+  title?: React.ReactNode;
 }
 
 /**

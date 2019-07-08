@@ -35,7 +35,7 @@ function EditableDataTable<T>(props: Props<T>) {
     data = [],
     idPropertyName = 'id',
     children,
-    emptyTitle = '无数据',
+    emptyTitle = '暂无数据',
   } = props;
   const context = useMemo(() => ({ idPropertyName }), [idPropertyName]);
   return (

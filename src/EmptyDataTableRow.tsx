@@ -18,7 +18,11 @@ const Wrapper = styled.div`
  */
 const EmptyDataTableRow: React.SFC<Props> = (props) => {
   const { children } = props;
-  return <Wrapper className="sinoui-data-table-info">{children}</Wrapper>;
+  return (
+    <Wrapper className="sinoui-data-table-info" data-testid="emptyInfo">
+      {children}
+    </Wrapper>
+  );
 };
 
 export default EmptyDataTableRow;

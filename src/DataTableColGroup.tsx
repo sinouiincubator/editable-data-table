@@ -13,7 +13,7 @@ function DataTableColGroup(props: Props) {
   const { children } = props;
   return (
     <DataTableRowContext.Provider value={context}>
-      <colgroup>{children}</colgroup>
+      <colgroup data-testid="colgroup">{children}</colgroup>
     </DataTableRowContext.Provider>
   );
 }

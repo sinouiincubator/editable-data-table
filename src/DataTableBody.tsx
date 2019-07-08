@@ -6,7 +6,7 @@ import DataTableBodyRow from './DataTableBodyRow';
  * 数据表格内容组件
  */
 const DataTableBody: React.SFC<{
-  data: any[];
+  data?: any[];
   idPropertyName: string;
 }> = function DataTableBody({ idPropertyName, data, children }) {
   if (!data || data.length === 0) {
@@ -19,6 +19,7 @@ const DataTableBody: React.SFC<{
           key={item[idPropertyName] || index}
           data={item}
           index={index}
+          data-testid="tableBody"
         >
           {children}
         </DataTableBodyRow>
