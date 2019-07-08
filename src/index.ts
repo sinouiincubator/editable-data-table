@@ -1,3 +1,8 @@
-import Counter from './Counter';
+import EditableDataTable, {
+  Props as EditableDataTableProps,
+} from './EditableDataTable';
+import TableColumn, { Props as TableColumnProps } from './TableColumn';
 
-export default Counter;
+export default EditableDataTable;
+
+export { EditableDataTableProps, TableColumn, TableColumnProps };

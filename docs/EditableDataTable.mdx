@@ -1,0 +1,91 @@
+---
+name: 可编辑表格
+---
+
+import { useState, useCallback, useMemo } from 'react';
+import { Playground, Props } from 'docz';
+import { ThemeProvider } from 'sinoui-components/styles';
+import defaultTheme from 'sinoui-components/styles/defaultTheme';
+import TableColumn from '../src/TableColumn';
+import EditableDataTable from '../src/EditableDataTable';
+import Button from 'sinoui-components/Button';
+
+# 可编辑表格
+
+## 基本用法
+
+<Playground>
+  <ThemeProvider theme={defaultTheme}>
+    <EditableDataTable
+      data={[{ id: '1', title: '123' }, { id: '2', title: '1234' }]}
+    >
+      <TableColumn title="序号" order />
+      <TableColumn title="id" name="id" />
+      <TableColumn title="标题" name="title" />
+    </EditableDataTable>
+  </ThemeProvider>
+</Playground>
+
+<Playground>
+  {() => {
+    const [data, setData] = useState([
+      { id: '1', title: '123' },
+      { id: '2', title: '1234' },
+    ]);
+    const handleAdd = () => {
+      setData([
+        ...data,
+        { id: data.length + 1, title: `标题${data.length + 1}` },
+      ]);
+    };
+
+    const handleRemove = useCallback((index) => {
+      setData(prev => prev.filter((_item, i) => i !== index));
+    }, []);
+
+    const renderButtons = useCallback((id, row, index) => (
+      <Button onClick={() => handleRemove(index)}>删除</Button>
+    ), [handleRemove]);
+
+    const columns = useMemo(() => <>
+      <TableColumn title="id" name="id" />
+      <TableColumn title="标题" name="title" />
+      <TableColumn title="操作列" name="id" />
+      <TableColumn title="操作" name="id" render={renderButtons} />
+    </>, [handleRemove]);
+
+    return (
+      <ThemeProvider theme={defaultTheme}>
+        <div>
+          <Button onClick={handleAdd}>添加</Button>
+          <EditableDataTable data={data}>
+          {columns}
+          </EditableDataTable>
+        </div>
+      </ThemeProvider>
+    );
+
+}}
+
+</Playground>
+
+### 无数据
+
+<Playground>
+  <ThemeProvider theme={defaultTheme}>
+    <EditableDataTable data={[]}>
+      <TableColumn title="id" name="id" />
+      <TableColumn title="标题" name="title" />
+    </EditableDataTable>
+  </ThemeProvider>
+</Playground>
+
+## 组件属性
+
+### EditableDataTable
+
+<Props of={EditableDataTable} />
+
+### TableColumn
+
+<Props of={TableColumn} />
