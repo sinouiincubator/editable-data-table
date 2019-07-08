@@ -50,4 +50,4 @@ function DataTableCellEditor(props: Props) {
   );
 }
 
-export default DataTableCellEditor;
+export default React.memo(DataTableCellEditor);
