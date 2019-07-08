@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef, useEffect } from 'react';
 import Table from './Table';
 import EditableDataTableContext from './shared/EditableDataTableContext';
 import EmptyDataTableRow from './EmptyDataTableRow';
@@ -30,6 +30,31 @@ export interface Props<T> {
    * 处于编辑状态的行（索引）
    */
   editingRows?: number[];
+
+  /**
+   * 监听行数据发生变化的事件
+   */
+  onRowChange?: (rowData: T) => void;
+}
+
+function useEditableDataTable<T>({
+  idPropertyName = 'id',
+  onRowChange,
+}: Props<T>) {
+  const options = useRef({
+    onRowChange,
+  });
+
+  useEffect(() => {
+    options.current.onRowChange = onRowChange;
+  }, [onRowChange]);
+
+  const context = useMemo(
+    () => ({ idPropertyName, options: options.current }),
+    [idPropertyName],
+  );
+
+  return context;
 }
 
 /**
@@ -43,7 +68,7 @@ function EditableDataTable<T>(props: Props<T>) {
     emptyTitle = '暂无数据',
     editingRows,
   } = props;
-  const context = useMemo(() => ({ idPropertyName }), [idPropertyName]);
+  const context = useEditableDataTable(props);
   return (
     <>
       <Table>

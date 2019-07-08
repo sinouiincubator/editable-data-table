@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, cleanup } from '@testing-library/react';
+import { render, cleanup, fireEvent } from '@testing-library/react';
 import { ThemeProvider } from 'sinoui-components/styles';
 import defaultTheme from 'sinoui-components/styles/defaultTheme';
 import createTheme from 'sinoui-components/styles/theme';
@@ -104,4 +104,38 @@ it('暗色主题', () => {
 
   expect(getByTestId('colgroup').querySelectorAll('col').length).toBe(2);
   expect(getByTestId('emptyInfo')).toHaveTextContent('暂无数据');
+});
+
+it('监听变更事件', () => {
+  const hanleRowChange = jest.fn();
+  const { getByDisplayValue } = render(
+    <ThemeProvider theme={defaultTheme}>
+      <EditableDataTable
+        editingRows={[1]}
+        data={[
+          {
+            id: '1',
+            title: '标题1',
+          },
+          {
+            id: '2',
+            title: '标题2',
+          },
+        ]}
+        onRowChange={hanleRowChange}
+      >
+        <TableColumn name="title" editor="input" />
+      </EditableDataTable>
+    </ThemeProvider>,
+  );
+
+  const input = getByDisplayValue('标题2');
+
+  fireEvent.change(input, { target: { value: '新的标题' } });
+
+  expect(hanleRowChange).toHaveBeenCalled();
+  expect(hanleRowChange.mock.calls[0][0]).toEqual({
+    id: '2',
+    title: '新的标题',
+  });
 });

@@ -60,10 +60,8 @@ it('change事件传递新的值，而不是事件', () => {
   );
 
   const input = getByDisplayValue('标题');
-
   expect(input).toBeVisible();
 
   fireEvent.click(getByText('修改'));
-
   expect(input).toHaveValue('新的标题');
 });

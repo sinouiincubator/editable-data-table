@@ -2,6 +2,7 @@ import React, { useState, useContext, useCallback } from 'react';
 import DataTableRowContext, {
   BodyRowContextType,
 } from './shared/DataTableRowContext';
+import EditableDataTableContext from './shared/EditableDataTableContext';
 
 interface Props {
   editor: React.ReactType;
@@ -23,6 +24,7 @@ function DataTableCellEditor(props: Props) {
   const { data } = useContext(DataTableRowContext) as BodyRowContextType<any>;
   const valueFromContext = data[name];
   const [, setValue] = useState(valueFromContext);
+  const { options } = useContext(EditableDataTableContext);
 
   const handleChange = useCallback(
     (event?: React.ChangeEvent<HTMLInputElement> | string) => {
@@ -30,8 +32,12 @@ function DataTableCellEditor(props: Props) {
       setValue(newValue);
 
       data[name] = newValue;
+
+      if (options.onRowChange) {
+        options.onRowChange(data);
+      }
     },
-    [data, name],
+    [data, name, options],
   );
 
   return (

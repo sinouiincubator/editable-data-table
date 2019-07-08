@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useMemo } from 'react';
 import { RowType } from './shared/constants';
-import DataTableRowContext from './shared/DataTableRowContext';
+import DataTableRowContext, {
+  BodyRowContextType,
+} from './shared/DataTableRowContext';
 
 interface Props<T> {
   /**
@@ -30,8 +32,8 @@ type CompType<T = any> = React.SFC<Props<T>>;
  */
 const DataTableBodyRow: CompType = (props) => {
   const { data, index, children, editing } = props;
-  const context = useMemo(
-    () => ({ type: RowType.Body, data, index, editing }),
+  const context: BodyRowContextType<any> = useMemo(
+    () => ({ type: RowType.Body, data, index, editing: !!editing }),
     [data, index, editing],
   );
 
