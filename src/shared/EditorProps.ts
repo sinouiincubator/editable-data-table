@@ -21,4 +21,9 @@ export default interface EditorProps<T = any, V = string> {
    * 参数`event`: 可以是变更事件，也可以是值。
    */
   onChange?: (event: any) => void;
+
+  /**
+   * 是否校验错误
+   */
+  error: boolean;
 }

@@ -5,6 +5,16 @@ import DataTableRowContext, {
   BodyRowContextType,
 } from './shared/DataTableRowContext';
 import DataTableCellEditor from './DataTableCellEditor';
+import EditingBodyRowContainer from './shared/EditingBodyRowContainer';
+
+interface CellState<T> {
+  data: T;
+  index: number;
+  editing: boolean;
+  errors?: { [x: string]: any };
+  validate: (rowData?: T) => boolean;
+  idPropertyName: string;
+}
 
 interface DataCellProps<T, CellDataType> {
   /**
@@ -19,6 +29,10 @@ interface DataCellProps<T, CellDataType> {
     row: T,
     index: number,
     id: string,
+    context: {
+      editing: boolean;
+      validate: (rowData?: any) => boolean;
+    },
   ) => React.ReactNode;
   /**
    * 数据列名称
@@ -31,17 +45,39 @@ interface DataCellProps<T, CellDataType> {
   editor?: React.ReactType;
 }
 
-/**
- * 数据单元格
- */
-function DataTableBodyCell<T = any, CellDataType = string>(
-  props: DataCellProps<T, CellDataType>,
-) {
+function useCellState<T>(): CellState<T> {
   const { data, index, editing } = useContext(
     DataTableRowContext,
   ) as BodyRowContextType<any>;
-  const { order, render, name, editor } = props;
+  const { validate } = EditingBodyRowContainer.useContainer();
   const { idPropertyName } = useContext(EditableDataTableContext);
+
+  return {
+    data,
+    index,
+    editing,
+    idPropertyName,
+    validate,
+  };
+}
+
+/**
+ * 数据单元格
+ */
+function DataTableBodyCellInner(
+  props: DataCellProps<any, any> & CellState<any>,
+) {
+  const {
+    order,
+    render,
+    name,
+    editor,
+    index,
+    editing,
+    data,
+    idPropertyName,
+    validate,
+  } = props;
 
   if (order) {
     return (
@@ -68,6 +104,10 @@ function DataTableBodyCell<T = any, CellDataType = string>(
           data,
           index,
           data[idPropertyName],
+          {
+            editing,
+            validate,
+          },
         )}
       </td>
     );
@@ -76,6 +116,16 @@ function DataTableBodyCell<T = any, CellDataType = string>(
   return name ? (
     <td className="sinoui-data-table-body-td">{data[name]}</td>
   ) : null;
+}
+
+const MemoDataTableBodyCellInner = React.memo(DataTableBodyCellInner);
+
+function DataTableBodyCell<T = any, CellDataType = string>(
+  props: DataCellProps<T, CellDataType>,
+) {
+  const state = useCellState<any>();
+
+  return <MemoDataTableBodyCellInner {...props} {...state} />;
 }
 
 export default DataTableBodyCell;

@@ -4,6 +4,7 @@ import 'jest-dom/extend-expect';
 import DataTableBodyCell from '../DataTableBodyCell';
 import DataTableRowContext from '../shared/DataTableRowContext';
 import { RowType } from '../shared/constants';
+import EditingBodyRowContainer from '../shared/EditingBodyRowContainer';
 
 afterEach(cleanup);
 
@@ -12,7 +13,9 @@ it('渲染序号列', () => {
     <DataTableRowContext.Provider
       value={{ type: RowType.Body, data: 1, index: 0, editing: false }}
     >
-      <DataTableBodyCell order />
+      <EditingBodyRowContainer.Provider>
+        <DataTableBodyCell order />
+      </EditingBodyRowContainer.Provider>
     </DataTableRowContext.Provider>,
   );
 
@@ -31,7 +34,9 @@ it('渲染数据', () => {
         editing: false,
       }}
     >
-      <DataTableBodyCell name="title" />
+      <EditingBodyRowContainer.Provider>
+        <DataTableBodyCell name="title" />
+      </EditingBodyRowContainer.Provider>
     </DataTableRowContext.Provider>,
   );
 
@@ -48,17 +53,19 @@ it('自定义单元格渲染', () => {
         editing: false,
       }}
     >
-      <DataTableBodyCell
-        name="title"
-        render={(value, data, index, id) => (
-          <div>
-            <div data-testid="value">{value}</div>
-            <div data-testid="data">{data.name}</div>
-            <div data-testid="index">{index}</div>
-            <div data-testid="id">{id}</div>
-          </div>
-        )}
-      />
+      <EditingBodyRowContainer.Provider>
+        <DataTableBodyCell
+          name="title"
+          render={(value, data, index, id) => (
+            <div>
+              <div data-testid="value">{value}</div>
+              <div data-testid="data">{data.name}</div>
+              <div data-testid="index">{index}</div>
+              <div data-testid="id">{id}</div>
+            </div>
+          )}
+        />
+      </EditingBodyRowContainer.Provider>
     </DataTableRowContext.Provider>,
   );
 
@@ -78,16 +85,18 @@ it('不指定name时的渲染自定义单元格渲染', () => {
         editing: false,
       }}
     >
-      <DataTableBodyCell
-        render={(value, data, index, id) => (
-          <div>
-            {value && <div data-testid="value">{value}</div>}
-            <div data-testid="data">{data.name}</div>
-            <div data-testid="index">{index}</div>
-            <div data-testid="id">{id}</div>
-          </div>
-        )}
-      />
+      <EditingBodyRowContainer.Provider>
+        <DataTableBodyCell
+          render={(value, data, index, id) => (
+            <div>
+              {value && <div data-testid="value">{value}</div>}
+              <div data-testid="data">{data.name}</div>
+              <div data-testid="index">{index}</div>
+              <div data-testid="id">{id}</div>
+            </div>
+          )}
+        />
+      </EditingBodyRowContainer.Provider>
     </DataTableRowContext.Provider>,
   );
 
@@ -107,7 +116,9 @@ it('没有指定name和render，则不渲染', () => {
         editing: false,
       }}
     >
-      <DataTableBodyCell />
+      <EditingBodyRowContainer.Provider>
+        <DataTableBodyCell />
+      </EditingBodyRowContainer.Provider>
     </DataTableRowContext.Provider>,
   );
 
@@ -124,7 +135,9 @@ it('编辑状态', () => {
         editing: true,
       }}
     >
-      <DataTableBodyCell name="title" editor="input" />
+      <EditingBodyRowContainer.Provider>
+        <DataTableBodyCell name="title" editor="input" />
+      </EditingBodyRowContainer.Provider>
     </DataTableRowContext.Provider>,
   );
 

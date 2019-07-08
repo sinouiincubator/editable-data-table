@@ -19,10 +19,39 @@ import TextInput from 'sinoui-components/TextInput';
   <EditableDataTable
     data={[{ id: '1', title: '123' }, { id: '2', title: '1234' }]}
     editingRows={[1]}
+    validate={(data) => {
+      const result = {};
+      if (!data.id) {
+        result.id = '必填';
+      }
+      if (data.title && data.title.startsWith('1')) {
+        result.title = '标题不能以1开头';
+      }
+      return result;
+    }}
   >
     <TableColumn title="序号" order />
     <TableColumn title="id" name="id" editor={TextInput} />
     <TableColumn title="标题" name="title" editor={TextInput} />
+    <TableColumn
+      title="操作"
+      name="id"
+      render={(value, row, index, id, context) => (
+        <Button
+          disabled={context.error}
+          onClick={() => {
+            if (!context.validate()) {
+              alert('数据填写不完整');
+            } else {
+              alert('保存成功');
+              console.log(row);
+            }
+          }}
+        >
+          保存
+        </Button>
+      )}
+    />
   </EditableDataTable>
 </Playground>
 

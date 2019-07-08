@@ -139,3 +139,90 @@ it('监听变更事件', () => {
     title: '新的标题',
   });
 });
+
+const validate = (rowData: any) => {
+  const result: { [x: string]: string } = {};
+
+  if (!rowData.title) {
+    result.title = '必填';
+  }
+  if (rowData.title && rowData.title.length > 10) {
+    result.title = '标题不能超过10个字';
+  }
+  if (rowData.title && rowData.title.startsWith('x')) {
+    result.title = '名称不能以x开头';
+  }
+
+  return result;
+};
+
+it('行数据校验', () => {
+  const { getByDisplayValue, container } = render(
+    <ThemeProvider theme={defaultTheme}>
+      <EditableDataTable
+        editingRows={[1]}
+        data={[
+          {
+            id: '1',
+            title: '标题1',
+          },
+          {
+            id: '2',
+            title: '标题2',
+          },
+        ]}
+        validate={validate}
+      >
+        <TableColumn name="title" editor="input" />
+      </EditableDataTable>
+    </ThemeProvider>,
+  );
+
+  const input = getByDisplayValue('标题2');
+  fireEvent.change(input, { target: { value: 'x123' } });
+
+  expect(container).toHaveTextContent('名称不能以x开头');
+
+  fireEvent.change(input, { target: { value: 'x1234' } });
+  expect(container).toHaveTextContent('名称不能以x开头');
+
+  fireEvent.change(input, { target: { value: '1234' } });
+  expect(container).not.toHaveTextContent('名称不能以x开头');
+});
+
+it('从外部校验数据行', () => {
+  const { container, getByText } = render(
+    <ThemeProvider theme={defaultTheme}>
+      <EditableDataTable
+        editingRows={[1]}
+        data={[
+          {
+            id: '1',
+            title: '标题1',
+          },
+          {
+            id: '2',
+            title: 'x123',
+          },
+        ]}
+        validate={validate}
+      >
+        <TableColumn name="title" editor="input" />
+        <TableColumn
+          name="id"
+          render={(_value, _row, _index, _id, context) =>
+            context.editing ? (
+              <button type="button" onClick={() => context.validate()}>
+                校验
+              </button>
+            ) : null
+          }
+        />
+      </EditableDataTable>
+    </ThemeProvider>,
+  );
+
+  fireEvent.click(getByText('校验'));
+
+  expect(container).toHaveTextContent('名称不能以x开头');
+});

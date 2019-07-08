@@ -35,19 +35,40 @@ export interface Props<T> {
    * 监听行数据发生变化的事件
    */
   onRowChange?: (rowData: T) => void;
+
+  /**
+   * 给正在编辑的行添加校验规则。
+   * 
+   * 返回错误提示：
+   * 
+   * ```js
+     {
+       'title': '不能为空',
+       'name': '不能少于三个字'
+     }
+   * ```
+   *
+   * 上面的错误信息表示字段`title`和`name`校验失败。
+   * 
+   * 如果数据行没有错误，则返回`{}`或者`undefined`。
+   */
+  validate?: (rowData: T) => { [x: string]: string } | undefined;
 }
 
 function useEditableDataTable<T>({
   idPropertyName = 'id',
   onRowChange,
+  validate,
 }: Props<T>) {
   const options = useRef({
     onRowChange,
+    validate,
   });
 
   useEffect(() => {
     options.current.onRowChange = onRowChange;
-  }, [onRowChange]);
+    options.current.validate = validate;
+  }, [onRowChange, validate]);
 
   const context = useMemo(
     () => ({ idPropertyName, options: options.current }),

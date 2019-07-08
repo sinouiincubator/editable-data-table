@@ -4,6 +4,7 @@ import 'jest-dom/extend-expect';
 import DataTableCellEditor from '../DataTableCellEditor';
 import DataTableRowContext from '../shared/DataTableRowContext';
 import { RowType } from '../shared/constants';
+import EditingBodyRowContainer from '../shared/EditingBodyRowContainer';
 
 afterEach(cleanup);
 
@@ -17,7 +18,9 @@ it('从编辑框中获取数据并更新状态', () => {
         type: RowType.Body,
       }}
     >
-      <DataTableCellEditor editor="input" name="title" />
+      <EditingBodyRowContainer.Provider>
+        <DataTableCellEditor editor="input" name="title" />
+      </EditingBodyRowContainer.Provider>
     </DataTableRowContext.Provider>,
   );
 
@@ -55,7 +58,9 @@ it('change事件传递新的值，而不是事件', () => {
         type: RowType.Body,
       }}
     >
-      <DataTableCellEditor editor={Editor} name="title" />
+      <EditingBodyRowContainer.Provider>
+        <DataTableCellEditor editor={Editor} name="title" />
+      </EditingBodyRowContainer.Provider>
     </DataTableRowContext.Provider>,
   );
 

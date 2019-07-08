@@ -4,6 +4,7 @@ import { RowType } from './shared/constants';
 import DataTableRowContext, {
   BodyRowContextType,
 } from './shared/DataTableRowContext';
+import EditingBodyRowContainer from './shared/EditingBodyRowContainer';
 
 interface Props<T> {
   /**
@@ -39,9 +40,11 @@ const DataTableBodyRow: CompType = (props) => {
 
   return (
     <DataTableRowContext.Provider value={context}>
-      <tr className="sinoui-data-table-body-row" data-testid="bodyRow">
-        {children}
-      </tr>
+      <EditingBodyRowContainer.Provider>
+        <tr className="sinoui-data-table-body-row" data-testid="bodyRow">
+          {children}
+        </tr>
+      </EditingBodyRowContainer.Provider>
     </DataTableRowContext.Provider>
   );
 };

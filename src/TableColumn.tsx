@@ -28,6 +28,10 @@ export interface Props<T, CellDataType> {
     row: T,
     index: number,
     id: string,
+    context: {
+      editing: boolean;
+      validate: (rowData?: any) => boolean;
+    },
   ) => React.ReactNode;
 
   /**

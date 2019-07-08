@@ -1,8 +1,10 @@
-import React, { useState, useContext, useCallback } from 'react';
+import React, { useState, useContext, useCallback, useMemo } from 'react';
+import FormHelpText from 'sinoui-components/Form/FormHelpText';
 import DataTableRowContext, {
   BodyRowContextType,
 } from './shared/DataTableRowContext';
 import EditableDataTableContext from './shared/EditableDataTableContext';
+import EditingBodyRowContainer from './shared/EditingBodyRowContainer';
 
 interface Props {
   editor: React.ReactType;
@@ -25,6 +27,11 @@ function DataTableCellEditor(props: Props) {
   const valueFromContext = data[name];
   const [, setValue] = useState(valueFromContext);
   const { options } = useContext(EditableDataTableContext);
+  const {
+    touched,
+    errors,
+    validateField,
+  } = EditingBodyRowContainer.useContainer();
 
   const handleChange = useCallback(
     (event?: React.ChangeEvent<HTMLInputElement> | string) => {
@@ -36,18 +43,31 @@ function DataTableCellEditor(props: Props) {
       if (options.onRowChange) {
         options.onRowChange(data);
       }
+      validateField(name, data);
     },
-    [data, name, options],
+    [data, name, options, validateField],
   );
 
-  return (
-    <Editor
-      name={name}
-      value={valueFromContext}
-      item={data}
-      onChange={handleChange}
-    />
+  const isTouched = touched[name];
+  const error = isTouched ? errors[name] : undefined;
+
+  const element = useMemo(
+    () => (
+      <>
+        <Editor
+          name={name}
+          value={valueFromContext}
+          item={data}
+          onChange={handleChange}
+          error={!!error}
+        />
+        {error && <FormHelpText error>{error}</FormHelpText>}
+      </>
+    ),
+    [data, error, handleChange, name, valueFromContext],
   );
+
+  return element;
 }
 
 export default React.memo(DataTableCellEditor);
