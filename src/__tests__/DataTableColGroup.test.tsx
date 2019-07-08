@@ -1,7 +1,8 @@
 import React, { useContext } from 'react';
 import { cleanup, render } from '@testing-library/react';
-import DataTableRowContext, { RowType } from '../DataTableRowContext';
+import DataTableRowContext from '../shared/DataTableRowContext';
 import DataTableColGroup from '../DataTableColGroup';
+import { RowType } from '../shared/constants';
 
 afterEach(cleanup);
 

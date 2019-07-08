@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { render, cleanup } from '@testing-library/react';
-import DataTableRowContext from '../DataTableRowContext';
+import DataTableRowContext from '../shared/DataTableRowContext';
 import DataTableBody from '../DataTableBody';
 
 afterEach(cleanup);

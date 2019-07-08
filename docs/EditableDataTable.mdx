@@ -9,22 +9,24 @@ import defaultTheme from 'sinoui-components/styles/defaultTheme';
 import TableColumn from '../src/TableColumn';
 import EditableDataTable from '../src/EditableDataTable';
 import Button from 'sinoui-components/Button';
+import TextInput from 'sinoui-components/TextInput';
 
 # 可编辑表格
 
 ## 基本用法
 
 <Playground>
-  <ThemeProvider theme={defaultTheme}>
-    <EditableDataTable
-      data={[{ id: '1', title: '123' }, { id: '2', title: '1234' }]}
-    >
-      <TableColumn title="序号" order />
-      <TableColumn title="id" name="id" />
-      <TableColumn title="标题" name="title" />
-    </EditableDataTable>
-  </ThemeProvider>
+  <EditableDataTable
+    data={[{ id: '1', title: '123' }, { id: '2', title: '1234' }]}
+    editingRows={[1]}
+  >
+    <TableColumn title="序号" order />
+    <TableColumn title="id" name="id" editor={TextInput} />
+    <TableColumn title="标题" name="title" editor={TextInput} />
+  </EditableDataTable>
 </Playground>
+
+### 优化版本
 
 <Playground>
   {() => {
@@ -55,14 +57,12 @@ import Button from 'sinoui-components/Button';
     </>, [handleRemove]);
 
     return (
-      <ThemeProvider theme={defaultTheme}>
         <div>
           <Button onClick={handleAdd}>添加</Button>
           <EditableDataTable data={data}>
           {columns}
           </EditableDataTable>
         </div>
-      </ThemeProvider>
     );
 
 }}
@@ -72,12 +72,10 @@ import Button from 'sinoui-components/Button';
 ### 无数据
 
 <Playground>
-  <ThemeProvider theme={defaultTheme}>
-    <EditableDataTable data={[]}>
-      <TableColumn title="id" name="id" />
-      <TableColumn title="标题" name="title" />
-    </EditableDataTable>
-  </ThemeProvider>
+  <EditableDataTable data={[]}>
+    <TableColumn title="id" name="id" />
+    <TableColumn title="标题" name="title" />
+  </EditableDataTable>
 </Playground>
 
 ## 组件属性

@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useContext } from 'react';
-import DataTableRowContext, { RowType } from './DataTableRowContext';
+import DataTableRowContext from './shared/DataTableRowContext';
 import DataTableBodyCell from './DataTableBodyCell';
 import DataTableHeadCell from './DataTableHeadCell';
+import { RowType } from './shared/constants';
 
 export interface Props<T, CellDataType> {
   /**
@@ -33,6 +34,11 @@ export interface Props<T, CellDataType> {
    * 列宽度
    */
   width?: number | string;
+
+  /**
+   * 编辑器
+   */
+  editor?: React.ReactType;
 }
 
 /**
@@ -43,8 +49,7 @@ const TableColumn: React.SFC<Props<any, any>> = React.memo(function TableColumn<
   CellDataType
 >(props: Props<T, CellDataType>) {
   const { title, order, width } = props;
-  const rowContext = useContext(DataTableRowContext);
-  const { type, data, index } = rowContext as any;
+  const { type } = useContext(DataTableRowContext);
 
   switch (type) {
     case RowType.Head:
@@ -52,7 +57,7 @@ const TableColumn: React.SFC<Props<any, any>> = React.memo(function TableColumn<
     case RowType.ColGroup:
       return <col width={order ? 50 : width} />;
     default:
-      return <DataTableBodyCell {...props} data={data} index={index} />;
+      return <DataTableBodyCell {...props} />;
   }
 });
 

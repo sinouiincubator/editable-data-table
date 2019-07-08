@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useMemo } from 'react';
-import DataTableRowContext, { RowType } from './DataTableRowContext';
+import { RowType } from './shared/constants';
+import DataTableRowContext from './shared/DataTableRowContext';
 
 interface Props<T> {
   /**
@@ -15,6 +16,11 @@ interface Props<T> {
    * 单元格子组件
    */
   children: React.ReactNode;
+
+  /**
+   * 是否处于编辑状态
+   */
+  editing?: boolean;
 }
 
 type CompType<T = any> = React.SFC<Props<T>>;
@@ -23,11 +29,11 @@ type CompType<T = any> = React.SFC<Props<T>>;
  * 内容行
  */
 const DataTableBodyRow: CompType = (props) => {
-  const { data, index, children } = props;
-  const context = useMemo(() => ({ type: RowType.Body, data, index }), [
-    data,
-    index,
-  ]);
+  const { data, index, children, editing } = props;
+  const context = useMemo(
+    () => ({ type: RowType.Body, data, index, editing }),
+    [data, index, editing],
+  );
 
   return (
     <DataTableRowContext.Provider value={context}>

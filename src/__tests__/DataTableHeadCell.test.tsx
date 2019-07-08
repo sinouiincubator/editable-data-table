@@ -1,7 +1,9 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, cleanup } from '@testing-library/react';
 import 'jest-dom/extend-expect';
 import DataTableHeadCell from '../DataTableHeadCell';
+
+afterEach(cleanup);
 
 it('渲染序号标题单元格', () => {
   const { container } = render(<DataTableHeadCell order title="序号" />);

@@ -1,5 +1,6 @@
 import React from 'react';
-import DataTableRowContext, { RowType } from './DataTableRowContext';
+import { RowType } from './shared/constants';
+import DataTableRowContext from './shared/DataTableRowContext';
 
 const context: { type: RowType.ColGroup } = {
   type: RowType.ColGroup,

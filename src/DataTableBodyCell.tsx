@@ -1,16 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useContext } from 'react';
-import EditableDataTableContext from './EditableDataTableContext';
+import EditableDataTableContext from './shared/EditableDataTableContext';
+import DataTableRowContext, {
+  BodyRowContextType,
+} from './shared/DataTableRowContext';
+import DataTableCellEditor from './DataTableCellEditor';
 
 interface DataCellProps<T, CellDataType> {
-  /**
-   * 数据所在的索引序号
-   */
-  index: number;
-  /**
-   * 数据
-   */
-  data: any;
   /**
    * 是否显示序号
    */
@@ -28,6 +24,11 @@ interface DataCellProps<T, CellDataType> {
    * 数据列名称
    */
   name?: string;
+
+  /**
+   * 编辑器
+   */
+  editor?: React.ReactType;
 }
 
 /**
@@ -36,12 +37,26 @@ interface DataCellProps<T, CellDataType> {
 function DataTableBodyCell<T = any, CellDataType = string>(
   props: DataCellProps<T, CellDataType>,
 ) {
-  const { data, index, order, render, name } = props;
+  const { data, index, editing } = useContext(
+    DataTableRowContext,
+  ) as BodyRowContextType<any>;
+  const { order, render, name, editor } = props;
   const { idPropertyName } = useContext(EditableDataTableContext);
 
   if (order) {
     return (
       <td className="sinoui-data-table-body-td align_center">{index + 1}</td>
+    );
+  }
+
+  if (editing && editor) {
+    if (!name) {
+      throw new Error(`没有给TableColumn指定name属性`);
+    }
+    return (
+      <td className="sinoui-data-table-body-td">
+        <DataTableCellEditor name={name} editor={editor} />
+      </td>
     );
   }
 

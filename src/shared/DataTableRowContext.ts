@@ -1,10 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
+import { RowType } from './constants';
 
 export interface BodyRowContextType<T> {
   type: RowType.Body;
   data: T;
   index: number;
+  /**
+   * 是否处于编辑状态
+   */
+  editing: boolean;
 }
 
 export interface HeadRowContextType {
@@ -19,12 +24,6 @@ export type RowContextType<T = any> =
   | BodyRowContextType<T>
   | HeadRowContextType
   | ColGroupContextType;
-
-export enum RowType {
-  Body,
-  Head,
-  ColGroup,
-}
 
 const DataTableRowContext = React.createContext<RowContextType>({
   type: RowType.Head,

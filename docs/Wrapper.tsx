@@ -1,4 +1,6 @@
 import React from 'react';
+import { ThemeProvider } from 'sinoui-components/styles';
+import defaultTheme from 'sinoui-components/styles/defaultTheme';
 
 interface WrapperProps {
   children: React.ReactNode;
@@ -6,5 +8,5 @@ interface WrapperProps {
 
 export default function Wrapper(props: WrapperProps) {
   const { children } = props;
-  return <>{children}</>;
+  return <ThemeProvider theme={defaultTheme}>{children}</ThemeProvider>;
 }

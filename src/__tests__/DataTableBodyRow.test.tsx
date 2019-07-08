@@ -3,7 +3,7 @@ import { render, cleanup } from '@testing-library/react';
 import 'jest-dom/extend-expect';
 import DataTableRowContext, {
   BodyRowContextType,
-} from '../DataTableRowContext';
+} from '../shared/DataTableRowContext';
 import DataTableBodyRow from '../DataTableBodyRow';
 
 afterEach(cleanup);
