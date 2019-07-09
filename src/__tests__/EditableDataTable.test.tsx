@@ -111,7 +111,7 @@ it('监听变更事件', () => {
   const { getByDisplayValue } = render(
     <ThemeProvider theme={defaultTheme}>
       <EditableDataTable
-        editingRows={[1]}
+        editingRows={[false, true]}
         data={[
           {
             id: '1',
@@ -160,7 +160,7 @@ it('行数据校验', () => {
   const { getByDisplayValue, container } = render(
     <ThemeProvider theme={defaultTheme}>
       <EditableDataTable
-        editingRows={[1]}
+        editingRows={[false, true]}
         data={[
           {
             id: '1',
@@ -194,7 +194,7 @@ it('从外部校验数据行', () => {
   const { container, getByText } = render(
     <ThemeProvider theme={defaultTheme}>
       <EditableDataTable
-        editingRows={[1]}
+        editingRows={[false, true]}
         data={[
           {
             id: '1',

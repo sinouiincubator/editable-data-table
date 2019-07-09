@@ -10,6 +10,7 @@ import TableColumn from '../src/TableColumn';
 import EditableDataTable from '../src/EditableDataTable';
 import Button from 'sinoui-components/Button';
 import TextInput from 'sinoui-components/TextInput';
+import produce from 'immer';
 
 # 可编辑表格
 
@@ -28,21 +29,24 @@ import TextInput from 'sinoui-components/TextInput';
       return result;
     };
 
-    const [editingRows, setEditingRows] = useState([1]);
+    const [editingRows, setEditingRows] = useState([true,false]);
     const [items, setItems] = useState([{ id: '1', title: '123' }, { id: '2', title: '1234' }]);
 
     const handleSave = (row, index, context) => {
       if (!context.validate()) {
         alert('数据填写不完整');
       } else {
-        console.log(row, items);
-        setEditingRows(prev => prev.filter(item => item !== index));
+        setEditingRows(produce(editingRows,(draft)=>{
+          draft[index] = !draft[index]
+        }));
         alert('保存成功');
       }
     };
 
     const handleEdit = (index) => {
-      setEditingRows(prev => [...prev, index]);
+      setEditingRows(produce(editingRows,(draft)=>{
+          draft[index] = !draft[index]
+        }));
     };
 
     return (<EditableDataTable

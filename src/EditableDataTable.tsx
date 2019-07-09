@@ -27,9 +27,9 @@ export interface Props<T> {
   emptyTitle?: React.ReactNode;
 
   /**
-   * 处于编辑状态的行（索引）
+   * 处于编辑状态的行
    */
-  editingRows?: number[];
+  editingRows?: boolean[];
 
   /**
    * 监听行数据发生变化的事件

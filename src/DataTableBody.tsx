@@ -8,7 +8,7 @@ import DataTableBodyRow from './DataTableBodyRow';
 const DataTableBody: React.SFC<{
   data?: any[];
   idPropertyName: string;
-  editingRows?: number[];
+  editingRows?: boolean[];
 }> = function DataTableBody({
   idPropertyName,
   data,
@@ -26,7 +26,7 @@ const DataTableBody: React.SFC<{
           data={item}
           index={index}
           data-testid="tableBody"
-          editing={editingRows.indexOf(index) !== -1}
+          editing={editingRows[index]}
         >
           {children}
         </DataTableBodyRow>
