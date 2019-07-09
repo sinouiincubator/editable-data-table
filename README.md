@@ -1,6 +1,63 @@
 # @sinouiincubator/editable-data-table
 
-这是由[ts-lib-scripts](https://github.com/sinoui/ts-lib-scripts)创建的TypeScript库项目。
+可编辑数据表格。
+
+## 快速入手
+
+```tsx
+import React, { useCallback } from 'react';
+import EditableDataTable, {
+  TableColumn,
+  useEditingList,
+} from '@sinouiincubator/editable-data-table';
+import TextInput from 'sinoui-components/TextInput';
+import DatePicker from '@sinoui/date-picker';
+import Button from 'sinoui-components/Button';
+
+function EidtableDataTableDemo() {
+  const { items, add } = useEditingList([]);
+
+  const handleAdd = useCallback(() => {
+    add({});
+  }, [add]);
+
+  return (
+    <>
+      <Button onClick={handleAdd}>新增</Button>
+      <EditableDataTable data={items} validate={validate}>
+        <TableColumn
+          title="姓名"
+          name="userName"
+          editor={TextInput}
+          validate={validate2}
+        />
+        <TableColumn
+          title="标题"
+          name="title"
+          editor={TextInput}
+          validate={validate3}
+        />
+        <TableColumn
+          title="出生日期"
+          name="birthday"
+          editor={DatePicker}
+          validate={validate4}
+        />
+        <TableColumn
+          title="操作"
+          name="id"
+          render={(value, row, id) => (
+            <TableColumnActions>
+              <TableColumnAction>保存</TableColumnAction>
+              <TableColumnAction>删除</TableColumnAction>
+            </TableColumnActions>
+          )}
+        />
+      </EditableDataTable>
+    </>
+  );
+}
+```
 
 ## 本地开发
 
