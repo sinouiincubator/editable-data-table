@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef, useEffect, useContext } from 'react';
 import { createContainer } from 'unstated-next';
+import shallowEqual from 'shallowequal';
 import EditableDataTableContext from './EditableDataTableContext';
 import DataTableRowContext, { BodyRowContextType } from './DataTableRowContext';
 
@@ -47,11 +48,27 @@ function useEditingBodyRow<T>(): ContextType<T> {
   const [touched, setTouched] = useState<{ [x: string]: boolean }>({});
   const [errors, setErrors] = useState({});
   const rowDataRef = useRef(rowData);
-  const { options } = useContext(EditableDataTableContext);
+  const { options, idPropertyName } = useContext(EditableDataTableContext);
 
   useEffect(() => {
     rowDataRef.current = rowData;
   }, [rowData]);
+
+  const updateErrors = useCallback((newErrors: any) => {
+    setErrors((prev) => {
+      if (!shallowEqual(newErrors, prev)) {
+        return newErrors;
+      }
+      return prev;
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!(rowData as any)[idPropertyName] && options.validate) {
+      const newErrors = options.validate(rowData) || {};
+      updateErrors(newErrors);
+    }
+  }, [rowData, options, idPropertyName, updateErrors]);
 
   const validate = useCallback(
     (newRowData: T = rowDataRef.current, updateTouched: boolean = true) => {
@@ -67,7 +84,7 @@ function useEditingBodyRow<T>(): ContextType<T> {
             setTouched(newTouched);
           }
 
-          setErrors(result || {});
+          updateErrors(result || {});
 
           return (
             Object.keys(result).filter((key) => !!result[key]).length === 0
@@ -77,7 +94,7 @@ function useEditingBodyRow<T>(): ContextType<T> {
 
       return true;
     },
-    [options],
+    [options, updateErrors],
   );
 
   const validateField = useCallback(

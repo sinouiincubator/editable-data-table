@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { render, cleanup, fireEvent } from '@testing-library/react';
 import { ThemeProvider } from 'sinoui-components/styles';
 import defaultTheme from 'sinoui-components/styles/defaultTheme';
 import createTheme from 'sinoui-components/styles/theme';
 import createPalette from 'sinoui-components/styles/palette';
 import 'jest-dom/extend-expect';
+import { produce } from 'immer';
 import EditableDataTable from '../EditableDataTable';
 import TableColumn from '../TableColumn';
 
@@ -226,4 +227,61 @@ it('从外部校验数据行', () => {
   fireEvent.click(getByText('校验'));
 
   expect(container).toHaveTextContent('名称不能以x开头');
+});
+
+it('删除正在编辑的数据', () => {
+  function Demo() {
+    const [items, setItems] = useState([
+      {
+        title: '标题1',
+      },
+      {
+        title: '标题2',
+      },
+      {
+        title: '标题3',
+      },
+    ]);
+    const [editingRows, setEditingRows] = useState([false, true, true]);
+
+    const handleRemove = (index: number) => {
+      const removeByIndex = produce((draft) => {
+        draft.splice(0, index);
+      });
+      setItems(removeByIndex);
+      setEditingRows(removeByIndex);
+    };
+
+    return (
+      <ThemeProvider theme={defaultTheme}>
+        <EditableDataTable
+          editingRows={editingRows}
+          data={items}
+          validate={validate}
+        >
+          <TableColumn name="title" editor="input" />
+          <TableColumn
+            name="id"
+            render={(_value, _item, index) => (
+              <button type="button" onClick={() => handleRemove(index)}>
+                删除
+              </button>
+            )}
+          />
+        </EditableDataTable>
+      </ThemeProvider>
+    );
+  }
+
+  const { getByDisplayValue, container, getAllByText } = render(<Demo />);
+
+  const input = getByDisplayValue('标题2');
+  fireEvent.change(input, { target: { value: 'x123' } });
+
+  expect(container).toHaveTextContent('名称不能以x开头');
+
+  fireEvent.click(getAllByText('删除')[1]);
+
+  expect(container).not.toHaveTextContent('名称不能以x开头');
+  expect(container).not.toHaveTextContent('x123');
 });

@@ -26,7 +26,7 @@ function DataTableCellEditor(props: Props) {
   const { data, index } = useContext(DataTableRowContext) as BodyRowContextType<
     any
   >;
-  const valueFromContext = data[name];
+  const valueFromContext = data[name] || '';
   const [, setValue] = useState(valueFromContext);
   const { options } = useContext(EditableDataTableContext);
   const {
