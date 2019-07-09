@@ -23,7 +23,9 @@ function isChangeEvent(
 function DataTableCellEditor(props: Props) {
   const { name, editor: Editor } = props;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data } = useContext(DataTableRowContext) as BodyRowContextType<any>;
+  const { data, index } = useContext(DataTableRowContext) as BodyRowContextType<
+    any
+  >;
   const valueFromContext = data[name];
   const [, setValue] = useState(valueFromContext);
   const { options } = useContext(EditableDataTableContext);
@@ -41,11 +43,11 @@ function DataTableCellEditor(props: Props) {
       data[name] = newValue;
 
       if (options.onRowChange) {
-        options.onRowChange(data);
+        options.onRowChange(index, data);
       }
       validateField(name, data);
     },
-    [data, name, options, validateField],
+    [data, name, options, index, validateField],
   );
 
   const isTouched = touched[name];
