@@ -373,32 +373,20 @@ function Demo() {
     remove,
     idPropertyName,
     editingRows,
-  } = useEditingList('/tests', []);
+  } = useEditingList('/api/tests', []);
 
-  const handleSave = async (row, index, context) => {
+  const handleSave = (row, index, context) => {
     if (!context.validate()) {
       alert('数据填写不完整');
     } else {
-      await save(row, index);
+      save(row, index);
       alert('保存成功');
     }
   };
 
-  const handleEdit = (index) => {
-    edit(index);
-  };
-
-  const handleRemove = (row, index) => {
-    remove(row, index);
-  };
-
-  const handleAdd = () => {
-    add();
-  };
-
   return (
     <>
-      <Button onClick={handleAdd}>新增</Button>
+      <Button onClick={add}>新增</Button>
       <EditableDataTable
         data={items}
         editingRows={editingRows}
@@ -421,11 +409,11 @@ function Demo() {
                   保存
                 </Button>
               ) : (
-                <Button autoWidth onClick={() => handleEdit(index)}>
+                <Button autoWidth onClick={() => edit(index)}>
                   编辑
                 </Button>
               )}
-              <Button autoWidth onClick={() => handleRemove(row, index)}>
+              <Button autoWidth onClick={() => remove(row, index)}>
                 删除
               </Button>
             </>
@@ -452,10 +440,6 @@ function Demo() {
 
     const { items, add, edit, save, remove, idPropertyName,editingRows } = useEditingList('/api/tests',[]);
 
-    const handleAdd =()=>{
-      add();
-    }
-
     const handleSave =  (row, index, context) => {
       if (!context.validate()) {
         alert('数据填写不完整');
@@ -465,17 +449,9 @@ function Demo() {
       }
     };
 
-    const handleEdit = (index) => {
-      edit(index);
-    };
-
-    const handleRemove = (row,index) => {
-       remove(row,index);
-    };
-
     return (
     <>
-      <Button onClick={handleAdd}>新增</Button>
+      <Button onClick={add}>新增</Button>
       <EditableDataTable
         data={items}
         editingRows={editingRows}
@@ -498,11 +474,11 @@ function Demo() {
                   保存
                 </Button>
               ) : (
-                <Button autoWidth onClick={() => handleEdit(index)}>
+                <Button autoWidth onClick={() => edit(index)}>
                   编辑
                 </Button>
               )}
-              <Button autoWidth onClick={() => handleRemove(row,index)}>
+              <Button autoWidth onClick={() => remove(row,index)}>
                 删除
               </Button>
             </>
