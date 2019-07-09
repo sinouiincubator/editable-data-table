@@ -1,0 +1,198 @@
+import { renderHook } from '@testing-library/react-hooks';
+import http from '@sinoui/http';
+import { render, cleanup, fireEvent } from '@testing-library/react';
+import React from 'react';
+import useEdititngList from '../useEditingList';
+import 'jest-dom/extend-expect';
+
+jest.mock('@sinoui/http');
+
+afterEach(cleanup);
+
+afterEach(() => {
+  (http.get as jest.Mock).mockReset();
+  (http.post as jest.Mock).mockReset();
+  (http.put as jest.Mock).mockReset();
+  (http.delete as jest.Mock).mockReset();
+});
+
+function renderDemo() {
+  function Demo() {
+    const { editingRows, items, add, remove } = useEdititngList<{
+      id: string;
+      userName: string;
+    }>('/test');
+
+    const handleAdd = () => {
+      add();
+    };
+
+    const handleRemove = (index: number) => {
+      remove(index);
+    };
+
+    return (
+      <div>
+        {editingRows.map((editing) => (
+          <span data-testid="editing">{`${editing}`}</span>
+        ))}
+        {items.map((item: any, index: number) => (
+          <div>
+            <span data-testid="item">{item.userName}</span>
+            <button type="button" onClick={() => handleRemove(index)}>
+              删除
+            </button>
+          </div>
+        ))}
+
+        <button type="button" onClick={handleAdd}>
+          添加
+        </button>
+      </div>
+    );
+  }
+
+  return render(<Demo />);
+}
+
+it('使用useRestListApi获取数据', async () => {
+  (http.get as jest.Mock).mockResolvedValue({
+    content: [{ id: '1', userName: '张三' }],
+    totalElements: 1,
+  });
+
+  const { findAllByTestId } = renderDemo();
+
+  const spans = await findAllByTestId('editing');
+  expect(spans.length).toBe(1);
+});
+
+it('添加数据', async () => {
+  (http.get as jest.Mock).mockResolvedValue({
+    content: [{ id: '1', userName: '张三' }],
+    totalElements: 1,
+  });
+
+  const { findAllByTestId, getByText } = renderDemo();
+
+  await findAllByTestId('item');
+  fireEvent.click(getByText('添加'));
+
+  const itemCount = (await findAllByTestId('item')).length;
+  expect(itemCount).toBe(2);
+
+  const editingCount = (await findAllByTestId('editing')).length;
+  expect(editingCount).toBe(2);
+  expect(getByText('true')).toBeVisible();
+});
+
+it('删除数据空数据', async () => {
+  (http.get as jest.Mock).mockResolvedValue({
+    content: [{ id: '1', userName: '张三' }],
+    totalElements: 1,
+  });
+
+  const { result, waitForNextUpdate } = renderHook(() =>
+    useEdititngList('/test'),
+  );
+
+  await waitForNextUpdate();
+
+  result.current.add();
+  result.current.remove(1);
+  expect(http.delete).toHaveBeenCalledTimes(0);
+  expect(result.current.items.length).toBe(1);
+});
+
+it('删除已有数据', async () => {
+  (http.get as jest.Mock).mockResolvedValue({
+    content: [{ id: '1', userName: '张三' }],
+    totalElements: 1,
+  });
+
+  (http.delete as jest.Mock).mockResolvedValue('删除成功');
+
+  const { findAllByTestId, getByText, getAllByText } = renderDemo();
+
+  await findAllByTestId('item');
+  fireEvent.click(getByText('添加'));
+  fireEvent.click(getAllByText('删除')[0]);
+
+  expect(http.delete).toHaveBeenCalledTimes(1);
+  await findAllByTestId('item');
+
+  const itemCount = (await findAllByTestId('item')).length;
+  expect(itemCount).toBe(1);
+
+  const editingCount = (await findAllByTestId('editing')).length;
+  expect(editingCount).toBe(1);
+  expect(getByText('true')).toBeVisible();
+});
+
+it('编辑某一项', async () => {
+  (http.get as jest.Mock).mockResolvedValue({
+    content: [{ id: '1', userName: '张三' }],
+    totalElements: 1,
+  });
+
+  const { result, waitForNextUpdate } = renderHook(() =>
+    useEdititngList('/test'),
+  );
+
+  await waitForNextUpdate();
+  result.current.edit(0);
+
+  expect(result.current.editingRows).toEqual([true]);
+});
+
+it('保存一项新增列表项', async () => {
+  (http.get as jest.Mock).mockResolvedValue({
+    content: [{ id: '1', userName: '张三' }],
+    totalElements: 1,
+  });
+
+  (http.post as jest.Mock).mockResolvedValue({
+    id: '03',
+    userName: '李四',
+  });
+
+  const { result, waitForNextUpdate } = renderHook(() =>
+    useEdititngList('/test'),
+  );
+  await waitForNextUpdate();
+  await result.current.save({ userName: '李四' }, 1);
+
+  expect(http.post).toHaveBeenCalledTimes(1);
+  expect(result.current.items.length).toBe(2);
+});
+
+it('保存一条已经存在的数据', async () => {
+  (http.get as jest.Mock).mockResolvedValue({
+    content: [{ id: '1', userName: '张三' }, { id: '03', userName: '王五' }],
+    totalElements: 1,
+  });
+
+  (http.put as jest.Mock).mockResolvedValue({
+    id: '03',
+    userName: '李四',
+  });
+
+  const { result, waitForNextUpdate } = renderHook(() =>
+    useEdititngList('/test', [{ id: '02', userName: '赵六' }]),
+  );
+
+  expect(result.current.editingRows).toEqual([false]);
+  await waitForNextUpdate();
+  result.current.edit(0);
+  expect(result.current.editingRows).toEqual([true]);
+
+  await result.current.save({ id: '03', userName: '李四' }, 1);
+
+  expect(http.post).toHaveBeenCalledTimes(0);
+  expect(http.put).toHaveBeenCalledTimes(1);
+  expect(result.current.items).toEqual([
+    { id: '1', userName: '张三' },
+    { id: '03', userName: '李四' },
+  ]);
+  expect(result.current.editingRows).toEqual([true, false]);
+});
