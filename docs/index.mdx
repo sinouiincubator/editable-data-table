@@ -444,8 +444,11 @@ function Demo() {
       if (!context.validate()) {
         alert('数据填写不完整');
       } else {
-        save(row, index);
-        alert('保存成功');
+        save(row, index).then(() => {
+          alert('保存成功');
+        }, () => {
+          alert('保存失败');
+        });
       }
     };
 
