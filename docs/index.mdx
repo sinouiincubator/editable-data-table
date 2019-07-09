@@ -7,6 +7,7 @@ import { useState, useCallback, useMemo } from 'react';
 import { Playground, Props } from 'docz';
 import TableColumn from '../src/TableColumn';
 import EditableDataTable from '../src/EditableDataTable';
+import useEditingList from '../src/useEditingList';
 import Button from 'sinoui-components/Button';
 import TextInput from 'sinoui-components/TextInput';
 import produce from 'immer';
@@ -344,11 +345,174 @@ function validate(rowData) {
 - 内置`editingRows`和`items`两个状态和变更方法。
 - 集成了[@sinoui/use-rest-list-api](https://github.com/sinoui/use-rest-list-api)，与后端 API 做增删改查交互。
 
-```ts
-import { useEiditingList } from '@sinouiincubator/editable-data-table';
+```tsx
+import EditableDataTable, {
+  useEiditingList,
+  TableColumn,
+} from '@sinouiincubator/editable-data-table';
+import Button from 'sinoui-components/Button';
+import TextInput from 'sinoui-components/TextInput';
+
+function validate(data) {
+  const result = {};
+  if (!data.id) {
+    result.id = '必填';
+  }
+  if (data.title && data.title.startsWith('1')) {
+    result.title = '标题不能以1开头';
+  }
+  return result;
+}
+
+function Demo() {
+  const { items, add, edit, save, remove, idPropertyName } = useEditingList(
+    '/tests',
+    [],
+  );
+
+  const handleSave = async (row, index, context) => {
+    if (!context.validate()) {
+      alert('数据填写不完整');
+    } else {
+      await save(row, index);
+      alert('保存成功');
+    }
+  };
+
+  const handleEdit = (index) => {
+    edit(index);
+  };
+
+  const handleRemove = (index) => {
+    remove(index);
+  };
+
+  const handleAdd = () => {
+    add();
+  };
+
+  return (
+    <>
+      <Button onClick={handleAdd}>新增</Button>
+      <EditableDataTable
+        data={items}
+        editingRows={editingRows}
+        validate={validate}
+        idPropertyName={idPropertyName}
+      >
+        <TableColumn title="序号" order />
+        <TableColumn title="id" name="id" editor={TextInput} />
+        <TableColumn title="标题" name="title" editor={TextInput} />
+        <TableColumn
+          title="操作"
+          name="id"
+          render={(value, row, index, id, context) => (
+            <>
+              {context.editing ? (
+                <Button
+                  autoWidth
+                  onClick={() => handleSave(row, index, context)}
+                >
+                  保存
+                </Button>
+              ) : (
+                <Button autoWidth onClick={() => handleEdit(index)}>
+                  编辑
+                </Button>
+              )}
+              <Button autoWidth onClick={() => handleRemove(index)}>
+                删除
+              </Button>
+            </>
+          )}
+        />
+      </EditableDataTable>
+    </>
+  );
+}
 ```
 
-// TODO: 补充。
+示例：
+
+<Playground>
+  {() => {
+    const validate = (data) => {
+      const result = {};
+      if (!data.id) {
+        result.id = '必填';
+      }
+      if (data.title && data.title.startsWith('1')) {
+        result.title = '标题不能以1开头';
+      }
+      return result;
+    };
+
+    const { items, add, edit, save, remove, idPropertyName } = useEditingList('/tests',[]);
+
+    const handleAdd =()=>{
+      add();
+    }
+
+    const handleSave =  (row, index, context) => {
+      if (!context.validate()) {
+        alert('数据填写不完整');
+      } else {
+        save(row, index);
+        alert('保存成功');
+      }
+    };
+
+    const handleEdit = (index) => {
+      edit(index);
+    };
+
+    const handleRemove = (index) => {
+      remove(index);
+    };
+
+    return (
+    <>
+      <Button onClick={handleAdd}>新增</Button>
+      <EditableDataTable
+        data={items}
+        editingRows={editingRows}
+        validate={validate}
+        idPropertyName={idPropertyName}
+      >
+        <TableColumn title="序号" order />
+        <TableColumn title="id" name="id" editor={TextInput} />
+        <TableColumn title="标题" name="title" editor={TextInput} />
+        <TableColumn
+          title="操作"
+          name="id"
+          render={(value, row, index, id, context) => (
+            <>
+              {context.editing ? (
+                <Button
+                  autoWidth
+                  onClick={() => handleSave(row, index, context)}
+                >
+                  保存
+                </Button>
+              ) : (
+                <Button autoWidth onClick={() => handleEdit(index)}>
+                  编辑
+                </Button>
+              )}
+              <Button autoWidth onClick={() => handleRemove(index)}>
+                删除
+              </Button>
+            </>
+          )}
+        />
+      </EditableDataTable>
+    </>
+
+);
+
+}}
+
+</Playground>
 
 ## 优化版本
 

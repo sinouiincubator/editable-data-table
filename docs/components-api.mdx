@@ -6,8 +6,6 @@ route: /components-api
 import { Playground, Props } from 'docz';
 import TableColumn from '../src/TableColumn';
 import EditableDataTable from '../src/EditableDataTable';
-import Button from 'sinoui-components/Button';
-import TextInput from 'sinoui-components/TextInput';
 
 # 组件 API
 
@@ -27,82 +25,18 @@ import TextInput from 'sinoui-components/TextInput';
 
 ## useEditingList
 
-### 使用
+### 参数配置
 
-```tsx
-import { useEditingList } from '@sinouiincubator/editable-data-table';
+- `url(string)` - crud 操作时的 url
+- `defaultValue(T[])` - 指定默认列表数据，默认值为`[]`
+- `options` - 相关配置,主要有 idPropertyName（数据的 id 属性名。默认为`id`）
 
-function validate(data) {
-  const result = {};
-  if (!data.id) {
-    result.id = '必填';
-  }
-  if (data.title && data.title.startsWith('1')) {
-    result.title = '标题不能以1开头';
-  }
-  return result;
-}
+### 返回值的数据结构
 
-function Demo() {
-  const { items, add, edit, save, remove } = useEditingList('/tests', []);
-
-  const handleSave = async (row, index, context) => {
-    if (!context.validate()) {
-      alert('数据填写不完整');
-    } else {
-      await save(row, index);
-      alert('保存成功');
-    }
-  };
-
-  const handleEdit = (index) => {
-    edit(index);
-  };
-
-  const handleRemove = (index) => {
-    remove(index);
-  };
-
-  const handleAdd = () => {
-    add();
-  };
-
-  return (
-    <>
-      <Button onClick={handleAdd}>新增</Button>
-      <EditableDataTable
-        data={items}
-        editingRows={editingRows}
-        validate={validate}
-      >
-        <TableColumn title="序号" order />
-        <TableColumn title="id" name="id" editor={TextInput} />
-        <TableColumn title="标题" name="title" editor={TextInput} />
-        <TableColumn
-          title="操作"
-          name="id"
-          render={(value, row, index, id, context) => (
-            <>
-              {context.editing ? (
-                <Button
-                  autoWidth
-                  onClick={() => handleSave(row, index, context)}
-                >
-                  保存
-                </Button>
-              ) : (
-                <Button autoWidth onClick={() => handleEdit(index)}>
-                  编辑
-                </Button>
-              )}
-              <Button autoWidth onClick={() => handleRemove(index)}>
-                删除
-              </Button>
-            </>
-          )}
-        />
-      </EditableDataTable>
-    </>
-  );
-}
-```
+- `items(T[])` - 列表数据
+- `editingRows(boolean[])` - 处于编辑状态的行。`editingRows`数组需要与`data`数组保持一一对应的关系，`editingRows`数组中每一个数据项代表的是`data`数组中对应数据项的编辑状态，`true`表示编辑状态，`false`表示非编辑状态。
+- `add(()=>void)` - 新增一条可编辑的空数据
+- `remove((index:number)=>void)` - 删除一条数据
+- `edit((index)=>void)` - 更新一条数据的编辑状态
+- `save((row:T,index:number)=>void)` - 新增一条数据或者更新一条数据
+- `idPropertyName(string)` - 数据的 id 属性名。默认为`id`
