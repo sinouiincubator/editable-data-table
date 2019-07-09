@@ -10626,6 +10626,11 @@ webpack-dev-server@^3.3.1:
     webpack-log "^2.0.0"
     yargs "12.0.5"
 
+webpack-docz-ghpages-plugin@^0.2.12:
+  version "0.2.12"
+  resolved "https://registry.yarnpkg.com/webpack-docz-ghpages-plugin/-/webpack-docz-ghpages-plugin-0.2.12.tgz#07b3aea651e4a1eb1158ede66712353d6aac17fb"
+  integrity sha512-8tIlbchxPuhp3odK5+2uxtT4VDllkhPgBKZxYBkoghC7zElgPgMY1FgZqjKXLUu4Fk7yYYrNtsfxOxrQF0113Q==
+
 webpack-hot-client@^4.1.1:
   version "4.1.2"
   resolved "https://registry.yarnpkg.com/webpack-hot-client/-/webpack-hot-client-4.1.2.tgz#3088c5533e021dd579fce8428235955248ed6a6c"
