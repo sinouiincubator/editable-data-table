@@ -22,7 +22,7 @@ const DataTableBody: React.SFC<{
     <tbody>
       {data.map((item, index) => (
         <DataTableBodyRow
-          key={item[idPropertyName] || index}
+          key={item[idPropertyName] || `index_${index}`}
           data={item}
           index={index}
           data-testid="tableBody"
