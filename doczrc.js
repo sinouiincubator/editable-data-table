@@ -2,6 +2,7 @@
 /* eslint-disable global-require */
 import url from 'url';
 import packageInfo from './package.json';
+import proxyPlugin from './scripts/proxy-plugin';
 
 /**
  * 获取基本URL
@@ -30,6 +31,7 @@ export default {
   menu: ['开始', '单元格编辑器', '组件API'],
   wrapper: 'docs/Wrapper.tsx',
   base: getBaseUrl(),
+  plugins: [proxyPlugin()],
   onCreateWebpackChain: (config) => {
     // 配置webpack的方式：[webpack-chain](https://github.com/neutrinojs/webpack-chain)
 
@@ -57,7 +59,10 @@ export default {
       })
       .end();
 
-    config.plugin('ghpages').use(require('webpack-docz-ghpages-plugin'));
+    config
+      .plugin('ghpages')
+      .use(require('webpack-docz-ghpages-plugin'))
+      .end();
 
     return config;
   },

@@ -15,7 +15,8 @@
     "prepublishOnly": "ts-lib-tools build",
     "doc:dev": "docz dev",
     "doc:build": "docz build",
-    "doc:publish": "docz build && gh-pages -d .docz/dist"
+    "doc:publish": "docz build && gh-pages -d .docz/dist",
+    "server:start": "node scripts/server.js"
   },
   "homepage": "https://sinouiincubator.github.io/editable-data-table",
   "repository": {
@@ -80,6 +81,7 @@
     "docz-theme-default": "^1.2.0",
     "express": "^4.17.1",
     "gh-pages": "^2.0.1",
+    "http-proxy-middleware": "^0.19.1",
     "husky": "^3.0.0",
     "jest-dom": "^3.5.0",
     "lint-staged": "^9.1.0",
