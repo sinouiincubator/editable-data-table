@@ -29,33 +29,36 @@ import produce from 'immer';
       return result;
     };
 
-    const [editingRows, setEditingRows] = useState([true,false]);
+    const [editingRows, setEditingRows] = useState([true, false]);
     const [items, setItems] = useState([{ id: '1', title: '123' }, { id: '2', title: '1234' }]);
 
     const handleSave = (row, index, context) => {
       if (!context.validate()) {
         alert('数据填写不完整');
       } else {
-        setEditingRows(produce(editingRows,(draft)=>{
-          draft[index] = !draft[index]
+        setEditingRows(produce(editingRows, (draft) => {
+          draft[index] = false;
         }));
         alert('保存成功');
       }
     };
 
     const handleEdit = (index) => {
-      setEditingRows(produce(editingRows,(draft)=>{
-          draft[index] = !draft[index]
-        }));
+      setEditingRows(produce(editingRows, (draft) => {
+        draft[index] = true;
+      }));
     };
 
     const handleRemove = (index) => {
-      setEditingRows(prev => prev.filter(item => item !== index));
-      setItems(prev => prev.filter((_item, i) => i !== index));
+      const removeByIndex = produce(draft => {
+        draft.splice(index, 1);
+      });
+      setEditingRows(removeByIndex);
+      setItems(removeByIndex);
     };
 
     const handleAdd = () => {
-      setEditingRows([...editingRows, items.length]);
+      setEditingRows([...editingRows, true]);
       setItems([...items, {}]);
     };
 
