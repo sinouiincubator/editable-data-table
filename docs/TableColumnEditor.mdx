@@ -7,6 +7,7 @@ import { useState, useCallback, useMemo } from 'react';
 import { Playground, Props } from 'docz';
 import TableColumn from '../src/TableColumn';
 import EditableDataTable from '../src/EditableDataTable';
+import { produce } from 'immer';
 
 # 单元格编辑器
 
@@ -328,9 +329,126 @@ function TitleSelect(props) {
 
 </Playground>
 
+## 单元格之间的值关联
+
+单元格编辑器可以随意修改`item`，但是直接修改`item`对象的属性值并不等于状态变更，也就不会引起可编辑数据表格的重绘。如果需要做单元格之间的值关联，我们需要监听到行数据变化并更新`items`状态。如下所示：
+
+```tsx
+import React, { useState } from 'react';
+import { produce } from 'immer';
+import EditableDataTable, {
+  TableColumn,
+} from '@sinouiincubator/editable-data-table';
+
+function Demo() {
+  const [items, setItems] = useState([
+    { id: '1', title: 'Java developer', titleId: '2', name: 'jacking' },
+  ]);
+
+  const handleRowChange = (index, rowData) => {
+    setItems(
+      produce((draft) => {
+        draft[index] = { ...rowData };
+      }),
+    );
+  };
+
+  return (
+    <EditableDataTable
+      data={items}
+      onRowChange={handleRowChange}
+      editingRows={[true]}
+    >
+      <TableColumn title="姓名" name="name" />
+      <TableColumn title="标题id" name="titleId" />
+      <TableColumn title="标题" name="title" editor={TitleSelect} />
+    </EditableDataTable>
+  );
+}
+```
+
+重点是我们在`EditableDataTable`上添加了`onRowChange`属性，用来监听数据行值变化事件。
+
+示例：
+
+<Playground>
+  {() => {
+    const titles = [
+      {
+        id: '1',
+        title: 'web developer',
+      },
+      {
+        id: '2',
+        title: 'Java developer',
+      },
+    ];
+
+    function TitleSelect(props) {
+      const { value, onChange, name, error, item } = props;
+
+      const handleChange = (event) => {
+        const title = event.target.value;
+        const {id} = titles.find((titleItem) => titleItem.title === title);
+
+        item.titleId = id;
+        onChange(title);
+      };
+
+      return (
+        <select
+          name={name}
+          value={value}
+          onChange={handleChange}
+          style={{
+              color: error ? 'red' : '#333',
+          }}
+        >
+          {titles.map((titleItem) => (
+            <option kselect>ey={titleItem.id} value={titleItem.title}>
+              {titleItem.title}
+            </option>
+          ))}
+        </select>
+      );
+    }
+
+    function Demo() {
+      const [items, setItems] = useState([
+        { id: '1', title: 'Java developer', titleId: '2', name: 'jacking' },
+        { id: '2', title: 'web developer', titleId: '1', name: 'zinuo' },
+      ]);
+
+      const handleRowChange = (index, rowData) => {
+        setItems(
+          produce((draft) => {
+            draft[index] = { ...rowData };
+          }),
+        );
+      };
+
+      return (
+        <EditableDataTable
+          data={items}
+          onRowChange={handleRowChange}
+          editingRows={[true, true]}
+        >
+          <TableColumn title="姓名" name="name" />
+          <TableColumn title="标题id" name="titleId" />
+          <TableColumn title="标题" name="title" editor={TitleSelect} />
+        </EditableDataTable>
+      );
+    }
+
+    return <Demo />;
+
+}}
+
+</Playground>
+
 ## Typescript 支持
 
-提供了`EditorProps`，表示单元格编辑器的属性。
+提供了`EditorProps`，表示单元格编辑器的属性类型。
 
 ```tsx
 import { EditorProps } from '@sinouiincubator/editable-data-table';
@@ -352,3 +470,192 @@ function TitleSelect(props: EditorProps) {
   );
 }
 ```
+
+## 选择框编辑器
+
+需要为选择框编辑器提供选项。大家可以创建一个高阶函数，来创建选择框编辑器，如下所示：
+
+`createSelectEditor.tsx`:
+
+```tsx
+import React from 'react';
+import { EditorProps } from '@sinouiincubator/editable-data-table';
+
+interface Option {
+  value: string;
+  title: string;
+}
+
+function createSelectEditor(options: Option[], displayName?: name) {
+  const Selector: React.SFC<EditorProps> = (props) => {
+    const { error, name, value, onChange } = props;
+    return (
+      <select4
+        style={{
+          color: error ? 'red' : '#333',
+        }}
+        name={name}
+        value={value}
+        onChange={onChange}
+      >
+        {options.map((optionItem) => (
+          <option key={optionItem.value} value={optionItem.value}>
+            {optionItem.title}
+          </option>
+        ))}
+      </select>
+    );
+  };
+
+  if (displayName) {
+    // displayName 方便大家在调试React时快速定位组件
+    Selector.displayName = displayName;
+  }
+
+  return Selector;
+}
+```
+
+`TitleSelect.tsx`:
+
+```tsx
+const titles = [
+  {
+    value: 'web developer',
+    title: 'web developer',
+  },
+  {
+    value: 'Java developer',
+    title: 'Java developer',
+  },
+];
+const TitleSelect = createSelectEditor(titles, 'TitleSelect');
+
+const favs = [
+  {
+    value: '篮球',
+    title: '篮球',
+  },
+  {
+    value: '足球',
+    title: '足球',
+  },
+];
+const FavSelect = createSelectEditor(favs, 'FavSelect');
+```
+
+`Demo.tsx`:
+
+```tsx
+import React, { useState } from 'react';
+
+function Demo() {
+  const [items, setItems] = useState([
+    { id: '1', title: 'Java developer', name: 'jacking' },
+    { id: '2', title: 'web developer', name: 'zinuo' },
+  ]);
+
+  return (
+    <EditableDataTable data={items} editingRows={[true, true]}>
+      <TableColumn title="姓名" name="name" />
+      <TableColumn title="标题id" name="titleId" />
+      <TableColumn title="标题" name="title" editor={TitleSelect} />
+      <TableColumn title="最喜欢的运动" name="fav" editor={FavSelect} />
+    </EditableDataTable>
+  );
+}
+```
+
+运行效果：
+
+<Playground>
+  {() => {
+    function createSelectEditor(options, displayName) {
+      const Selector = (props) => {
+        const { error, name, value, onChange } = props;
+        return (
+          <select
+            style={{
+              color: error ? 'red' : '#333',
+            }}
+            name={name}
+            value={value}
+            onChange={onChange}
+          >
+            {options.map((optionItem) => (
+              <option key={optionItem.value} value={optionItem.value}>
+                {optionItem.title}
+              </option>
+            ))}
+          </select>
+        );
+      };
+
+      if (displayName) {
+        Selector.displayName = displayName;
+      }
+
+      return Selector;
+    }
+
+    const titles = [
+      {
+        value: 'web developer',
+        title: 'web developer',
+      },
+      {
+        value: 'Java developer',
+        title: 'Java developer',
+      },
+    ];
+    const TitleSelect = createSelectEditor(titles, 'TitleSelect');
+
+    const favs = [
+      {
+        value: '篮球',
+        title: '篮球',
+      },
+      {
+        value: '足球',
+        title: '足球',
+      },
+    ];
+    const FavSelect = createSelectEditor(favs, 'FavSelect');
+
+    function Demo() {
+      const [items, setItems] = useState([
+        { id: '1', title: 'Java developer', name: 'jacking' },
+        { id: '2', title: 'web developer', name: 'zinuo' },
+      ]);
+
+      return (
+        <EditableDataTable data={items} editingRows={[true, true]}>
+          <TableColumn title="姓名" name="name" />
+          <TableColumn title="标题id" name="titleId" />
+          <TableColumn title="标题" name="title" editor={TitleSelect} />
+          <TableColumn title="最喜欢的运动" name="fav" editor={FavSelect} />
+        </EditableDataTable>
+      );
+    }
+
+    return <Demo />;
+
+}}
+
+</Playground>
+
+## sinoui-components
+
+可以用 sinoui-components 提供的组件作为单元格编辑器，包括：
+
+- TextInput
+- Select
+- RadioGroup
+- CheckboxGroup
+- Radio
+- Checkbox
+- DatePicker
+
+等。
+
+这些组件都可以通过上述描述的方式方法与可编辑数据表格组合使用。
