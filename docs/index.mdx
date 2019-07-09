@@ -365,10 +365,15 @@ function validate(data) {
 }
 
 function Demo() {
-  const { items, add, edit, save, remove, idPropertyName } = useEditingList(
-    '/tests',
-    [],
-  );
+  const {
+    items,
+    add,
+    edit,
+    save,
+    remove,
+    idPropertyName,
+    editingRows,
+  } = useEditingList('/tests', []);
 
   const handleSave = async (row, index, context) => {
     if (!context.validate()) {
@@ -383,8 +388,8 @@ function Demo() {
     edit(index);
   };
 
-  const handleRemove = (index) => {
-    remove(index);
+  const handleRemove = (row, index) => {
+    remove(row, index);
   };
 
   const handleAdd = () => {
@@ -401,8 +406,8 @@ function Demo() {
         idPropertyName={idPropertyName}
       >
         <TableColumn title="序号" order />
-        <TableColumn title="id" name="id" editor={TextInput} />
         <TableColumn title="标题" name="title" editor={TextInput} />
+        <TableColumn title="备注" name="note" editor={TextInput} />
         <TableColumn
           title="操作"
           name="id"
@@ -420,7 +425,7 @@ function Demo() {
                   编辑
                 </Button>
               )}
-              <Button autoWidth onClick={() => handleRemove(index)}>
+              <Button autoWidth onClick={() => handleRemove(row, index)}>
                 删除
               </Button>
             </>
@@ -438,16 +443,14 @@ function Demo() {
   {() => {
     const validate = (data) => {
       const result = {};
-      if (!data.id) {
-        result.id = '必填';
-      }
+      
       if (data.title && data.title.startsWith('1')) {
         result.title = '标题不能以1开头';
       }
       return result;
     };
 
-    const { items, add, edit, save, remove, idPropertyName } = useEditingList('/tests',[]);
+    const { items, add, edit, save, remove, idPropertyName,editingRows } = useEditingList('/api/tests',[]);
 
     const handleAdd =()=>{
       add();
@@ -466,8 +469,8 @@ function Demo() {
       edit(index);
     };
 
-    const handleRemove = (index) => {
-      remove(index);
+    const handleRemove = (row,index) => {
+       remove(row,index);
     };
 
     return (
@@ -480,8 +483,8 @@ function Demo() {
         idPropertyName={idPropertyName}
       >
         <TableColumn title="序号" order />
-        <TableColumn title="id" name="id" editor={TextInput} />
         <TableColumn title="标题" name="title" editor={TextInput} />
+        <TableColumn title="备注" name="note" editor={TextInput}/>
         <TableColumn
           title="操作"
           name="id"
@@ -499,7 +502,7 @@ function Demo() {
                   编辑
                 </Button>
               )}
-              <Button autoWidth onClick={() => handleRemove(index)}>
+              <Button autoWidth onClick={() => handleRemove(row,index)}>
                 删除
               </Button>
             </>

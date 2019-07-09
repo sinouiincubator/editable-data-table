@@ -27,10 +27,6 @@ function renderDemo() {
       add();
     };
 
-    const handleRemove = (index: number) => {
-      remove(index);
-    };
-
     return (
       <div>
         {editingRows.map((editing) => (
@@ -39,7 +35,7 @@ function renderDemo() {
         {items.map((item: any, index: number) => (
           <div>
             <span data-testid="item">{item.userName}</span>
-            <button type="button" onClick={() => handleRemove(index)}>
+            <button type="button" onClick={() => remove(item, index)}>
               删除
             </button>
           </div>
@@ -99,12 +95,38 @@ it('删除数据空数据', async () => {
   await waitForNextUpdate();
 
   result.current.add();
-  result.current.remove(1);
+  result.current.remove({}, 1);
   expect(http.delete).toHaveBeenCalledTimes(0);
   expect(result.current.items.length).toBe(1);
 });
 
 it('删除已有数据', async () => {
+  (http.get as jest.Mock).mockResolvedValue({
+    content: [{ id: '1', userName: '张三' }, { id: '2', userName: '李四' }],
+    totalElements: 1,
+  });
+
+  (http.delete as jest.Mock).mockResolvedValue('删除成功');
+
+  const { findAllByTestId, getByText, getAllByText } = renderDemo();
+
+  await findAllByTestId('item');
+
+  fireEvent.click(getByText('添加'));
+  fireEvent.click(getAllByText('删除')[0]);
+
+  expect(http.delete).toHaveBeenCalledTimes(1);
+  await findAllByTestId('item');
+
+  const itemCount = (await findAllByTestId('item')).length;
+  expect(itemCount).toBe(2);
+
+  const editingCount = (await findAllByTestId('editing')).length;
+  expect(editingCount).toBe(2);
+  expect(getByText('true')).toBeVisible();
+});
+
+it('删除未保存的数据', async () => {
   (http.get as jest.Mock).mockResolvedValue({
     content: [{ id: '1', userName: '张三' }],
     totalElements: 1,
@@ -115,18 +137,15 @@ it('删除已有数据', async () => {
   const { findAllByTestId, getByText, getAllByText } = renderDemo();
 
   await findAllByTestId('item');
-  fireEvent.click(getByText('添加'));
-  fireEvent.click(getAllByText('删除')[0]);
 
-  expect(http.delete).toHaveBeenCalledTimes(1);
-  await findAllByTestId('item');
+  fireEvent.click(getByText('添加'));
+  fireEvent.click(getAllByText('删除')[1]);
 
   const itemCount = (await findAllByTestId('item')).length;
   expect(itemCount).toBe(1);
 
   const editingCount = (await findAllByTestId('editing')).length;
   expect(editingCount).toBe(1);
-  expect(getByText('true')).toBeVisible();
 });
 
 it('编辑某一项', async () => {
