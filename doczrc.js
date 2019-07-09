@@ -27,7 +27,7 @@ export default {
   typescript: true,
   files: ['**/*.mdx'],
   public: './docs/assets',
-  menu: ['首页'],
+  menu: ['开始', '单元格编辑器', '组件API'],
   wrapper: 'docs/Wrapper.tsx',
   base: getBaseUrl(),
   onCreateWebpackChain: (config) => {

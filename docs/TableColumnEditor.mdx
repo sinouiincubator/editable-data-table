@@ -1,0 +1,354 @@
+---
+name: 单元格编辑器
+route: /table-column-editor
+---
+
+import { useState, useCallback, useMemo } from 'react';
+import { Playground, Props } from 'docz';
+import TableColumn from '../src/TableColumn';
+import EditableDataTable from '../src/EditableDataTable';
+
+# 单元格编辑器
+
+在[TableColumn](components-api#tablecolumn)上通过`editor`属性指定单元格编辑器。单元格编辑器必须正确处理 EditableDataTable 给与的参数，方能让编辑器与 EditableDataTable 结合在一起使用，这些参数包括：
+
+- `value` - 单元格值
+- `onChange` - 编辑器值变更时的回调函数。编辑器在值变化时，调用这个回调函数，将变化后的值传递给 EditingDataTable。
+- `name` - 数据属性名称
+- `item` - 当前行的数据对象
+- `error` - 是否校验错误
+
+例子：
+
+一个自定义的标题选择器组件`TitleSelect.tsx`:
+
+```tsx
+function TitleSelect(props) {
+  const { value, onChange, name, error } = props;
+  return (
+    <select
+      name={name}
+      value={value}
+      onChange={onChange}
+      style={{
+        color: error ? 'red' : '#333',
+      }}
+    >
+      <option value="web developer">web developer</option>
+      <option value="Java developer">Java developer</option>
+    </select>
+  );
+}
+```
+
+使用`TitleSelect`的例子：
+
+```tsx
+function Demo() {
+  function validate(rowData) {
+    const errors = {};
+
+    if (rowData.title && rowData.title !== 'Java developer') {
+      errors.title = '不能是Java developer';
+    }
+
+    return errors;
+  }
+
+  const users = [
+    {
+      id: '1',
+      name: 'Jacking',
+      title: 'web developer',
+    },
+    {
+      id: '2',
+      name: 'zinuo',
+      title: 'web developer',
+    },
+  ];
+
+  const editingRows = [false, true]; // 第二行数据是编辑状态
+
+  return (
+    <EditableDataTable
+      data={users}
+      editingRows={editingRows}
+      validate={validate}
+    >
+      <TableColumn title="id" name="id" editor="input" />
+      <TableColumn title="姓名" name="name" editor="input" />
+      <TableColumn title="标题" name="title" editor={TitleSelect} />
+    </EditableDataTable>
+  );
+}
+```
+
+查看运行效果：
+
+<Playground>
+  {() => {
+    function TitleSelect(props) {
+      const { value, onChange, name, error } = props;
+      return (
+        <select
+          name={name}
+          value={value}
+          onChange={onChange}
+          style={{
+            color: error ? 'red' : '#333',
+          }}
+        >
+          <option value="web developer">web developer</option>
+          <option value="Java developer">Java developer</option>
+          <option value="node.js developer">Node.js developer</option>
+        </select>
+      );
+    }
+
+    function validate(rowData) {
+      const errors = {};
+      if (rowData.title && rowData.title === 'Java developer') {
+        errors.title = '不能是 Java developer';
+      }
+
+      return errors;
+    }
+
+    const users = [
+      {
+        id: '1',
+        name: 'Jacking',
+        title: 'web developer',
+      },
+      {
+        id: '2',
+        name: 'zinuo',
+        title: 'web developer',
+      },
+    ];
+
+    const editingRows = [false, true]; // 第二行数据是编辑状态
+
+    return (
+      <EditableDataTable
+        data={users}
+        editingRows={editingRows}
+        validate={validate}
+      >
+        <TableColumn title="id" name="id" editor="input" />
+        <TableColumn title="姓名" name="name" editor="input" />
+        <TableColumn title="标题" name="title" editor={TitleSelect} />
+      </EditableDataTable>
+    );
+
+}}
+
+</Playground>
+
+## onChange 属性
+
+`onChange`属性用来将编辑器的值传递给可编辑数据表格。方法签名如下：
+
+```ts
+onChange(event?: React.ChangeEvent | string): void;
+```
+
+`onChange`支持两种传值方式：
+
+- 变更事件。这种情况可编辑数据表格从`event.target.value`中取值。
+- 直接传值。
+
+上述提供的`TitleSelect`采用了第一种方式。还可以通过第二种方式来传值：
+
+```tsx
+function TitleSelect(props: EditorProps) {
+  const { value, onChange, name, error } = props;
+
+  const handleChange = (event) => {
+    onChange(event.target.value);
+  };
+
+  return (
+    <select
+      name={name}
+      value={value}
+      onChange={handleChange}
+      style={{
+        color: error ? 'red' : '#333',
+      }}
+    >
+      <option value="web developer">web developer</option>
+      <option value="Java developer">Java developer</option>
+    </select>
+  );
+}
+```
+
+## item 属性
+
+item 属性有两个用途：
+
+- 为单元格编辑器提供整行数据，单元格编辑器有可能需要其他行数据才能渲染出来
+- 单元格编辑器可能需要修改其他字段的值
+
+看一个用途二的例子：
+
+```tsx
+const titles = [
+  {
+    id: '1',
+    title: 'web developer',
+  },
+  {
+    id: '2',
+    title: 'Java developer',
+  },
+];
+
+function TitleSelect(props) {
+  const { value, onChange, name, error, item } = props;
+
+  const handleChange = (event) => {
+    const title = event.target.value;
+    const { id } = titles.find((titleItem) => titleItem.title === title);
+
+    item.titleId = id;
+    onChange(title);
+  };
+
+  return (
+    <div>
+      <select
+        name={name}
+        value={value}
+        onChange={handleChange}
+        style={{
+          color: error ? 'red' : '#333',
+        }}
+      >
+        {titles.map((titleItem) => (
+          <option key={titleItem.id} value={titleItem.title}>
+            {titleItem.title}
+          </option>
+        ))}
+      </select>
+      <span>titleId: {item.titleId}</span>
+    </div>
+  );
+}
+```
+
+示例：
+
+<Playground>
+  {() => {
+    const titles = [
+      {
+        id: '1',
+        title: 'web developer',
+      },
+      {
+        id: '2',
+        title: 'Java developer',
+      },
+    ];
+
+    function TitleSelect(props) {
+      const { value, onChange, name, error, item } = props;
+
+      const handleChange = (event) => {
+        const title = event.target.value;
+        const {id} = titles.find((titleItem) => titleItem.title === title);
+
+        item.titleId = id;
+        onChange(title);
+      };
+
+      return (
+        <div>
+          <select
+            name={name}
+            value={value}
+            onChange={handleChange}
+            style={{
+                color: error ? 'red' : '#333',
+            }}
+          >
+            {titles.map((titleItem) => (
+              <option key={titleItem.id} value={titleItem.title}>
+                {titleItem.title}
+              </option>
+            ))}
+          </select>
+          <span>titleId: {item.titleId}</span>
+        </div>
+      );
+    }
+
+    function validate(rowData) {
+      const errors = {};
+      if (rowData.title && rowData.title === 'Java developer') {
+        errors.title = '不能是 Java developer';
+      }
+
+      return errors;
+    }
+
+    const users = [
+      {
+        id: '1',
+        name: 'Jacking',
+        title: 'web developer',
+        titleId: '1',
+      },
+      {
+        id: '2',
+        name: 'zinuo',
+        title: 'web developer',
+        titleId: '1'
+      },
+    ];
+
+    const editingRows = [false, true]; // 第二行数据是编辑状态
+
+    return (
+      <EditableDataTable
+        data={users}
+        editingRows={editingRows}
+        validate={validate}
+      >
+        <TableColumn title="id" name="id" editor="input" />
+        <TableColumn title="姓名" name="name" editor="input" />
+        <TableColumn title="标题" name="title" editor={TitleSelect} />
+      </EditableDataTable>
+    );
+
+}}
+
+</Playground>
+
+## Typescript 支持
+
+提供了`EditorProps`，表示单元格编辑器的属性。
+
+```tsx
+import { EditorProps } from '@sinouiincubator/editable-data-table';
+
+function TitleSelect(props: EditorProps) {
+  const { value, onChange, name, error } = props;
+  return (
+    <select
+      name={name}
+      value={value}
+      onChange={onChange}
+      style={{
+        color: error ? 'red' : '#333',
+      }}
+    >
+      <option value="web developer">web developer</option>
+      <option value="Java developer">Java developer</option>
+    </select>
+  );
+}
+```
