@@ -76,6 +76,7 @@
     "css-loader": "^3.0.0",
     "docz": "^1.2.0",
     "docz-theme-default": "^1.2.0",
+    "express": "^4.17.1",
     "gh-pages": "^2.0.1",
     "husky": "^3.0.0",
     "jest-dom": "^3.5.0",
@@ -90,7 +91,8 @@
     "react-textarea-autosize": "^7.1.0",
     "style-loader": "^0.23.1",
     "ts-lib-tools": "^0.2.7",
-    "typescript": "^3.5.2"
+    "typescript": "^3.5.2",
+    "webpack-docz-ghpages-plugin": "^0.2.12"
   },
   "jest": {
     "transformIgnorePatterns": [
