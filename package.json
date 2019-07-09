@@ -107,5 +107,8 @@
       "^.+\\.module\\.(css|sass|scss)$",
       "^.+[/\\\\]dist[/\\\\]"
     ]
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
