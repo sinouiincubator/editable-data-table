@@ -107,7 +107,7 @@ it('暗色主题', () => {
 });
 
 it('监听变更事件', () => {
-  const hanleRowChange = jest.fn();
+  const handleRowChange = jest.fn();
   const { getByDisplayValue } = render(
     <ThemeProvider theme={defaultTheme}>
       <EditableDataTable
@@ -122,7 +122,7 @@ it('监听变更事件', () => {
             title: '标题2',
           },
         ]}
-        onRowChange={hanleRowChange}
+        onRowChange={handleRowChange}
       >
         <TableColumn name="title" editor="input" />
       </EditableDataTable>
@@ -133,8 +133,9 @@ it('监听变更事件', () => {
 
   fireEvent.change(input, { target: { value: '新的标题' } });
 
-  expect(hanleRowChange).toHaveBeenCalled();
-  expect(hanleRowChange.mock.calls[0][0]).toEqual({
+  expect(handleRowChange).toHaveBeenCalled();
+  expect(handleRowChange.mock.calls[0][0]).toEqual(1);
+  expect(handleRowChange.mock.calls[0][1]).toEqual({
     id: '2',
     title: '新的标题',
   });

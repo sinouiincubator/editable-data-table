@@ -33,7 +33,7 @@ export interface Props<T> {
   /**
    * 监听行数据发生变化的事件。回调函数的`rowData`参数代表的是变更后的行数据对象。
    */
-  onRowChange?: (rowData: T) => void;
+  onRowChange?: (index: number, rowData: T) => void;
 
   /**
    * 给正在编辑的行添加校验规则。

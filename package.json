@@ -15,7 +15,15 @@
     "prepublishOnly": "ts-lib-tools build",
     "doc:dev": "docz dev",
     "doc:build": "docz build",
-    "doc:publish": "docz dev && gh-pages -d .docz/dist"
+    "doc:publish": "docz build && gh-pages -d .docz/dist"
+  },
+  "homepage": "https://sinouiincubator.github.io/editable-data-table",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sinouiincubator/editable-data-table.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sinouiincubator/editable-data-table/issues"
   },
   "prettier": {
     "printWidth": 80,
