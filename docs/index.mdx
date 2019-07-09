@@ -3,6 +3,399 @@ name: 开始
 route: /
 ---
 
-# 开始使用
+import { useState, useCallback, useMemo } from 'react';
+import { Playground, Props } from 'docz';
+import TableColumn from '../src/TableColumn';
+import EditableDataTable from '../src/EditableDataTable';
+import Button from 'sinoui-components/Button';
+import TextInput from 'sinoui-components/TextInput';
+import produce from 'immer';
 
-在这里写项目使用文档。
+# 可编辑表格
+
+安装：
+
+```shell
+yarn add @sinouiincubator/editable-data-table
+```
+
+引用：
+
+```ts
+import EditableDataTable, {
+  TableColumn,
+} from '@sinouiincubator/editable-data-table';
+```
+
+可编辑列表（`EditableDataTable`）提供以下功能：
+
+- 展现列表数据（不支持分页，但是可以与分页功能组合使用）
+- 编辑数据行
+- 校验数据行
+
+我们可以基于可编辑表格做列表数据的增删改查。下面我们通过例子来了解基本用法。
+
+## 展现列表数据
+
+`EditableDataTable`可以用来展现列表数据，可以通过`TableColumn`定义列表的列信息：列标题、列单元格数据渲染逻辑、宽度等。
+
+```tsx
+import EditableDataTable, {
+  TableColumn,
+} from '@sinouiincubator/editable-data-table';
+
+function Demo() {
+  const users = [
+    {
+      id: '1',
+      firstName: 'Jacking',
+      lastName: 'Liu',
+      title: 'developer',
+    },
+    {
+      id: '2',
+      firstName: 'Zinuo',
+      lastName: 'Tian',
+      title: 'developer',
+    },
+  ];
+
+  return (
+    <EditableDataTable data={users}>
+      <TableColumn title="id" name="id" />
+      <TableColumn
+        title="姓名"
+        render={(value, row) => `${row.firstName} ${row.lastName}`}
+      />
+      <TableColumn title="标题" name="title" />
+    </EditableDataTable>
+  );
+}
+```
+
+查看运行效果：
+
+<Playground>
+  {() => {
+    const users = [
+      {
+        id: '1',
+        firstName: 'Jacking',
+        lastName: 'Liu',
+        title: 'developer',
+      },
+      {
+        id: '2',
+        firstName: 'Zinuo',
+        lastName: 'Tian',
+        title: 'developer',
+      },
+    ];
+    return (
+      <EditableDataTable data={users}>
+        <TableColumn title="id" name="id" />
+        <TableColumn
+          title="姓名"
+          render={(value, row) => `${row.firstName} ${row.lastName}`}
+        />
+        <TableColumn title="标题" name="title" />
+      </EditableDataTable>
+    );
+  }}
+</Playground>
+
+## 编辑数据行
+
+`EditableDataTable`组件通过`editingRows`接收数据行是否处于编辑状态的数据。这是一个与`data`数组等长的布尔数组，`editingRows`数组的每一项与`data`数组一一对应，`true`表示编辑状态、`false`表示非编辑状态。
+
+可以通过`TableColumn`组件的`editor`属性指定单元格的编辑器。如下所示：
+
+```jsx
+import EditableDataTable, {
+  TableColumn,
+} from '@sinouiincubator/editable-data-table';
+
+function Demo() {
+  const users = [
+    {
+      id: '1',
+      name: 'Jacking',
+      title: 'developer',
+    },
+    {
+      id: '2',
+      name: 'zinuo',
+      title: 'developer',
+    },
+  ];
+
+  const editingRows = [false, true]; // 第二行数据是编辑状态
+
+  return (
+    <EditableDataTable data={users} editingRows={editingRows}>
+      <TableColumn title="id" name="id" editor="input" />
+      <TableColumn title="姓名" name="name" editor="input" />
+      <TableColumn title="标题" name="title" editor="input" />
+    </EditableDataTable>
+  );
+}
+```
+
+查看运行效果：
+
+<Playground>
+  {() => {
+    const users = [
+      {
+        id: '1',
+        name: 'Jacking',
+        title: 'developer',
+      },
+      {
+        id: '2',
+        name: 'zinuo',
+        title: 'developer',
+      },
+    ];
+
+    const editingRows = [false, true]; // 第二行数据是编辑状态
+
+    return (
+      <EditableDataTable data={users} editingRows={editingRows}>
+        <TableColumn title="id" name="id" editor="input" />
+        <TableColumn title="姓名" name="name" editor="input" />
+        <TableColumn title="标题" name="title" editor="input" />
+      </EditableDataTable>
+    );
+
+}}
+
+</Playground>
+
+## 校验数据行
+
+可以通过`EditableDataTable`的`validate`属性指定行数据的校验，这是一个方法，方法返回验证错误的结果。如下所示：
+
+```ts
+function validate(rowData) {
+  const errors = {};
+
+  if (!rowData.id) {
+    errors.id = '必填';
+  }
+
+  if (!rowData.name) {
+    errors.name = '必填';
+  }
+
+  if (rowData.title && rowData.title.startsWith('1')) {
+    errors.title = '不能以1开头';
+  }
+
+  return errors;
+}
+```
+
+这个方法运行的结果类似如下面：
+
+```js
+{
+  id: '必填',
+  title: '不能以1开头'
+}
+```
+
+这个键值对数据，键表示有验证错误的字段名（表单域名称），值表示字段名对应的验证错误。
+
+看看效果：
+
+<Playground>
+  {() => {
+    function validate(rowData) {
+      const errors = {};
+
+      if (!rowData.id) {
+        errors.id = '必填';
+      }
+
+      if (!rowData.name) {
+        errors.name = '必填';
+      }
+
+      if (rowData.title && rowData.title.startsWith('1')) {
+        errors.title = '不能以1开头';
+      }
+
+      return errors;
+    }
+
+    const users = [
+      {
+        id: '1',
+        name: 'Jacking',
+        title: 'developer',
+      },
+      {
+        id: '2',
+        name: 'zinuo',
+        title: 'developer',
+      },
+    ];
+
+    const editingRows = [false, true]; // 第二行数据是编辑状态
+
+    return (
+      <EditableDataTable data={users} editingRows={editingRows} validate={validate}>
+        <TableColumn title="id" name="id" editor="input" />
+        <TableColumn title="姓名" name="name" editor="input" />
+        <TableColumn title="标题" name="title" editor="input" />
+      </EditableDataTable>
+    );
+
+}}
+
+</Playground>
+
+## 增删改查
+
+可以基于`EditableDataTable`实现增删改查。看看下面一个与后端 API 无法的增删改查示例：
+
+<Playground>
+  {() => {
+    const validate = (data) => {
+      const result = {};
+      if (!data.id) {
+        result.id = '必填';
+      }
+      if (data.title && data.title.startsWith('1')) {
+        result.title = '标题不能以1开头';
+      }
+      return result;
+    };
+
+    const [editingRows, setEditingRows] = useState([true, false]);
+    const [items, setItems] = useState([{ id: '1', title: '123' }, { id: '2', title: '1234' }]);
+
+    const handleSave = (row, index, context) => {
+      if (!context.validate()) {
+        alert('数据填写不完整');
+      } else {
+        setEditingRows(produce(editingRows, (draft) => {
+          draft[index] = false;
+        }));
+        alert('保存成功');
+      }
+    };
+
+    const handleEdit = (index) => {
+      setEditingRows(produce(editingRows, (draft) => {
+        draft[index] = true;
+      }));
+    };
+
+    const handleRemove = (index) => {
+      const removeByIndex = produce(draft => {
+        draft.splice(index, 1);
+      });
+      setEditingRows(removeByIndex);
+      setItems(removeByIndex);
+    };
+
+    const handleAdd = () => {
+      setEditingRows([...editingRows, true]);
+      setItems([...items, {}]);
+    };
+
+    return (<>
+      <Button onClick={handleAdd}>新增</Button>
+      <EditableDataTable
+        data={items}
+        editingRows={editingRows}
+        validate={validate}
+      >
+        <TableColumn title="序号" order />
+        <TableColumn title="id" name="id" editor={TextInput} />
+        <TableColumn title="标题" name="title" editor={TextInput} />
+        <TableColumn
+          title="操作"
+          name="id"
+          render={(value, row, index, id, context) => (<>
+            {
+              context.editing ?
+                <Button autoWidth onClick={() => handleSave(row, index, context)}>保存</Button> :
+                <Button autoWidth onClick={() => handleEdit(index)}>编辑</Button>
+            }
+            <Button autoWidth onClick={() => handleRemove(index)}>删除</Button>
+          </>)}
+        />
+      </EditableDataTable>
+    </>);
+
+}}
+
+</Playground>
+
+## 使用 useEditingList
+
+可以使用 useEditingList 简化增删改查场景的开发：
+
+- 内置`editingRows`和`items`两个状态和变更方法。
+- 集成了[@sinoui/use-rest-list-api](https://github.com/sinoui/use-rest-list-api)，与后端 API 做增删改查交互。
+
+```ts
+import { useEiditingList } from '@sinouiincubator/editable-data-table';
+```
+
+// TODO: 补充。
+
+## 优化版本
+
+<Playground>
+  {() => {
+    const [data, setData] = useState([
+      { id: '1', title: '123' },
+      { id: '2', title: '1234' },
+    ]);
+    const handleAdd = () => {
+      setData([
+        ...data,
+        { id: data.length + 1, title: `标题${data.length + 1}` },
+      ]);
+    };
+
+    const handleRemove = useCallback((index) => {
+      setData(prev => prev.filter((_item, i) => i !== index));
+    }, []);
+
+    const renderButtons = useCallback((id, row, index) => (
+      <Button onClick={() => handleRemove(index)}>删除</Button>
+    ), [handleRemove]);
+
+    const columns = useMemo(() => <>
+      <TableColumn title="id" name="id" />
+      <TableColumn title="标题" name="title" />
+      <TableColumn title="操作列" name="id" />
+      <TableColumn title="操作" name="id" render={renderButtons} />
+    </>, [handleRemove]);
+
+    return (
+        <div>
+          <Button onClick={handleAdd}>添加</Button>
+          <EditableDataTable data={data}>
+          {columns}
+          </EditableDataTable>
+        </div>
+    );
+
+}}
+
+</Playground>
+
+## 无数据
+
+<Playground>
+  <EditableDataTable data={[]}>
+    <TableColumn title="id" name="id" />
+    <TableColumn title="标题" name="title" />
+  </EditableDataTable>
+</Playground>
