@@ -45,24 +45,40 @@ import TextInput from 'sinoui-components/TextInput';
       setEditingRows(prev => [...prev, index]);
     };
 
-    return (<EditableDataTable
-      data={items}
-      editingRows={editingRows}
-      validate={validate}
-    >
-      <TableColumn title="序号" order />
-      <TableColumn title="id" name="id" editor={TextInput} />
-      <TableColumn title="标题" name="title" editor={TextInput} />
-      <TableColumn
-        title="操作"
-        name="id"
-        render={(value, row, index, id, context) => (
-          context.editing ?
-            <Button onClick={() => handleSave(row, index, context)}>保存</Button> :
-            <Button onClick={() => handleEdit(index)}>编辑</Button>
-        )}
-      />
-    </EditableDataTable>);
+    const handleRemove = (index) => {
+      setEditingRows(prev => prev.filter(item => item !== index));
+      setItems(prev => prev.filter((_item, i) => i !== index));
+    };
+
+    const handleAdd = () => {
+      setEditingRows([...editingRows, items.length]);
+      setItems([...items, {}]);
+    };
+
+    return (<>
+      <Button onClick={handleAdd}>新增</Button>
+      <EditableDataTable
+        data={items}
+        editingRows={editingRows}
+        validate={validate}
+      >
+        <TableColumn title="序号" order />
+        <TableColumn title="id" name="id" editor={TextInput} />
+        <TableColumn title="标题" name="title" editor={TextInput} />
+        <TableColumn
+          title="操作"
+          name="id"
+          render={(value, row, index, id, context) => (<>
+            {
+              context.editing ?
+                <Button autoWidth onClick={() => handleSave(row, index, context)}>保存</Button> :
+                <Button autoWidth onClick={() => handleEdit(index)}>编辑</Button>
+            }
+            <Button autoWidth onClick={() => handleRemove(index)}>删除</Button>
+          </>)}
+        />
+      </EditableDataTable>
+    </>);
 
 }}
 
