@@ -6,7 +6,7 @@ interface Options<T> {
   /**
    * 单元格表单域是否一致处于编辑状态。
    */
-  alwaysEdting?: boolean;
+  alwaysEditing?: boolean;
 
   /**
    * 验证行数据的函数
@@ -30,7 +30,7 @@ function useSimpleEditingList<T = any>(
 ): SimpleEditingListResult<T> {
   const [items, setItems] = useState<T[]>(defaultItems);
   const [editingRows, setEditingRows] = useState<boolean[]>(() =>
-    new Array(defaultItems.length).fill(!!options.alwaysEdting),
+    new Array(defaultItems.length).fill(!!options.alwaysEditing),
   );
   const [errors, setErrors] = useState<ErrorResult[]>(() =>
     new Array(defaultItems.length).fill({}),
@@ -74,7 +74,7 @@ function useSimpleEditingList<T = any>(
   const replaceItems = useCallback((newItems: T[]) => {
     setItems(newItems);
     setEditingRows(
-      new Array(newItems.length).fill(!!optionsRef.current.alwaysEdting),
+      new Array(newItems.length).fill(!!optionsRef.current.alwaysEditing),
     );
 
     setErrors(new Array(newItems.length).fill({}));

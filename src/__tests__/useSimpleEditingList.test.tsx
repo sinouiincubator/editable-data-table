@@ -109,7 +109,7 @@ it('展示并替换数据', () => {
 it('一直处于编辑状态', () => {
   function Demo() {
     const editingList = useSimpleEditingList([{ id: '1', title: '标题1' }], {
-      alwaysEdting: true,
+      alwaysEditing: true,
     });
     return <SimpleDemo editingList={editingList} />;
   }
@@ -197,7 +197,7 @@ it('外置单元格校验', () => {
   function Demo() {
     const editingList = useSimpleEditingList(
       [{ id: '1', title: '标题1' }, { id: '2', title: '标题2' }],
-      { validate, alwaysEdting: true },
+      { validate, alwaysEditing: true },
     );
     return <SimpleDemo editingList={editingList} />;
   }
@@ -232,7 +232,7 @@ it('校验整个列表', () => {
         { id: '2', title: '123' },
         { id: '3', title: '标题3' },
       ],
-      { validate, alwaysEdting: true },
+      { validate, alwaysEditing: true },
     );
     return <SimpleDemo editingList={editingList} />;
   }
@@ -253,7 +253,7 @@ it('只读列表，不做校验', () => {
         { id: '2', title: '123' },
         { id: '3', title: '标题3' },
       ],
-      { validate, alwaysEdting: false },
+      { validate, alwaysEditing: false },
     );
     return <SimpleDemo editingList={editingList} />;
   }
@@ -274,7 +274,7 @@ it('没有指定validate，不能做列表校验', () => {
         { id: '2', title: '123' },
         { id: '3', title: '标题3' },
       ],
-      { alwaysEdting: true },
+      { alwaysEditing: true },
     );
     return <SimpleDemo editingList={editingList} />;
   }
