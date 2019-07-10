@@ -1,0 +1,140 @@
+---
+name: 校验
+route: /validate
+---
+
+import { Playground } from 'docz';
+import EditableDataTable, { useSimpleEditingList, TableColumn } from '../src';
+import Button from 'sinoui-components/Button';
+
+## 校验
+
+EditableDataTable 内置支持校验，也支持在表格组件的外部维护校验状态。可以使用 useSimpleEditingList 管理外置的校验状态。
+
+```tsx
+import React from 'react';
+import EditableDataTable, {
+  useSimpleEditingList,
+  TableColumn,
+} from '@sinouiincubator/editable-data-table';
+
+interface User {
+  id: string;
+  name: string;
+  duty?: string;
+}
+
+function validate(rowData: User) {
+  const errors = {};
+
+  if (!rowData.name) {
+    errors.name = '必填';
+  }
+
+  if (rowData.duty && rowData.duty.startsWith('1')) {
+    errors.duty = '职务不能以1开头';
+  }
+
+  return errors;
+}
+
+function Demo() {
+  const editingList = useSimpleEditingList<User>(
+    [
+      { id: '1', name: 'Jacking', duty: 'developer' },
+      { id: '2', name: 'zinuo', duty: 'developer' },
+    ],
+    {
+      alwaysEditing: true,
+      validate,
+    },
+  );
+
+  const handleSave = () => {
+    if (!editingList.validateAllEditingRows()) {
+      alert('数据校验失败，请检查。');
+    } else {
+      console.log('需要保存的数据', editingList.items);
+      alert('保存数据成功');
+    }
+  };
+
+  return (
+    <>
+      <button onClick={handleSave}>保存</button>
+      <EditableDataTable
+        data={editingList.items}
+        editingRows={editingList.editingRows}
+        errors={editingList.errors}
+        touched={editingList.touched}
+        onFieldChange={editingList.validateField}
+      >
+        <TableColumn order title="序号" />
+        <TableColumn title="姓名" name="name" editor="input" />
+        <TableColumn title="职务" name="duty" editor="input" />
+      </EditableDataTable>
+    </>
+  );
+}
+```
+
+演示效果：
+
+<Playground>
+  {() => {
+    function validate(rowData) {
+      const errors = {};
+
+      if (!rowData.name) {
+        errors.name = '必填';
+      }
+
+      if (rowData.duty && rowData.duty.startsWith('1')) {
+        errors.duty = '职务不能以1开头';
+      }
+
+      return errors;
+    }
+
+    function Demo() {
+      const editingList = useSimpleEditingList([
+        { id: '1', name: 'Jacking', duty: 'developer' },
+        { id: '2', name: 'zinuo', duty: 'developer' },
+      ], {
+        alwaysEditing: true,
+        validate,
+      });
+
+      const handleSave = () => {
+        if (!editingList.validateAllEditingRows()) {
+          alert('数据校验失败，请检查。');
+        } else {
+          console.log('需要保存的数据', editingList.items);
+          alert('保存数据成功');
+        }
+      };
+
+      return (
+        <>
+          <Button raised onClick={handleSave}>保存</Button>
+          <Button raised onClick={() => editingList.add({})}>新增</Button>
+          <EditableDataTable
+            data={editingList.items}
+            editingRows={editingList.editingRows}
+            errors={editingList.errors}
+            touched={editingList.touched}
+            onFieldChange={editingList.validateField}
+          >
+            <TableColumn order title="序号" />
+            <TableColumn title="姓名" name="name" editor="input" />
+            <TableColumn title="职务" name="duty" editor="input" />
+          </EditableDataTable>
+        </>
+      );
+    }
+
+    return <Demo />;
+
+}}
+
+</Playground>

@@ -13,7 +13,8 @@ import EditableDataTable from '../src/EditableDataTable';
 
 - EditableDataTable - 可编辑数据表格组件
 - TableColumn - 定义数据表格列的组件
-- useEditingList - 可编辑表格数据的状态管理 hook
+- useEditingList - 可编辑表格数据的状态管理 hook（与后端 API 交互，不包括校验状态）
+- useSimpleEditingList - 可编辑表格数据的状态管理 hook （不与后端交互，但包括校验状态）
 
 ## EditableDataTable
 
@@ -40,3 +41,113 @@ import EditableDataTable from '../src/EditableDataTable';
 - `edit((index)=>void)` - 更新一条数据的编辑状态
 - `save((row:T,index:number)=>void)` - 新增一条数据或者更新一条数据
 - `idPropertyName(string)` - 数据的 id 属性名。默认为`id`
+
+## useSimpleEditingList
+
+可编辑表格数据的状态管理 hook （不与后端交互，但包括校验状态）。
+
+示例：
+
+```tsx
+import { useSimpleEditingList } from '@sinouiincubator/editable-data-table';
+
+function Demo() {
+  const editingList = useSimpleEditingList(defaultValue, options);
+  return null;
+}
+```
+
+### 参数说明
+
+- `defaultValue` - 指定默认值，默认为`[]`。
+- `options` - 指定配置：
+  - `alwaysEditing?: boolean` - 如果为`true`，则表示所有数据行处于编辑状态。默认为`false`。
+  - `validate?: (item: T) => ErrorResult | undefined` - 验证行数据的函数
+
+### 返回值`editingList`
+
+`editingList`对象有以下属性：
+
+```ts
+interface SimpleEditingListResult<T> {
+  /**
+   * 列表数据
+   */
+  items: T[];
+  /**
+   * 设置列表数据
+   *
+   * @param newItems 新的列表数据
+   */
+  setItems(newItems: T[]): void;
+  /**
+   * 数据行的编辑状态。
+   */
+  editingRows: boolean[];
+  /**
+   * 设置数据行处于编辑状态
+   *
+   * @param rowIndex 数据行所在的索引位置
+   */
+  edit(rowIndex: number): void;
+  /**
+   * 设置数据行处于只读状态
+   *
+   * @param rowIndex 数据行所在的索引位置
+   */
+  setReadonly(rowIndex: number): void;
+  /**
+   * 添加数据行
+   *
+   * @param item 需要添加的数据行
+   */
+  add(item: T): void;
+  /**
+   * 删除数据行
+   *
+   * @param index 数据行所在的索引位置
+   */
+  remove(index: number): void;
+  /**
+   * 删除一组数据行
+   *
+   * @param indexes 一组数据行所在的索引位置
+   */
+  removeItems(indexes: number[]): void;
+  /**
+   * 更新数据行
+   *
+   * @param index 数据行所在的索引位置
+   * @param item 新的数据对象
+   */
+  updateItem(index: number, item: T): void;
+  /**
+   * 错误状态
+   */
+  errors: ErrorResult[];
+  /**
+   * 编辑器被点击状态
+   */
+  touched: TouchedState[];
+  /**
+   * 校验单个数据项
+   *
+   * @param index 数据行所在的索引位置
+   * @param fieldName 数据项名称
+   * @param rowData 数据行的新数据对象
+   */
+  validateField(index: number, fieldName: string, rowData: T): void;
+  /**
+   * 校验所有编辑中的数据行
+   */
+  validateAllEditingRows(): boolean;
+}
+
+interface ErrorResult {
+  [fieldName: string]: string;
+}
+
+interface TouchedState {
+  [fieldName: string]: boolean;
+}
+```
