@@ -5,6 +5,7 @@ interface ContextType {
   idPropertyName: string;
   options: {
     onRowChange?: (index: number, rowData: any) => void;
+    onFieldChange?: (index: number, fieldName: string, rowData: any) => void;
     validate?: (rowData: any) => { [x: string]: string } | undefined;
   };
 }

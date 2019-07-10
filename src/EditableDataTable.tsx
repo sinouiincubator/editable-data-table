@@ -18,6 +18,16 @@ export interface Props<T> {
   editingRows?: boolean[];
 
   /**
+   * 错误状态
+   */
+  errors?: ErrorResult[];
+
+  /**
+   * 单元格是否被点击的状态
+   */
+  touched?: TouchedState[];
+
+  /**
    * 子节点，一组TableColumn。使用TableColumn指表格列信息。
    */
   children: React.ReactNode;
@@ -34,6 +44,11 @@ export interface Props<T> {
    * 监听行数据发生变化的事件。回调函数的`rowData`参数代表的是变更后的行数据对象。
    */
   onRowChange?: (index: number, rowData: T) => void;
+
+  /**
+   * 监听单元格值变化事件。回调函数的`rowData`参数代表的是变更后的行数据对象。
+   */
+  onFieldChange?: (index: number, fieldName: string, rowData: T) => void;
 
   /**
    * 给正在编辑的行添加校验规则。
@@ -58,16 +73,19 @@ function useEditableDataTable<T>({
   idPropertyName = 'id',
   onRowChange,
   validate,
+  onFieldChange,
 }: Props<T>) {
   const options = useRef({
     onRowChange,
     validate,
+    onFieldChange,
   });
 
   useEffect(() => {
     options.current.onRowChange = onRowChange;
     options.current.validate = validate;
-  }, [onRowChange, validate]);
+    options.current.onFieldChange = onFieldChange;
+  }, [onRowChange, validate, onFieldChange]);
 
   const context = useMemo(
     () => ({ idPropertyName, options: options.current }),
@@ -87,6 +105,8 @@ function EditableDataTable<T>(props: Props<T>) {
     children,
     emptyTitle = '暂无数据',
     editingRows,
+    errors,
+    touched,
   } = props;
   const context = useEditableDataTable(props);
   return (
@@ -99,6 +119,8 @@ function EditableDataTable<T>(props: Props<T>) {
             data={data}
             idPropertyName={idPropertyName}
             editingRows={editingRows}
+            errors={errors}
+            touched={touched}
           >
             {children}
           </DataTableBody>

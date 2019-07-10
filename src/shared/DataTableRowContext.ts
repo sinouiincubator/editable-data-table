@@ -10,6 +10,16 @@ export interface BodyRowContextType<T> {
    * 是否处于编辑状态
    */
   editing: boolean;
+
+  /**
+   * 数据行的验证结果
+   */
+  error?: ErrorResult;
+
+  /**
+   * 单元格数据被点击状态
+   */
+  touched?: TouchedState;
 }
 
 export interface HeadRowContextType {

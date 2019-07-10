@@ -13,6 +13,11 @@ interface ContextType<T> {
   };
 
   /**
+   * 表单校验状态是否是受控于外部。（也就是使用者处理数据行校验）
+   */
+  errorControlled: boolean;
+
+  /**
    * 点击状态
    */
   touched: {
@@ -42,7 +47,7 @@ interface ContextType<T> {
  *
  */
 function useEditingBodyRow<T>(): ContextType<T> {
-  const { data: rowData } = useContext(
+  const { data: rowData, error: outerError, touched: outTouched } = useContext(
     DataTableRowContext,
   ) as BodyRowContextType<T>;
   const [touched, setTouched] = useState<{ [x: string]: boolean }>({});
@@ -111,8 +116,9 @@ function useEditingBodyRow<T>(): ContextType<T> {
   );
 
   return {
-    errors,
-    touched,
+    errors: outerError || errors,
+    errorControlled: !!outerError,
+    touched: outTouched || touched,
     validate,
     validateField,
   };

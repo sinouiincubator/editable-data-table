@@ -33,6 +33,7 @@ function DataTableCellEditor(props: Props) {
     touched,
     errors,
     validateField,
+    errorControlled,
   } = EditingBodyRowContainer.useContainer();
 
   const handleChange = useCallback(
@@ -45,9 +46,16 @@ function DataTableCellEditor(props: Props) {
       if (options.onRowChange) {
         options.onRowChange(index, data);
       }
-      validateField(name, data);
+
+      if (options.onFieldChange) {
+        options.onFieldChange(index, name, data);
+      }
+
+      if (!errorControlled) {
+        validateField(name, data);
+      }
     },
-    [data, name, options, index, validateField],
+    [data, name, options, index, errorControlled, validateField],
   );
 
   const isTouched = touched[name];

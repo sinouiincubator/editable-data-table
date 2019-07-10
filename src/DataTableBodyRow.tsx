@@ -24,6 +24,16 @@ interface Props<T> {
    * 是否处于编辑状态
    */
   editing?: boolean;
+
+  /**
+   * 行数据错误状态
+   */
+  error?: ErrorResult;
+
+  /**
+   * 单元格编辑器是否被点击过
+   */
+  touched?: TouchedState;
 }
 
 type CompType<T = any> = React.SFC<Props<T>>;
@@ -32,10 +42,17 @@ type CompType<T = any> = React.SFC<Props<T>>;
  * 内容行
  */
 const DataTableBodyRow: CompType = (props) => {
-  const { data, index, children, editing } = props;
+  const { data, index, children, editing, error, touched } = props;
   const context: BodyRowContextType<any> = useMemo(
-    () => ({ type: RowType.Body, data, index, editing: !!editing }),
-    [data, index, editing],
+    () => ({
+      type: RowType.Body,
+      data,
+      index,
+      editing: !!editing,
+      error,
+      touched,
+    }),
+    [data, index, editing, error, touched],
   );
 
   return (
