@@ -2,7 +2,7 @@
 
 可编辑数据表格。
 
-使用方式、属性配置可参考：https://sinouiincubator.github.io/editable-data-table
+[官方文档](https://sinouiincubator.github.io/editable-data-table)
 
 ## 快速入手
 
