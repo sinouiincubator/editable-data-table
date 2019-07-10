@@ -13,7 +13,7 @@ import EditableDataTable, {
   useEditingList,
 } from '@sinouiincubator/editable-data-table';
 import TextInput from 'sinoui-components/TextInput';
-import DatePicker from '@sinoui/date-picker';
+import DatePicker from '@sinoui/datepicker';
 import Button from 'sinoui-components/Button';
 
 function validate(data) {
@@ -25,6 +25,18 @@ function validate(data) {
     result.duty = '标题不能以1开头';
   }
   return result;
+}
+
+function CusDatePicker({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (value?: string) => void;
+}) {
+  return (
+    <DatePicker value={value} onChange={(event, date) => onChange(date)} />
+  );
 }
 
 function EidtableDataTableDemo() {
@@ -58,7 +70,7 @@ function EidtableDataTableDemo() {
       >
         <TableColumn title="姓名" name="userName" editor={TextInput} />
         <TableColumn title="职务" name="duty" editor={TextInput} />
-        <TableColumn title="出生日期" name="birthday" editor={DatePicker} />
+        <TableColumn title="出生日期" name="birthday" editor={CusDatePicker} />
         <TableColumn
           title="操作"
           name="id"
