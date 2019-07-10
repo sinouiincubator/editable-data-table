@@ -27,7 +27,7 @@ interface Options<T> {
 function useSimpleEditingList<T = any>(
   defaultItems: T[] = [],
   options: Options<T> = {},
-) {
+): SimpleEditingListResult<T> {
   const [items, setItems] = useState<T[]>(defaultItems);
   const [editingRows, setEditingRows] = useState<boolean[]>(() =>
     new Array(defaultItems.length).fill(!!options.alwaysEdting),
