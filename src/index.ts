@@ -4,6 +4,7 @@ import EditableDataTable, {
 import TableColumn, { Props as TableColumnProps } from './TableColumn';
 import EditorProps from './shared/EditorProps';
 import useEditingList from './useEditingList';
+import useSimpleEditingList from './useSimpleEditingList';
 
 export default EditableDataTable;
 
@@ -13,4 +14,5 @@ export {
   TableColumnProps,
   EditorProps,
   useEditingList,
+  useSimpleEditingList,
 };
