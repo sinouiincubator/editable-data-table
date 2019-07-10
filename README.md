@@ -2,7 +2,15 @@
 
 可编辑数据表格。
 
-[官方文档](https://sinouiincubator.github.io/editable-data-table)
+可编辑列表（EditableDataTable）提供以下功能：
+
+- 展现列表数据（不支持分页，但是可以与分页功能组合使用）
+- 编辑数据行
+- 校验数据行
+
+可以基于可编辑表格实现数据组的增删改查功能。具体详情见[官方文档](https://sinouiincubator.github.io/editable-data-table)。
+
+[开始学习如何使用可编辑列表吧](https://sinouiincubator.github.io/editable-data-table/)。
 
 ## 快速入手
 
