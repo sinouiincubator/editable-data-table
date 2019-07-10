@@ -2,6 +2,8 @@
 
 可编辑数据表格。
 
+使用方式、属性配置可参考：https://sinouiincubator.github.io/editable-data-table
+
 ## 快速入手
 
 ```tsx
@@ -14,43 +16,70 @@ import TextInput from 'sinoui-components/TextInput';
 import DatePicker from '@sinoui/date-picker';
 import Button from 'sinoui-components/Button';
 
-function EidtableDataTableDemo() {
-  const { items, add } = useEditingList([]);
+function validate(data) {
+  const result = {};
+  if (!data.userName) {
+    result.userName = '必填';
+  }
+  if (data.duty && data.duty.startsWith('1')) {
+    result.duty = '标题不能以1开头';
+  }
+  return result;
+}
 
-  const handleAdd = useCallback(() => {
-    add({});
-  }, [add]);
+function EidtableDataTableDemo() {
+  const {
+    items,
+    add,
+    edit,
+    save,
+    remove,
+    idPropertyName,
+    editingRows,
+  } = useEditingList('/api/tests', []);
+
+  const handleSave = async (row, index, context) => {
+    if (!context.validate()) {
+      alert('数据填写不完整');
+    } else {
+      await save(row, index);
+      alert('保存成功');
+    }
+  };
 
   return (
     <>
-      <Button onClick={handleAdd}>新增</Button>
-      <EditableDataTable data={items} validate={validate}>
-        <TableColumn
-          title="姓名"
-          name="userName"
-          editor={TextInput}
-          validate={validate2}
-        />
-        <TableColumn
-          title="标题"
-          name="title"
-          editor={TextInput}
-          validate={validate3}
-        />
-        <TableColumn
-          title="出生日期"
-          name="birthday"
-          editor={DatePicker}
-          validate={validate4}
-        />
+      <Button onClick={add}>新增</Button>
+      <EditableDataTable
+        data={items}
+        validate={validate}
+        editingRows={editingRows}
+        idPropertyName={idPropertyName}
+      >
+        <TableColumn title="姓名" name="userName" editor={TextInput} />
+        <TableColumn title="职务" name="duty" editor={TextInput} />
+        <TableColumn title="出生日期" name="birthday" editor={DatePicker} />
         <TableColumn
           title="操作"
           name="id"
-          render={(value, row, id) => (
-            <TableColumnActions>
-              <TableColumnAction>保存</TableColumnAction>
-              <TableColumnAction>删除</TableColumnAction>
-            </TableColumnActions>
+          render={(value, row, index, id, context) => (
+            <>
+              {context.editing ? (
+                <Button
+                  autoWidth
+                  onClick={() => handleSave(row, index, context)}
+                >
+                  保存
+                </Button>
+              ) : (
+                <Button autoWidth onClick={() => edit(index)}>
+                  编辑
+                </Button>
+              )}
+              <Button autoWidth onClick={() => remove(row, index)}>
+                删除
+              </Button>
+            </>
           )}
         />
       </EditableDataTable>
