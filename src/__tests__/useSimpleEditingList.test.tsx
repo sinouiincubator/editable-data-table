@@ -232,7 +232,7 @@ it('校验整个列表', () => {
         { id: '2', title: '123' },
         { id: '3', title: '标题3' },
       ],
-      { validate, alwaysEdting: true, fields: ['title'] },
+      { validate, alwaysEdting: true },
     );
     return <SimpleDemo editingList={editingList} />;
   }
@@ -253,28 +253,7 @@ it('只读列表，不做校验', () => {
         { id: '2', title: '123' },
         { id: '3', title: '标题3' },
       ],
-      { validate, alwaysEdting: false, fields: ['title'] },
-    );
-    return <SimpleDemo editingList={editingList} />;
-  }
-
-  const { queryByText, getByText } = render(<Demo />);
-
-  fireEvent.click(getByText('校验列表'));
-
-  expect(queryByText('标题不能以1开头')).toBeFalsy();
-  expect(queryByText('必填')).toBeFalsy();
-});
-
-it('没有指定fields，不能做列表校验', () => {
-  function Demo() {
-    const editingList = useSimpleEditingList(
-      [
-        { id: '1', title: '' },
-        { id: '2', title: '123' },
-        { id: '3', title: '标题3' },
-      ],
-      { validate, alwaysEdting: true },
+      { validate, alwaysEdting: false },
     );
     return <SimpleDemo editingList={editingList} />;
   }
@@ -295,7 +274,7 @@ it('没有指定validate，不能做列表校验', () => {
         { id: '2', title: '123' },
         { id: '3', title: '标题3' },
       ],
-      { fields: ['title'], alwaysEdting: true },
+      { alwaysEdting: true },
     );
     return <SimpleDemo editingList={editingList} />;
   }

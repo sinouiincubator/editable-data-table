@@ -2,20 +2,6 @@ import { useRef, useEffect, useState, useCallback } from 'react';
 import { produce } from 'immer';
 import shallowEqual from 'shallowequal';
 
-/**
- * 错误结果
- */
-interface ErrorResult {
-  [fieldName: string]: string;
-}
-
-/**
- * 被点击了的状态
- */
-interface TouchedState {
-  [fieldName: string]: boolean;
-}
-
 interface Options<T> {
   /**
    * 单元格表单域是否一致处于编辑状态。
@@ -26,11 +12,6 @@ interface Options<T> {
    * 验证行数据的函数
    */
   validate?: (item: T) => ErrorResult | undefined;
-
-  /**
-   * 需要编辑的表单域
-   */
-  fields?: string[];
 }
 
 /**
@@ -198,13 +179,7 @@ function useSimpleEditingList<T = any>(
    * 校验列表中正在编辑的数据
    */
   const validateAllEditingRows = () => {
-    const { fields, validate } = optionsRef.current;
-
-    if (!fields) {
-      throw new Error(
-        '必须在useSimpleEditingList的options中指定fields，才能使用validateAllEditingRows方法。',
-      );
-    }
+    const { validate } = optionsRef.current;
 
     if (!validate) {
       return true;
@@ -229,17 +204,19 @@ function useSimpleEditingList<T = any>(
     setErrors(newErrors);
     setTouched(
       produce((draft) => {
-        const defaultTouchedState: TouchedState = {};
-        fields.forEach((field) => {
-          defaultTouchedState[field] = true;
-        });
-
         items.forEach((_item, index) => {
           if (!editingRows[index]) {
             return;
           }
 
-          draft[index] = defaultTouchedState;
+          const fieldError = newErrors[index];
+          const fieldTouched: TouchedState = {};
+
+          Object.keys(fieldError).forEach((field) => {
+            fieldTouched[field] = true;
+          });
+
+          draft[index] = fieldTouched;
         });
       }),
     );
