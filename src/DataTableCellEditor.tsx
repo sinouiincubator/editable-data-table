@@ -22,8 +22,8 @@ function isChangeEvent(
  */
 function DataTableCellEditor(props: Props) {
   const { name, editor: Editor } = props;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data, index } = useContext(DataTableRowContext) as BodyRowContextType<
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     any
   >;
   const valueFromContext = data[name] || '';
@@ -71,7 +71,14 @@ function DataTableCellEditor(props: Props) {
           onChange={handleChange}
           error={!!error}
         />
-        {error && <FormHelpText error>{error}</FormHelpText>}
+        {error && (
+          <FormHelpText
+            error
+            className="sinoui-editable-data-table-editor-error"
+          >
+            {error}
+          </FormHelpText>
+        )}
       </>
     ),
     [data, error, handleChange, name, valueFromContext],

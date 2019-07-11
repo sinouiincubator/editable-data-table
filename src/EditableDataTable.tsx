@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useMemo, useRef, useEffect } from 'react';
+import classNames from 'classnames';
 import Table from './Table';
 import EditableDataTableContext from './shared/EditableDataTableContext';
 import EmptyDataTableRow from './EmptyDataTableRow';
@@ -16,6 +17,16 @@ export interface Props<T> {
    * 处于编辑状态的行。`editingRows`数组需要与`data`数组保持一一对应的关系，`editingRows`数组中每一个数据项代表的是`data`数组中对应数据项的编辑状态，`true`表示编辑状态，`false`表示非编辑状态。
    */
   editingRows?: boolean[];
+
+  /**
+   * 给table元素添加className
+   */
+  className?: string;
+
+  /**
+   * 给table元素添加样式
+   */
+  style?: React.CSSProperties;
 
   /**
    * 错误状态
@@ -107,11 +118,16 @@ function EditableDataTable<T>(props: Props<T>) {
     editingRows,
     errors,
     touched,
+    className,
+    style,
   } = props;
   const context = useEditableDataTable(props);
   return (
     <>
-      <Table>
+      <Table
+        className={classNames('sinoui-editable-data-table', className)}
+        style={style}
+      >
         <EditableDataTableContext.Provider value={context}>
           <DataTableColGroup>{children}</DataTableColGroup>
           <DataTableHead>{children}</DataTableHead>

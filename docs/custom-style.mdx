@@ -1,0 +1,138 @@
+---
+name: 样式定制
+route: /custom-style.mdx
+---
+
+# 样式定制 (0.4.0)
+
+支持多种方式定制可编辑表格的样式，包括：
+
+- css
+- styled-components
+- style
+- css modules
+
+定制方式大同小异。
+
+## 列宽度
+
+列宽度设定是可编辑列表高频出现的场景。可以通过`<TableColumn>`的`width`属性指定每一列的宽度。设定的列宽度会生成相对应的`colgroup`和`col`。如下所示：
+
+定义列宽度：
+
+```tsx
+<TableColumn title="标题" width="50%" />
+<TableColumn title="出生日期" width={100} />
+<TableColumn title="性别" width={50} />
+<TableColumn title="家庭地址" width="50%" />
+```
+
+会生成下面的 DOM：
+
+```html
+<colgroup>
+  <col width="50%" />
+  <col width="100" />
+  <col width="50" />
+  <col width="50%" />
+</colgroup>
+```
+
+[`<colgroup />`](http://www.w3school.com.cn/tags/tag_colgroup.asp)和[`<col />`](https://www.runoob.com/tags/tag-col.html)规定表格中的列宽度和对齐方式。
+
+## 可编辑表格的 DOM 结构
+
+我们可以根据表格的 DOM 结构给表格内部各部分添加自定义样式。DOM 结构如下：
+
+```html
+<table calss="sinoui-editable-data-table">
+  <!--表头区域-->
+  <thead>
+    <tr class="sinoui-data-table-head-row">
+      <th class="sinoui-data-table-head">
+        标题
+      </th>
+    </tr>
+  </thead>
+  <!--数据区域-->
+  <tbody>
+    <!--数据行-->
+    <tr class="sinoui-data-table-body-row">
+      <!--数据单元格-->
+      <td class="sinoui-data-table-body-td">
+        <!--编辑器-->
+        <input />
+        <!--验证错误提示语-->
+        <div class="sinoui-editable-data-table-editor-error">
+          验证错误提示语
+        </div>
+      </td>
+    </tr>
+  </tbody>
+</table>
+```
+
+`EditableDataTable`组件接收`className`和`style`属性，这两个属性都会应用给`table`元素的。这样你对数据表格的样式定制不会影响全局。
+
+## 示例：内容居中显示
+
+### css 的方式 （全局）
+
+```css
+.sinoui-editable-data-table .sinoui-data-table-body-td,
+.sinoui-editable-data-table .sinoui-data-table-head,
+.sinoui-editable-data-table-editor-error {
+  text-align: center;
+}
+```
+
+将上面的 css 代码放到应用的全局样式文件中去即可。
+
+### css 的方式（局部）
+
+`CustomEditableDataTable.css`:
+
+```css
+.custom-editable-data-table .sinoui-data-table-body-td,
+.custom-editable-data-table .sinoui-data-table-head,
+.custom-editable-data-table .sinoui-editable-data-table-editor-error {
+  text-align: center;
+}
+```
+
+`CustomEditableDataTable.tsx`:
+
+```tsx
+import React from 'react';
+import EditableDataTable, {
+  TableColumn,
+} from '@sinouiincubator/editable-data-table';
+import './CustomEditableDataTable.css';
+
+function DemoTable() {
+  return (
+    <EditableDataTable className="custom-editable-data-table">
+      <TableColumn title="标题" name="title" />
+    </EditableDataTable>
+  );
+}
+```
+
+### styled-components
+
+```tsx
+import styled from 'styled-components';
+import EditableDataTable from '@sinouiincubator/editable-data-table';
+
+const WrapperEditableDataTable = styled(EditableDataTable)`
+  .sinoui-data-table-body-td,
+  .sinoui-data-table-head,
+  .sinoui-editable-data-table-editor-error {
+    text-align: center;
+  }
+`;
+```
+
+## 根据状态定制数据行、单元格的样式
+
+暂不支持。计划中...
