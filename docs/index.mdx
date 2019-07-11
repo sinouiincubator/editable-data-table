@@ -496,49 +496,6 @@ function Demo() {
 
 </Playground>
 
-## 优化版本
-
-<Playground>
-  {() => {
-    const [data, setData] = useState([
-      { id: '1', title: '123' },
-      { id: '2', title: '1234' },
-    ]);
-    const handleAdd = () => {
-      setData([
-        ...data,
-        { id: data.length + 1, title: `标题${data.length + 1}` },
-      ]);
-    };
-
-    const handleRemove = useCallback((index) => {
-      setData(prev => prev.filter((_item, i) => i !== index));
-    }, []);
-
-    const renderButtons = useCallback((id, row, index) => (
-      <Button onClick={() => handleRemove(index)}>删除</Button>
-    ), [handleRemove]);
-
-    const columns = useMemo(() => <>
-      <TableColumn title="id" name="id" />
-      <TableColumn title="标题" name="title" />
-      <TableColumn title="操作列" name="id" />
-      <TableColumn title="操作" name="id" render={renderButtons} />
-    </>, [handleRemove]);
-
-    return (
-        <div>
-          <Button onClick={handleAdd}>添加</Button>
-          <EditableDataTable data={data}>
-          {columns}
-          </EditableDataTable>
-        </div>
-    );
-
-}}
-
-</Playground>
-
 ## 无数据
 
 <Playground>
