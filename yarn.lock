@@ -1164,20 +1164,17 @@
     "@babel/runtime" "^7.4.5"
     "@sinoui/http" "^0.2.2"
 
-"@sinoui/use-rest-list-api@^0.3.1":
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/@sinoui/use-rest-list-api/-/use-rest-list-api-0.3.1.tgz#b44562b8e2baa84e248feee51629ea454b67b112"
-  integrity sha512-mMvGCnQxzvz3/U5x65gW2PuYO796qKvSEHePZGqucd8fjB58Uut38SDBaJtNR8rsVPKavOlalP4QsDQor93EBw==
+"@sinoui/use-rest-list-api@^0.4.1":
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/@sinoui/use-rest-list-api/-/use-rest-list-api-0.4.1.tgz#888dad7daf6075e9ab1f09413b4214da6d6b379c"
+  integrity sha512-Bm2bXeHhyBM2CZrMcz/JkBkoYa4+9YpH3yWnVHkkgphej1O+HYo0jGWrO5HEcDqed6/8vb1cYQuwSNvR16itHg==
   dependencies:
     "@babel/polyfill" "^7.4.4"
     "@babel/runtime" "^7.4.5"
     "@sinoui/http" "^0.2.2"
     "@sinoui/use-data-api" "^0.4.0"
-    "@types/qs" "^6.5.3"
-    "@types/react" "^16.8.19"
     immer "^3.1.3"
     qs "^6.7.0"
-    react "^16.8.6"
 
 "@svgr/babel-plugin-add-jsx-attribute@^4.2.0":
   version "4.2.0"
@@ -1417,11 +1414,6 @@
   version "1.5.2"
   resolved "https://registry.yarnpkg.com/@types/q/-/q-1.5.2.tgz#690a1475b84f2a884fd07cd797c00f5f31356ea8"
 
-"@types/qs@^6.5.3":
-  version "6.5.3"
-  resolved "https://registry.yarnpkg.com/@types/qs/-/qs-6.5.3.tgz#1c3b71b091eaeaf5924538006b7f70603ce63d38"
-  integrity sha512-Jugo5V/1bS0fRhy2z8+cUAHEyWOATaz4rbyLVvcFs7+dXp5HfwpEwzF1Q11bB10ApUqHf+yTauxI0UXQDwGrbA==
-
 "@types/react-dom@^16.8.4":
   version "16.8.4"
   resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-16.8.4.tgz#7fb7ba368857c7aa0f4e4511c4710ca2c5a12a88"
@@ -1435,7 +1427,7 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react@*", "@types/react@^16.8.19", "@types/react@^16.8.22", "@types/react@^16.8.23":
+"@types/react@*", "@types/react@^16.8.22", "@types/react@^16.8.23":
   version "16.8.23"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-16.8.23.tgz#ec6be3ceed6353a20948169b6cb4c97b65b97ad2"
   dependencies:

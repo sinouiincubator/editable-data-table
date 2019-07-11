@@ -1,10 +1,6 @@
-import useRestListApi from '@sinoui/use-rest-list-api';
+import useRestListApi, { Options } from '@sinoui/use-rest-list-api';
 import { useState, useEffect, useCallback } from 'react';
 import { produce } from 'immer';
-
-interface Options {
-  idPropertyName?: string;
-}
 
 /**
  * 维护可编辑列表的hook
@@ -12,9 +8,9 @@ interface Options {
 export default function useEditingList<T>(
   url: string,
   defaultValue: T[] = [],
-  options?: Options,
+  options?: Options<T>,
 ) {
-  const { idPropertyName = 'id' } = options || {};
+  const { keyName = 'id' } = options || {};
   const {
     items,
     setItems,
@@ -48,9 +44,9 @@ export default function useEditingList<T>(
     async (row: T, index: number) => {
       try {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        if ((row as any)[idPropertyName]) {
+        if ((row as any)[keyName]) {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          await remove((row as any)[idPropertyName]);
+          await remove((row as any)[keyName]);
           setEditingRows(
             produce(editingRows, (draft) => {
               draft.splice(index, 1);
@@ -68,14 +64,14 @@ export default function useEditingList<T>(
         throw error;
       }
     },
-    [editingRows, idPropertyName, remove, removeItemAt],
+    [editingRows, keyName, remove, removeItemAt],
   );
 
   const asyncUpdate = useCallback(
     async (row: T, index: number) => {
       try {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        if ((row as any)[idPropertyName]) {
+        if ((row as any)[keyName]) {
           await update(row);
         } else {
           const result = await save(row, false);
@@ -92,16 +88,19 @@ export default function useEditingList<T>(
         throw error;
       }
     },
-    [addItem, editingRows, idPropertyName, removeItemAt, save, update],
+    [addItem, editingRows, keyName, removeItemAt, save, update],
   );
 
-  const edit = useCallback((index: number) => {
-    setEditingRows(
-      produce(editingRows, (draft) => {
-        draft[index] = true;
-      }),
-    );
-  }, [editingRows]);
+  const edit = useCallback(
+    (index: number) => {
+      setEditingRows(
+        produce(editingRows, (draft) => {
+          draft[index] = true;
+        }),
+      );
+    },
+    [editingRows],
+  );
 
   return {
     items,
@@ -110,6 +109,6 @@ export default function useEditingList<T>(
     remove: asyncRemove,
     edit,
     save: asyncUpdate,
-    idPropertyName,
+    idPropertyName: keyName,
   };
 }

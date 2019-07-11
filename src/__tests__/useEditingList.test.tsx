@@ -52,10 +52,7 @@ function renderDemo() {
 }
 
 it('使用useRestListApi获取数据', async () => {
-  (http.get as jest.Mock).mockResolvedValue({
-    content: [{ id: '1', userName: '张三' }],
-    totalElements: 1,
-  });
+  (http.get as jest.Mock).mockResolvedValue([{ id: '1', userName: '张三' }]);
 
   const { findAllByTestId } = renderDemo();
 
@@ -64,10 +61,7 @@ it('使用useRestListApi获取数据', async () => {
 });
 
 it('添加数据', async () => {
-  (http.get as jest.Mock).mockResolvedValue({
-    content: [{ id: '1', userName: '张三' }],
-    totalElements: 1,
-  });
+  (http.get as jest.Mock).mockResolvedValue([{ id: '1', userName: '张三' }]);
 
   const { findAllByTestId, getByText } = renderDemo();
 
@@ -83,10 +77,7 @@ it('添加数据', async () => {
 });
 
 it('删除数据空数据', async () => {
-  (http.get as jest.Mock).mockResolvedValue({
-    content: [{ id: '1', userName: '张三' }],
-    totalElements: 1,
-  });
+  (http.get as jest.Mock).mockResolvedValue([{ id: '1', userName: '张三' }]);
 
   const { result, waitForNextUpdate } = renderHook(() =>
     useEdititngList('/test'),
@@ -101,10 +92,10 @@ it('删除数据空数据', async () => {
 });
 
 it('删除已有数据', async () => {
-  (http.get as jest.Mock).mockResolvedValue({
-    content: [{ id: '1', userName: '张三' }, { id: '2', userName: '李四' }],
-    totalElements: 1,
-  });
+  (http.get as jest.Mock).mockResolvedValue([
+    { id: '1', userName: '张三' },
+    { id: '2', userName: '李四' },
+  ]);
 
   (http.delete as jest.Mock).mockResolvedValue('删除成功');
 
@@ -127,10 +118,7 @@ it('删除已有数据', async () => {
 });
 
 it('删除未保存的数据', async () => {
-  (http.get as jest.Mock).mockResolvedValue({
-    content: [{ id: '1', userName: '张三' }],
-    totalElements: 1,
-  });
+  (http.get as jest.Mock).mockResolvedValue([{ id: '1', userName: '张三' }]);
 
   (http.delete as jest.Mock).mockResolvedValue('删除成功');
 
@@ -149,10 +137,7 @@ it('删除未保存的数据', async () => {
 });
 
 it('编辑某一项', async () => {
-  (http.get as jest.Mock).mockResolvedValue({
-    content: [{ id: '1', userName: '张三' }],
-    totalElements: 1,
-  });
+  (http.get as jest.Mock).mockResolvedValue([{ id: '1', userName: '张三' }]);
 
   const { result, waitForNextUpdate } = renderHook(() =>
     useEdititngList('/test'),
@@ -165,10 +150,7 @@ it('编辑某一项', async () => {
 });
 
 it('保存一项新增列表项', async () => {
-  (http.get as jest.Mock).mockResolvedValue({
-    content: [{ id: '1', userName: '张三' }],
-    totalElements: 1,
-  });
+  (http.get as jest.Mock).mockResolvedValue([{ id: '1', userName: '张三' }]);
 
   (http.post as jest.Mock).mockResolvedValue({
     id: '03',
@@ -186,10 +168,10 @@ it('保存一项新增列表项', async () => {
 });
 
 it('保存一条已经存在的数据', async () => {
-  (http.get as jest.Mock).mockResolvedValue({
-    content: [{ id: '1', userName: '张三' }, { id: '03', userName: '王五' }],
-    totalElements: 1,
-  });
+  (http.get as jest.Mock).mockResolvedValue([
+    { id: '1', userName: '张三' },
+    { id: '03', userName: '王五' },
+  ]);
 
   (http.put as jest.Mock).mockResolvedValue({
     id: '03',

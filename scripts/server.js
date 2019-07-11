@@ -13,13 +13,10 @@ app.get('/api/test', (req, res) => {
 });
 
 app.get('/api/tests', (req, res) => {
-  res.json({
-    content: [
-      { id: '1', title: '123', note: '备注1' },
-      { id: '2', title: '1234', note: '备注2' },
-    ],
-    totalElements: 2,
-  });
+  res.json([
+    { id: '1', title: '123', note: '备注1' },
+    { id: '2', title: '1234', note: '备注2' },
+  ]);
 });
 
 app.delete('/api/tests/:id', (req, res) => {
