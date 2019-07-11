@@ -24,23 +24,47 @@ import EditableDataTable from '../src/EditableDataTable';
 
 <Props of={TableColumn} />
 
-## useEditingList
+## useEditingList（0.3.0）
+
+> 可编辑表格数据的状态管理 hook。
+
+```ts
+useEditingList<T>(url:string,defaultValue:T[],options?:Options<T>):Response<T>
+```
 
 ### 参数配置
 
-- `url(string)` - crud 操作时的 url
-- `defaultValue(T[])` - 指定默认列表数据，默认值为`[]`
-- `options` - 相关配置,主要有 keyName（数据的 id 属性名。默认为`id`）
+| 参数名称     | 参数类型 | 默认值 | 说明               |
+| ------------ | -------- | ------ | ------------------ |
+| url          | string   |        | 与后端交互时的 url |
+| defaultValue | T[]      | []     | 默认列表数据       |
+| options      | Options  |        | 状态管理所需配置项 |
+
+其中，`options`具体配置可参考[use-rest-list-api 的 options](https://github.com/sinoui/use-rest-list-api#options)。
 
 ### 返回值的数据结构
 
-- `items(T[])` - 列表数据
-- `editingRows(boolean[])` - 处于编辑状态的行。`editingRows`数组需要与`data`数组保持一一对应的关系，`editingRows`数组中每一个数据项代表的是`data`数组中对应数据项的编辑状态，`true`表示编辑状态，`false`表示非编辑状态。
-- `add(()=>void)` - 新增一条可编辑的空数据
-- `remove((index:number)=>void)` - 删除一条数据
-- `edit((index)=>void)` - 更新一条数据的编辑状态
-- `save((row:T,index:number)=>void)` - 新增一条数据或者更新一条数据
-- `idPropertyName(string)` - 数据的 id 属性名。默认为`id`
+| 返回值名称     | 类型                       | 说明                                                                                                                                                                                        |
+| -------------- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| items          | T[]                        | 列表数据                                                                                                                                                                                    |
+| editingRows    | boolean[]                  | 处于编辑状态的行。`editingRows`数组需要与`data`数组保持一一对应的关系，`editingRows`数组中每一个数据项代表的是`data`数组中对应数据项的编辑状态，`true`表示编辑状态，`false`表示非编辑状态。 |
+| add            | ()=>void                   | 新增一条可编辑的空数据                                                                                                                                                                      |
+| remove         | (row:T,index:number)=>void | 删除一条数据                                                                                                                                                                                |
+| edit           | (index:number)=>void       | 更新一条数据的编辑状态                                                                                                                                                                      |
+| save           | (row:T,index:number)=>void | 新增一条数据或者更新一条数据                                                                                                                                                                |
+| idPropertyName | string                     | 数据的 id 属性名。                                                                                                                                                                          |
+
+### 使用方式
+
+```ts
+import { useEditingList } from '@sinouiincubator/editable-data-table';
+
+function Demo() {
+  const { items, add, remove } = useEditingList('/tests', []);
+
+  return null;
+}
+```
 
 ## useSimpleEditingList
 
