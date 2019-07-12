@@ -1,5 +1,9 @@
 # 版本变更说明
 
+## v0.5.1 - 2019.7.12
+
+- fix: useEditingList 没有返回 useRestListApi 的返回值
+
 ## v0.5.0 - 2019.7.12
 
 - feat: 支持在指定位置新增数据
