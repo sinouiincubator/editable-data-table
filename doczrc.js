@@ -34,6 +34,7 @@ export default {
     '组件API',
     '校验',
     '样式定制',
+    '分页加载数据的可编辑数据表格',
     '分页展示数据的可编辑数据表格',
   ],
   wrapper: 'docs/Wrapper.tsx',

@@ -1,19 +1,4 @@
----
-name: 分页加载数据的可编辑数据表格
-route: /pagination-editable-table
----
-
-import { Playground, Props } from 'docz';
-import PaginationEditableTableDemo from './PaginationEditableTableDemo';
-
-可编辑数据表格可以与分页数据加载相结合，实现分页加载数据的可编辑数据表格。本章节会结合：
-
-- [@sinoui/use-rest-page-api](https://github.com/sinoui/use-rest-page-api)
-- [sinoui-components/Pagination](http://47.93.34.153:10080/sinoui/sinoui/tree/master/packages/sinoui-components/Pagination)
-
-实现分页加载数据的可编辑数据表格。
-
-```tsx
+/* eslint-disable import/no-extraneous-dependencies */
 import React, { useEffect, useMemo } from 'react';
 import useRestPageApi from '@sinoui/use-rest-page-api';
 import Pagination from 'sinoui-components/Pagination';
@@ -138,51 +123,3 @@ function PaginationEditableDataTableDemo() {
 }
 
 export default PaginationEditableDataTableDemo;
-```
-
-示例：
-
-<Playground>
-  <PaginationEditableTableDemo />
-</Playground>
-
-## 与查询的结合
-
-`useRestPageApi.query(searechParams)`是用来查询的方法。
-
-如：
-
-```tsx
-<SearchForm onSubmit={dataSource.query}>
-  <SearchFormItem>
-    <Label>标题</Label>
-    <TextInput name="title" />
-  </SearchFormItem>
-</SearchForm>
-```
-
-再如：
-
-```tsx
-<SearchFormState onSubmit={dataSource.query}>
-  <SearchFormItem>
-    <Label>标题</Label>
-    <TextInput name="title" />
-  </SearchFormItem>
-</SearchFormState>
-```
-
-## 输入框值变更自动保存
-
-`useRestPageApi.update(rowData)`是用来更新数据的方法。可以使用[lodash/debounce](https://www.lodashjs.com/docs/latest#_debouncefunc-wait0-options)降低保存的频率。
-
-```tsx
-const debounceUpdate = useMemo(() => debounce(update, 200), [update]);
-
-const handleOnRowChange = async (index: number, rowData: Data) => {
-  const validateResult = validate(rowData);
-  if (!validateResult || Object.keys(validateResult).length === 0) {
-    await debounceUpdate(rowData, false);
-  }
-};
-```

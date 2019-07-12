@@ -4,6 +4,7 @@ const app = express();
 const uuid = require('uuid/v4');
 const bodyParser = require('body-parser');
 const paginationShowDemo = require('./pagination-show-demo');
+const paginationDemo = require('./pagination-demo');
 
 app.use(bodyParser.json());
 
@@ -36,6 +37,7 @@ app.put('/api/tests/:id', (req, res) => {
 });
 
 paginationShowDemo(app);
+paginationDemo(app);
 
 app.listen(5000, (error) => {
   if (error) {
