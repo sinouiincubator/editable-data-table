@@ -21,6 +21,7 @@ export default function useEditingList<T>(
     save,
     isLoading,
     addItem,
+    ...rest
   } = useRestListApi<T>(url, defaultValue);
   const [editingRows, setEditingRows] = useState(() =>
     defaultValue.map(() => false),
@@ -113,6 +114,7 @@ export default function useEditingList<T>(
   );
 
   return {
+    ...rest,
     items,
     editingRows,
     add,
