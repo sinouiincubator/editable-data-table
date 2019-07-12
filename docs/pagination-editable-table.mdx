@@ -1,0 +1,301 @@
+---
+name: 分页加载数据的可编辑数据表格
+route: /pagination-editable-table
+---
+
+import { Playground, Props } from 'docz';
+import { useEffect, useState } from 'react';
+import useRestPageApi from '@sinoui/use-rest-page-api';
+import Pagination from 'sinoui-components/Pagination';
+import EditableDataTable, {
+  TableColumn,
+  useSimpleEditingList,
+} from '@sinouiincubator/editable-data-table';
+import TextInput from 'sinoui-components/TextInput';
+import Button from 'sinoui-components/Button';
+import DatePicker from '@sinoui/datepicker';
+import debounce from 'lodash/debounce';
+import Form, {
+  FormItem,
+  Label,
+  TextInput as TextInputField,
+} from '@sinoui/forms';
+
+可编辑数据表格可以与分页数据加载相结合，实现分页加载数据的可编辑数据表格。本章节会结合：
+
+- [@sinoui/use-rest-page-api](https://github.com/sinoui/use-rest-page-api)
+- [sinoui-components/Pagination](http://47.93.34.153:10080/sinoui/sinoui/tree/master/packages/sinoui-components/Pagination)
+
+实现分页加载数据的可编辑数据表格。
+
+```tsx
+import React, { useEffect, useState } from 'react';
+import useRestPageApi from '@sinoui/use-rest-page-api';
+import Pagination from 'sinoui-components/Pagination';
+import EditableDataTable, {
+  TableColumn,
+  useSimpleEditingList,
+} from '@sinouiincubator/editable-data-table';
+import TextInput from 'sinoui-components/TextInput';
+import Button from 'sinoui-components/Button';
+import DatePicker from '@sinoui/datepicker';
+import debounce from 'lodash/debounce';
+import Form, {
+  FormItem,
+  Label,
+  TextInput as TextInputField,
+} from '@sinoui/forms';
+
+interface Data {
+  id: string;
+  title?: string;
+  duty?: string;
+  birthday: string;
+}
+
+function CusDatePicker({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (value?: string) => void;
+}) {
+  return (
+    <DatePicker value={value} onChange={(event, date) => onChange(date)} />
+  );
+}
+
+function validate(data: Data) {
+  const result: any = {};
+
+  if (data.title && data.title.startsWith('1')) {
+    result.title = '标题不能以1开头';
+  }
+  return result;
+}
+
+function PaginationEditableDataTableDemo() {
+  const {
+    items,
+    pagination,
+    fetch,
+    remove: asyncRemove,
+    update,
+    query,
+  } = useRestPageApi<Data>('/tests', []);
+  const { editingRows, setItems, items: data } = useSimpleEditingList<Data>(
+    items,
+    {
+      alwaysEditing: true,
+    },
+  );
+
+  const [formValues, setFormValues] = useState({});
+
+  useEffect(() => {
+    setItems(items);
+  }, [items]);
+
+  const getFormValue = (form: any) => {
+    setFormValues(form.values);
+  };
+
+  const handleOnChange = (pageNumber: number, pageSize: number) => {
+    fetch(pageNumber - 1, pageSize);
+  };
+
+  const handleRemove = async (row: Data, index: number) => {
+    try {
+      await asyncRemove(row.id);
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const handleOnRowChange = debounce(async (index: number, rowData: Data) => {
+    try {
+      await update(rowData, false);
+    } catch (error) {
+      throw error;
+    }
+  }, 200);
+
+  return (
+    <>
+      <Form formRef={getFormValue}>
+        <FormItem>
+          <Label>姓名</Label>
+          <TextInputField name="title" />
+        </FormItem>
+      </Form>
+      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+        <Button raised onClick={() => query(formValues)}>
+          查询
+        </Button>
+      </div>
+      <EditableDataTable
+        data={data}
+        editingRows={editingRows}
+        validate={validate}
+        onRowChange={handleOnRowChange}
+      >
+        <TableColumn title="序号" order />
+        <TableColumn title="标题" name="title" editor={TextInput} />
+        <TableColumn title="出生日期" name="birthday" editor={CusDatePicker} />
+        <TableColumn title="职务" name="duty" editor={TextInput} />
+        <TableColumn
+          title="操作"
+          name="id"
+          render={(value, row, index, id, context) => (
+            <>
+              <Button autoWidth onClick={() => handleRemove(row, index)}>
+                删除
+              </Button>
+            </>
+          )}
+        />
+      </EditableDataTable>
+      <Pagination
+        pageSize={pagination.pageSize}
+        total={pagination.totalElements}
+        currentPage={pagination.pageNo + 1}
+        onChange={handleOnChange}
+      />
+    </>
+  );
+}
+```
+
+示例：
+
+<Playground>
+  {()=>{
+
+    interface Data {
+      id: string;
+      title?: string;
+      duty?: string;
+      birthday: string;
+    }
+
+    function CusDatePicker({
+      value,
+      onChange,
+    }: {
+        value: string;
+        onChange: (value?: string) => void;
+      }) {
+        return (
+          <DatePicker value={value} onChange={(event, date) => onChange(date)} />
+        );
+    }
+
+    function validate(data: Data) {
+      const result: any = {};
+
+      if (data.title && data.title.startsWith('1')) {
+          result.title = '标题不能以 1 开头';
+      }
+      return result;
+    }
+
+    const {
+    items,
+    pagination,
+    fetch,
+    remove: asyncRemove,
+    update,
+    query,
+    } = useRestPageApi<Data>('/tests', []);
+
+    const { editingRows, setItems, items: data } = useSimpleEditingList<Data>(items,{alwaysEditing: true});
+
+    const [formValues, setFormValues] = useState({});
+
+    useEffect(() => {
+      setItems(items);
+    }, [items]);
+
+    const getFormValue = (form: any) => {
+      setFormValues(form.values);
+    };
+
+    const handleOnChange = (pageNumber: number, pageSize: number) => {
+      fetch(pageNumber - 1, pageSize);
+    };
+
+    const handleRemove = (row: Data, index: number) => {
+      asyncRemove(row.id);
+    };
+
+    const handleOnRowChange = debounce((index: number, rowData: Data) => {
+      update(rowData, false);
+    }, 200);
+
+    return (
+      <>
+        <Form formRef={getFormValue}>
+          <FormItem>
+            <Label>姓名</Label>
+            <TextInputField name="title" />
+          </FormItem>
+        </Form>
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <Button raised onClick={() => query(formValues)}>
+            查询
+          </Button>
+        </div>
+        <EditableDataTable
+          data={data}
+          editingRows={editingRows}
+          validate={validate}
+          onRowChange={handleOnRowChange}
+        >
+          <TableColumn title="序号" order />
+          <TableColumn title="标题" name="title" editor={TextInput} />
+          <TableColumn title="出生日期" name="birthday" editor={CusDatePicker} />
+          <TableColumn title="职务" name="duty" editor={TextInput} />
+          <TableColumn
+            title="操作"
+            name="id"
+            render={(value, row, index, id, context) => (
+              <Button autoWidth onClick={() => handleRemove(row, index)}>
+                删除
+              </Button>
+            )}
+          />
+        </EditableDataTable>
+        <Pagination
+          pageSize={pagination.pageSize}
+          total={pagination.totalElements}
+          currentPage={pagination.pageNo + 1}
+          onChange={handleOnChange}
+        />
+        </>
+    );
+
+}}
+
+</Playground>
+
+## 与查询的结合
+
+`useRestPageApi.query(searechParams)`是用来查询的方法。
+
+```tsx
+<SearchForm onSubmit={(values) => dataSource.query(values)}>
+  <SearchFormItem>
+    <Label>标题</Label>
+    <TextInput name="title" />
+</SearchForm>
+```
+
+## 输入框值变更自动保存
+
+`useRestPageApi.update(rowData)`是用来更新数据的方法。
+
+```tsx
+const handleOnRowChange = debounce((index: number, rowData: Data) => {
+  await update(rowData, false);
+}, 200);
+```
