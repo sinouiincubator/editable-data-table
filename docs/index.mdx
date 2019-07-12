@@ -426,6 +426,15 @@ function Demo() {
 }
 ```
 
+`useEditingList.add()`方法可以指定添加数据的位置，默认在末尾添加数据，如果需要在开始位置添加数据，则可以指定`index`参数为 0 即可：
+
+```ts
+const { add } = useEditingList('url');
+
+// 在开始位置添加数据
+add({}, 0);
+```
+
 示例：
 
 <Playground>

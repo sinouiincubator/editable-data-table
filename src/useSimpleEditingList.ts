@@ -84,30 +84,21 @@ function useSimpleEditingList<T = any>(
   /**
    * 新增一条数据
    */
-  const add = useCallback((item: T) => {
-    setItems(
-      produce((draft) => {
-        draft.push(item);
-      }),
-    );
+  const add = useCallback((item: Partial<T> = {}, index: number = -1) => {
+    const addAt = produce(<V>(draft: V[], value: V) => {
+      if (index === -1 || index >= draft.length) {
+        draft.push(value);
+      } else {
+        draft.splice(index, 0, value);
+      }
+    });
+    setItems((prev) => addAt(prev, item));
 
-    setEditingRows(
-      produce((draft) => {
-        draft.push(true);
-      }),
-    );
+    setEditingRows((prev) => addAt(prev, true));
 
-    setErrors(
-      produce((draft) => {
-        draft.push({});
-      }),
-    );
+    setErrors((prev) => addAt(prev, {}));
 
-    setTouched(
-      produce((draft) => {
-        draft.push({});
-      }),
-    );
+    setTouched((prev) => addAt(prev, {}));
   }, []);
 
   /**

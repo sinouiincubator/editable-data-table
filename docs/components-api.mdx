@@ -45,15 +45,15 @@ useEditingList<T>(url:string,defaultValue:T[],options?:Options<T>):Response<T>
 
 ### 返回值的数据结构
 
-| 返回值名称     | 类型                       | 说明                                                                                                                                                                                        |
-| -------------- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| items          | T[]                        | 列表数据                                                                                                                                                                                    |
-| editingRows    | boolean[]                  | 处于编辑状态的行。`editingRows`数组需要与`data`数组保持一一对应的关系，`editingRows`数组中每一个数据项代表的是`data`数组中对应数据项的编辑状态，`true`表示编辑状态，`false`表示非编辑状态。 |
-| add            | ()=>void                   | 新增一条可编辑的空数据                                                                                                                                                                      |
-| remove         | (row:T,index:number)=>void | 删除一条数据                                                                                                                                                                                |
-| edit           | (index:number)=>void       | 更新一条数据的编辑状态                                                                                                                                                                      |
-| save           | (row:T,index:number)=>void | 新增一条数据或者更新一条数据                                                                                                                                                                |
-| idPropertyName | string                     | 数据的 id 属性名。                                                                                                                                                                          |
+| 返回值名称     | 类型                                                | 说明                                                                                                                                                                                        |
+| -------------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| items          | T[]                                                 | 列表数据                                                                                                                                                                                    |
+| editingRows    | boolean[]                                           | 处于编辑状态的行。`editingRows`数组需要与`data`数组保持一一对应的关系，`editingRows`数组中每一个数据项代表的是`data`数组中对应数据项的编辑状态，`true`表示编辑状态，`false`表示非编辑状态。 |
+| add            | `(item: Partial<T> = {}, index: number = -1)=>void` | 新增一条可编辑的空数据。`index`默认为-1，表示在末尾添加数据，`index`等于 0 时，表示在开始位置添加数据。                                                                                     |
+| remove         | (row:T,index:number)=>void                          | 删除一条数据                                                                                                                                                                                |
+| edit           | (index:number)=>void                                | 更新一条数据的编辑状态                                                                                                                                                                      |
+| save           | (row:T,index:number)=>void                          | 新增一条数据或者更新一条数据                                                                                                                                                                |
+| idPropertyName | string                                              | 数据的 id 属性名。                                                                                                                                                                          |
 
 ### 使用方式
 
@@ -86,21 +86,21 @@ useSimpleEditingList(defaultValue:T[],options:Options):editingList
 
 ### 返回值`editingList`数据结构
 
-| 返回值名称             | 类型                                                   | 说明                   |
-| ---------------------- | ------------------------------------------------------ | ---------------------- |
-| items                  | T[]                                                    | 列表数据               |
-| setItems               | (newItems: T[]) => void                                | 设置列表数据           |
-| editingRows            | boolean[]                                              | 数据行的编辑状态       |
-| edit                   | (rowIndex: number) => void                             | 设置数据行处于编辑状态 |
-| setReadonly            | (rowIndex: number) => void                             | 设置数据行处于只读状态 |
-| add                    | (item:T) => void                                       | 添加数据行             |
-| remove                 | (index: number) => void                                | 删除数据行             |
-| removeItems            | (indexes: number[]) => void                            | 删除一组数据行         |
-| updateItem             | (index: number, item: T) => void                       | 更新数据行             |
-| errors                 | [fieldName: string]: string[]                          | 校验错误               |
-| touched                | [fieldName: string]: boolean[]                         | 编辑器被点击状态       |
-| validateField          | (index: number, fieldName: string, rowData: T) => void | 校验单个数据行         |
-| validateAllEditingRows | () => boolean                                          | 校验所有编辑器中的行   |
+| 返回值名称             | 类型                                                   | 说明                                                                                                    |
+| ---------------------- | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------- |
+| items                  | T[]                                                    | 列表数据                                                                                                |
+| setItems               | (newItems: T[]) => void                                | 设置列表数据                                                                                            |
+| editingRows            | boolean[]                                              | 数据行的编辑状态                                                                                        |
+| edit                   | (rowIndex: number) => void                             | 设置数据行处于编辑状态                                                                                  |
+| setReadonly            | (rowIndex: number) => void                             | 设置数据行处于只读状态                                                                                  |
+| add                    | `(item: Partial<T> = {}, index: number = -1)=>void`    | 新增一条可编辑的空数据。`index`默认为-1，表示在末尾添加数据，`index`等于 0 时，表示在开始位置添加数据。 |
+| remove                 | (index: number) => void                                | 删除数据行                                                                                              |
+| removeItems            | (indexes: number[]) => void                            | 删除一组数据行                                                                                          |
+| updateItem             | (index: number, item: T) => void                       | 更新数据行                                                                                              |
+| errors                 | [fieldName: string]: string[]                          | 校验错误                                                                                                |
+| touched                | [fieldName: string]: boolean[]                         | 编辑器被点击状态                                                                                        |
+| validateField          | (index: number, fieldName: string, rowData: T) => void | 校验单个数据行                                                                                          |
+| validateAllEditingRows | () => boolean                                          | 校验所有编辑器中的行                                                                                    |
 
 ### 使用方式
 

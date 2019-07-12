@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import useRestListApi, { Options } from '@sinoui/use-rest-list-api';
 import { useState, useEffect, useCallback } from 'react';
 import { produce } from 'immer';
@@ -35,9 +36,18 @@ export default function useEditingList<T>(
     });
   }, [isLoading, itemsCount]);
 
-  const add = () => {
-    setItems([...items, {}]);
-    setEditingRows([...editingRows, true]);
+  const add = (item: Partial<T> = {}, index: number = -1) => {
+    const addAt = produce(<V>(draft: V[], value: V) => {
+      if (index === -1 || index >= draft.length) {
+        draft.push(value);
+      } else {
+        draft.splice(index, 0, value);
+      }
+    });
+
+    setItems(addAt(items, item));
+
+    setEditingRows(addAt(editingRows, true));
   };
 
   const asyncRemove = useCallback(
@@ -76,7 +86,7 @@ export default function useEditingList<T>(
         } else {
           const result = await save(row, false);
           removeItemAt(index);
-          addItem(result);
+          addItem(result, index);
         }
 
         setEditingRows(
