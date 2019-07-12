@@ -1,6 +1,6 @@
 {
   "name": "@sinouiincubator/editable-data-table",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "license": "MIT",
   "main": "dist/index.js",
   "umd:main": "dist/sinouiincubator-editable-data-table.umd.production.js",
@@ -100,8 +100,8 @@
     "style-loader": "^0.23.1",
     "ts-lib-tools": "^0.2.7",
     "typescript": "^3.5.2",
-    "webpack-docz-ghpages-plugin": "^0.2.12",
-    "uuid": "^3.3.2"
+    "uuid": "^3.3.2",
+    "webpack-docz-ghpages-plugin": "^0.2.12"
   },
   "jest": {
     "transformIgnorePatterns": [
