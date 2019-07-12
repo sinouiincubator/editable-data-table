@@ -16,6 +16,7 @@ function SimpleDemo({ editingList }: { editingList: any }) {
       { id: '3', title: '标题3' },
     ]);
   }, [editingList]);
+
   return (
     <ThemeProvider theme={defaultTheme}>
       <div>
@@ -24,6 +25,9 @@ function SimpleDemo({ editingList }: { editingList: any }) {
         </button>
         <button type="button" onClick={() => editingList.add({})}>
           新增
+        </button>
+        <button type="button" onClick={() => editingList.add({}, 0)}>
+          在首位新增
         </button>
         <button
           type="button"
@@ -146,7 +150,23 @@ it('新增', () => {
 
   fireEvent.click(getByText('新增'));
 
-  expect(getAllByText('编辑').length).toBe(1); // 新增的一条数据处于编辑状态
+  expect(getAllByText('只读').length).toBe(1); // 新增的一条数据处于编辑状态
+});
+
+it('在首位添加数据', () => {
+  function Demo() {
+    const editingList = useSimpleEditingList([{ id: '01', title: '标题1' }]);
+    return <SimpleDemo editingList={editingList} />;
+  }
+
+  const { getByText, container } = render(<Demo />);
+
+  fireEvent.click(getByText('在首位新增'));
+
+  // 第一行应该有“只读”按钮
+  expect(container.querySelector('tbody tr:first-child')).toHaveTextContent(
+    '只读',
+  );
 });
 
 it('删除', () => {

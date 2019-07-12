@@ -1164,10 +1164,10 @@
     "@babel/runtime" "^7.4.5"
     "@sinoui/http" "^0.2.2"
 
-"@sinoui/use-rest-list-api@^0.4.1":
-  version "0.4.1"
-  resolved "https://registry.yarnpkg.com/@sinoui/use-rest-list-api/-/use-rest-list-api-0.4.1.tgz#888dad7daf6075e9ab1f09413b4214da6d6b379c"
-  integrity sha512-Bm2bXeHhyBM2CZrMcz/JkBkoYa4+9YpH3yWnVHkkgphej1O+HYo0jGWrO5HEcDqed6/8vb1cYQuwSNvR16itHg==
+"@sinoui/use-rest-list-api@^0.5.0":
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/@sinoui/use-rest-list-api/-/use-rest-list-api-0.5.0.tgz#eef0a30225bc0690a98f70c136ad284d1b259e59"
+  integrity sha512-Qpm5Mu6tbpTrRCKSN1hxJuT9FdjrdqPLuyAN1XsStwqfm6wMaTFSngN+pLUuR/7mpUd3rTh/s8AjUAaOa0sTkQ==
   dependencies:
     "@babel/polyfill" "^7.4.4"
     "@babel/runtime" "^7.4.5"

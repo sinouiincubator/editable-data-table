@@ -36,9 +36,10 @@ interface SimpleEditingListResult<T> {
   /**
    * 添加数据行
    *
-   * @param item 需要添加的数据行
+   * @param item 数据行
+   * @param index 添加数据的位置。默认值为-1，表示在数组末尾添加数据行。
    */
-  add(item: T): void;
+  add(item: Partial<T>, index?: number): void;
   /**
    * 删除数据行
    *

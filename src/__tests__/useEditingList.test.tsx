@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { renderHook } from '@testing-library/react-hooks';
 import http from '@sinoui/http';
 import { render, cleanup, fireEvent } from '@testing-library/react';
@@ -27,6 +28,10 @@ function renderDemo() {
       add();
     };
 
+    const handleAddAtFirst = () => {
+      add({}, 0);
+    };
+
     return (
       <div>
         {editingRows.map((editing) => (
@@ -43,6 +48,10 @@ function renderDemo() {
 
         <button type="button" onClick={handleAdd}>
           添加
+        </button>
+
+        <button type="button" onClick={handleAddAtFirst}>
+          在开始位置添加
         </button>
       </div>
     );
@@ -71,9 +80,27 @@ it('添加数据', async () => {
   const itemCount = (await findAllByTestId('item')).length;
   expect(itemCount).toBe(2);
 
-  const editingCount = (await findAllByTestId('editing')).length;
-  expect(editingCount).toBe(2);
-  expect(getByText('true')).toBeVisible();
+  const editingStateElements = await findAllByTestId('editing');
+  expect(editingStateElements.length).toBe(2);
+  expect(editingStateElements[0]).toHaveTextContent('false');
+  expect(editingStateElements[1]).toHaveTextContent('true');
+});
+
+it('在开始位置添加数据', async () => {
+  (http.get as jest.Mock).mockResolvedValue([{ id: '1', userName: '张三' }]);
+
+  const { findAllByTestId, getByText } = renderDemo();
+
+  await findAllByTestId('item');
+  fireEvent.click(getByText('在开始位置添加'));
+
+  const itemCount = (await findAllByTestId('item')).length;
+  expect(itemCount).toBe(2);
+
+  const editingStateElements = await findAllByTestId('editing');
+  expect(editingStateElements.length).toBe(2);
+  expect(editingStateElements[0]).toHaveTextContent('true');
+  expect(editingStateElements[1]).toHaveTextContent('false');
 });
 
 it('删除数据空数据', async () => {
@@ -150,10 +177,14 @@ it('编辑某一项', async () => {
 });
 
 it('保存一项新增列表项', async () => {
-  (http.get as jest.Mock).mockResolvedValue([{ id: '1', userName: '张三' }]);
+  (http.get as jest.Mock).mockResolvedValue([
+    { id: '1', userName: '张三' },
+    { userName: '王五' },
+    { id: '3', userName: 'xx' },
+  ]);
 
   (http.post as jest.Mock).mockResolvedValue({
-    id: '03',
+    id: '02',
     userName: '李四',
   });
 
@@ -164,7 +195,11 @@ it('保存一项新增列表项', async () => {
   await result.current.save({ userName: '李四' }, 1);
 
   expect(http.post).toHaveBeenCalledTimes(1);
-  expect(result.current.items.length).toBe(2);
+  expect(result.current.items.length).toBe(3);
+  expect(result.current.items[1]).toEqual({
+    id: '02',
+    userName: '李四',
+  });
 });
 
 it('保存一条已经存在的数据', async () => {
