@@ -4,7 +4,7 @@ import shallowEqual from 'shallowequal';
 
 interface Options<T> {
   /**
-   * 单元格表单域是否一致处于编辑状态。
+   * 单元格表单域是否一直处于编辑状态。
    */
   alwaysEditing?: boolean;
 
