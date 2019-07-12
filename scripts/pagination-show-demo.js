@@ -14,7 +14,10 @@ function setup(app) {
   }
 
   app.get('/api/pagination-show-demo', (req, res) => {
-    res.json(items);
+    const { title } = req.query;
+    res.json(
+      title ? items.filter((item) => item.title.indexOf(title) !== -1) : items,
+    );
   });
 
   app.post('/api/pagination-show-demo', (req, res) => {
