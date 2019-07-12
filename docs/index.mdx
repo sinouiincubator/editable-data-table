@@ -11,6 +11,7 @@ import useEditingList from '../src/useEditingList';
 import Button from 'sinoui-components/Button';
 import TextInput from 'sinoui-components/TextInput';
 import produce from 'immer';
+import useSimpleEditingList from '../src/useSimpleEditingList';
 
 # 可编辑表格
 
@@ -491,6 +492,112 @@ function Demo() {
     </>
 
 );
+
+}}
+
+</Playground>
+
+## 使用 useSimpleEditingList
+
+使用其简化可编辑列表的开发，不与后端交互，但包含校验。
+
+- 只有使用`setItems`才能更换列表数据
+- `useSimpleEditingList(defaultItems)`只是指定默认数据
+
+```tsx
+import EditableDataTable, {
+  useEiditingList,
+  TableColumn,
+} from '@sinouiincubator/editable-data-table';
+import Button from 'sinoui-components/Button';
+import TextInput from 'sinoui-components/TextInput';
+
+function Demo() {
+  const {
+    items,
+    add,
+    remove,
+    edit,
+    editingRows,
+    setItems,
+    setReadonly,
+  } = useSimpleEditingList([]);
+
+  return (
+    <>
+      <Button onClick={() => add({})}>新增</Button>
+      <EditableDataTable data={items} editingRows={editingRows}>
+        <TableColumn title="序号" order />
+        <TableColumn title="标题" name="title" editor={TextInput} />
+        <TableColumn title="备注" name="note" editor={TextInput} />
+        <TableColumn
+          title="操作"
+          name="id"
+          render={(value, row, index, id, context) => (
+            <>
+              {context.editing ? (
+                <Button autoWidth onClick={() => setReadonly(index)}>
+                  保存
+                </Button>
+              ) : (
+                <Button autoWidth onClick={() => edit(index)}>
+                  编辑
+                </Button>
+              )}
+              <Button autoWidth onClick={() => remove(index)}>
+                删除
+              </Button>
+            </>
+          )}
+        />
+      </EditableDataTable>
+    </>
+  );
+}
+```
+
+示例：
+
+<Playground>
+  {() => {
+    const { items,add,remove,edit,editingRows,setItems,setReadonly } = useSimpleEditingList([]);
+
+    return (
+      <>
+      <Button onClick={()=>add({})}>新增</Button>
+      <EditableDataTable
+        data={items}
+        editingRows={editingRows}
+      >
+        <TableColumn title="序号" order />
+        <TableColumn title="标题" name="title" editor={TextInput} />
+        <TableColumn title="备注" name="note" editor={TextInput}/>
+        <TableColumn
+          title="操作"
+          name="id"
+          render={(value, row, index, id, context) => (
+            <>
+              {context.editing ? (
+                <Button
+                  autoWidth
+                  onClick={() => setReadonly(index)}
+                >
+                  保存
+                </Button>
+              ) : (
+                <Button autoWidth onClick={() => edit(index)}>
+                  编辑
+                </Button>
+              )}
+              <Button autoWidth onClick={() => remove(index)}>
+                删除
+              </Button>
+            </>
+          )}
+        />
+      </EditableDataTable>
+      </>
+    )
 
 }}
 
