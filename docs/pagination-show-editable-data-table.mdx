@@ -586,6 +586,14 @@ function Demo() {
 </Button>
 ```
 
+当然，别忘了将`editingList.editingRows`传给`EditableDataTable.editingRows`，并且定义单元格编辑器：
+
+```tsx
+<EditableDataTable editingRows={editingList.editingRows}>
+  <TableColumn title="标题" name="title" editor="input" />
+</EditableDataTable>
+```
+
 ## 再次提炼状态管理
 
 增加、删除、修改、编辑四个动作都与翻页有关系，我们可以将这四个方法提炼到一个自定义 hook：
