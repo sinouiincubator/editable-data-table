@@ -22,7 +22,7 @@ export default function useEditingList<T>(
     isLoading,
     addItem,
     ...rest
-  } = useRestListApi<T>(url, defaultValue);
+  } = useRestListApi<T>(url, defaultValue, options);
   const [editingRows, setEditingRows] = useState(() =>
     defaultValue.map(() => false),
   );
