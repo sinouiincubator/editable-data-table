@@ -1,6 +1,6 @@
 ---
-name: 分页展示数据的可编辑数据表格
-route: /pagination-show-editable-data-table
+name: 分页展示数据
+route: /pagination-show
 ---
 
 import { Playground } from 'docz';
@@ -797,6 +797,47 @@ function Demo() {
     </div>
   );
 }
+```
+
+## 校验
+
+在这个场景中，使用`EditableDataTable`内置的校验即可。
+
+首先定义一下数据行的校验方法：
+
+```tsx
+function validate(rowData) {
+  const errors: { [x: string]: string } = {};
+
+  if (!rowData.title) {
+    errors.title = '必填';
+  }
+
+  return errors;
+}
+```
+
+然后将`validate`传递给`EditableDataTable`：
+
+```tsx
+<EditableDataTable validate={validate} />
+```
+
+最后，调整保存方法，先校验数据，然后再保存数据：
+
+```tsx
+<Button
+  autoWidth
+  onClick={() => {
+    if (!context.validate()) {
+      alert('数据填写不完整');
+    } else {
+      save();
+    }
+  }}
+>
+  保存
+</Button>
 ```
 
 ## 查询列表
