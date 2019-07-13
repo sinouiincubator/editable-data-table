@@ -5,6 +5,7 @@ import DataTableRowContext, {
   BodyRowContextType,
 } from './shared/DataTableRowContext';
 import EditingBodyRowContainer from './shared/EditingBodyRowContainer';
+import { ErrorResult, TouchedState } from './types';
 
 interface Props<T> {
   /**

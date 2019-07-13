@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
 import DataTableBodyRow from './DataTableBodyRow';
+import { ErrorResult, TouchedState } from './types';
 
 /**
  * 数据表格内容组件

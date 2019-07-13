@@ -7,6 +7,7 @@ import EmptyDataTableRow from './EmptyDataTableRow';
 import DataTableColGroup from './DataTableColGroup';
 import DataTableHead from './DataTableHead';
 import DataTableBody from './DataTableBody';
+import { ErrorResult, TouchedState } from './types';
 
 export interface Props<T> {
   /**

@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState, useCallback } from 'react';
 import { produce } from 'immer';
 import shallowEqual from 'shallowequal';
+import { ErrorResult, SimpleEditingListResult, TouchedState } from './types';
 
 interface Options<T> {
   /**

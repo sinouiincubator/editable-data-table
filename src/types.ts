@@ -1,12 +1,12 @@
-interface ErrorResult {
+export interface ErrorResult {
   [fieldName: string]: string;
 }
 
-interface TouchedState {
+export interface TouchedState {
   [fieldName: string]: boolean;
 }
 
-interface SimpleEditingListResult<T> {
+export interface SimpleEditingListResult<T> {
   /**
    * 列表数据
    */

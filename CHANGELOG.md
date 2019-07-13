@@ -3,6 +3,7 @@
 ## v0.5.2 - 2019.7.12
 
 - fix: 修复 useEditingList 的 options 没有起到作用的缺陷
+- fix: 修复 useSimpleEditingList 返回值类型为 any 的缺陷
 
 ## v0.5.1 - 2019.7.12
 

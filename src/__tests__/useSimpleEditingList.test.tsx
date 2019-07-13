@@ -6,6 +6,7 @@ import 'jest-dom/extend-expect';
 import useSimpleEditingList from '../useSimpleEditingList';
 import EditableDataTable from '../EditableDataTable';
 import TableColumn from '../TableColumn';
+import { ErrorResult } from '../types';
 
 afterEach(cleanup);
 

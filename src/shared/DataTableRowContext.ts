@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
 import { RowType } from './constants';
+import { ErrorResult, TouchedState } from '../types';
 
 export interface BodyRowContextType<T> {
   type: RowType.Body;
