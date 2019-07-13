@@ -823,6 +823,8 @@ function validate(rowData) {
 <EditableDataTable validate={validate} />
 ```
 
+到这一步，修改编辑器的值，就会调用`validate`方法校验数据是否有问题，这就是“实时校验”。
+
 最后，调整保存方法，先校验数据，然后再保存数据：
 
 ```tsx
