@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import useRestListApi, { Options } from '@sinoui/use-rest-list-api';
-import { useState, useEffect, useCallback } from 'react';
-import { produce } from 'immer';
+import { useEffect, useCallback } from 'react';
+import useSimpleEditingList, {
+  SimpleEditingListOptions,
+} from './useSimpleEditingList';
 
 /**
  * 维护可编辑列表的hook
@@ -9,118 +11,88 @@ import { produce } from 'immer';
 export default function useEditingList<T>(
   url: string,
   defaultValue: T[] = [],
-  options?: Options<T>,
+  options?: Options<T> & SimpleEditingListOptions<T>,
 ) {
-  const { keyName = 'id' } = options || {};
+  const { keyName = 'id', alwaysEditing = false } = options || {};
   const {
-    items,
-    setItems,
+    items: originItems,
     remove,
-    removeItemAt,
     update,
     save,
     isLoading,
-    addItem,
-    ...rest
+    isError,
   } = useRestListApi<T>(url, defaultValue, options);
-  const [editingRows, setEditingRows] = useState(() =>
-    defaultValue.map(() => false),
-  );
+  const {
+    setItems,
+    remove: removeEditingItems,
+    updateItem,
+    setReadonly,
+    ...rest
+  } = useSimpleEditingList(originItems, options);
 
-  const itemsCount = items.length;
   useEffect(() => {
-    setEditingRows((prev) => {
-      if (itemsCount !== prev.length) {
-        return new Array(itemsCount).fill(false);
-      }
-      return prev;
-    });
-  }, [isLoading, itemsCount]);
+    setItems(originItems);
+  }, [setItems, originItems]);
 
-  const add = (item: Partial<T> = {}, index: number = -1) => {
-    const addAt = produce(<V>(draft: V[], value: V) => {
-      if (index === -1 || index >= draft.length) {
-        draft.push(value);
-      } else {
-        draft.splice(index, 0, value);
-      }
-    });
+  const getItemId = useCallback((item: any) => item[keyName], [keyName]);
 
-    setItems(addAt(items, item));
-
-    setEditingRows(addAt(editingRows, true));
-  };
-
+  /**
+   * 删除数据行
+   *
+   * @param row 数据行对象或者一组数据行与索引的数组
+   * @param index 数据行所在的索引位置
+   */
   const asyncRemove = useCallback(
-    async (row: T, index: number) => {
-      try {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        if ((row as any)[keyName]) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          await remove((row as any)[keyName]);
-          setEditingRows(
-            produce(editingRows, (draft) => {
-              draft.splice(index, 1);
-            }),
-          );
-        } else {
-          removeItemAt(index);
-          setEditingRows(
-            produce((draft) => {
-              draft.splice(index, 1);
-            }),
-          );
+    async (row: T | [T, number][], index: number) => {
+      if (Array.isArray(row)) {
+        const savedRowIds = row
+          .map(([item]) => getItemId(item))
+          .filter((id) => !!id);
+        if (savedRowIds.length > 0) {
+          await remove(savedRowIds, false);
         }
-      } catch (error) {
-        throw error;
+      } else if (getItemId(row)) {
+        await remove(getItemId(row), false);
       }
-    },
-    [editingRows, keyName, remove, removeItemAt],
-  );
 
-  const asyncUpdate = useCallback(
-    async (row: T, index: number) => {
-      try {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        if ((row as any)[keyName]) {
-          await update(row);
-        } else {
-          const result = await save(row, false);
-          removeItemAt(index);
-          addItem(result, index);
-        }
-
-        setEditingRows(
-          produce(editingRows, (draft) => {
-            draft[index] = false;
-          }),
-        );
-      } catch (error) {
-        throw error;
-      }
-    },
-    [addItem, editingRows, keyName, removeItemAt, save, update],
-  );
-
-  const edit = useCallback(
-    (index: number) => {
-      setEditingRows(
-        produce(editingRows, (draft) => {
-          draft[index] = true;
-        }),
+      removeEditingItems(
+        Array.isArray(row) ? row.map(([, idx]) => idx) : index,
       );
     },
-    [editingRows],
+    [remove, removeEditingItems, getItemId],
+  );
+
+  /**
+   * 更新数据行
+   *
+   * @param row 数据行对象
+   * @param index 数据行所在位置
+   */
+  const asyncUpdate = useCallback(
+    async (row: T, index: number) => {
+      let newRow;
+      if (getItemId(row)) {
+        newRow = await update(row, false);
+      } else {
+        newRow = await save(row, false);
+      }
+
+      updateItem(index, newRow);
+
+      if (!alwaysEditing) {
+        setReadonly(index);
+      }
+    },
+    [getItemId, updateItem, alwaysEditing, update, save, setReadonly],
   );
 
   return {
     ...rest,
-    items,
-    editingRows,
-    add,
+    isLoading,
+    isError,
     remove: asyncRemove,
-    edit,
     save: asyncUpdate,
     idPropertyName: keyName,
+    setReadonly,
   };
 }

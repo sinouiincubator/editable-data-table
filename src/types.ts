@@ -39,11 +39,11 @@ export interface SimpleEditingListResult<T> {
    * @param item 数据行
    * @param index 添加数据的位置。默认值为-1，表示在数组末尾添加数据行。
    */
-  add(item: Partial<T>, index?: number): void;
+  add(item?: Partial<T>, index?: number): void;
   /**
    * 删除数据行
    *
-   * @param index 数据行所在的索引位置
+   * @param index 数据行所在的索引位置。可以是数组，表示删除一组数据行。
    */
   remove(index: number | number[]): void;
   /**

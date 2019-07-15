@@ -192,6 +192,7 @@ it('保存一项新增列表项', async () => {
     useEdititngList('/test'),
   );
   await waitForNextUpdate();
+  result.current.edit(1);
   await result.current.save({ userName: '李四' }, 1);
 
   expect(http.post).toHaveBeenCalledTimes(1);
@@ -200,6 +201,7 @@ it('保存一项新增列表项', async () => {
     id: '02',
     userName: '李四',
   });
+  expect(result.current.editingRows).toEqual([false, false, false]);
 });
 
 it('保存一条已经存在的数据', async () => {
@@ -220,7 +222,7 @@ it('保存一条已经存在的数据', async () => {
   expect(result.current.editingRows).toEqual([false]);
   await waitForNextUpdate();
   result.current.edit(0);
-  expect(result.current.editingRows).toEqual([true]);
+  expect(result.current.editingRows).toEqual([true, false]);
 
   await result.current.save({ id: '03', userName: '李四' }, 1);
 
