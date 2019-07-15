@@ -79,6 +79,7 @@ export interface Props<T> {
    * 如果数据行没有错误，则返回`{}`或者`undefined`。
    */
   validate?: (rowData: T) => { [x: string]: string } | undefined;
+  rowClassName?: (index: number) => string;
 }
 
 function useEditableDataTable<T>({
@@ -121,6 +122,7 @@ function EditableDataTable<T>(props: Props<T>) {
     touched,
     className,
     style,
+    rowClassName,
   } = props;
   const context = useEditableDataTable(props);
   return (
@@ -138,6 +140,7 @@ function EditableDataTable<T>(props: Props<T>) {
             editingRows={editingRows}
             errors={errors}
             touched={touched}
+            rowClassName={rowClassName}
           >
             {children}
           </DataTableBody>

@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useMemo } from 'react';
+import classNames from 'classnames';
 import { RowType } from './shared/constants';
 import DataTableRowContext, {
   BodyRowContextType,
@@ -35,6 +36,7 @@ interface Props<T> {
    * 单元格编辑器是否被点击过
    */
   touched?: TouchedState;
+  rowClassName?: (index: number) => string;
 }
 
 type CompType<T = any> = React.SFC<Props<T>>;
@@ -43,7 +45,15 @@ type CompType<T = any> = React.SFC<Props<T>>;
  * 内容行
  */
 const DataTableBodyRow: CompType = (props) => {
-  const { data, index, children, editing, error, touched } = props;
+  const {
+    data,
+    index,
+    children,
+    editing,
+    error,
+    touched,
+    rowClassName,
+  } = props;
   const context: BodyRowContextType<any> = useMemo(
     () => ({
       type: RowType.Body,
@@ -59,7 +69,13 @@ const DataTableBodyRow: CompType = (props) => {
   return (
     <DataTableRowContext.Provider value={context}>
       <EditingBodyRowContainer.Provider>
-        <tr className="sinoui-data-table-body-row" data-testid="bodyRow">
+        <tr
+          className={classNames(
+            'sinoui-data-table-body-row',
+            rowClassName ? rowClassName(index) : '',
+          )}
+          data-testid="bodyRow"
+        >
           {children}
         </tr>
       </EditingBodyRowContainer.Provider>

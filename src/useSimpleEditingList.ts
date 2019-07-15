@@ -82,6 +82,7 @@ function useSimpleEditingList<T = any>(
 
     setErrors(new Array(newItems.length).fill({}));
     setTouched(new Array(newItems.length).fill({}));
+    setSelectedRows([]);
   }, []);
 
   /**

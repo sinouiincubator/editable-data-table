@@ -12,6 +12,7 @@ const DataTableBody: React.SFC<{
   editingRows?: boolean[];
   errors?: ErrorResult[];
   touched?: TouchedState[];
+  rowClassName?: (index: number) => string;
 }> = function DataTableBody({
   idPropertyName,
   data,
@@ -19,6 +20,7 @@ const DataTableBody: React.SFC<{
   editingRows = [],
   errors,
   touched,
+  rowClassName,
 }) {
   if (!data || data.length === 0) {
     return null;
@@ -34,6 +36,7 @@ const DataTableBody: React.SFC<{
           editing={editingRows[index]}
           error={errors ? errors[index] : undefined}
           touched={touched ? touched[index] : undefined}
+          rowClassName={rowClassName}
         >
           {children}
         </DataTableBodyRow>

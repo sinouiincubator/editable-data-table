@@ -17,6 +17,7 @@ import EditableDataTable, {
   useSimpleEditingList,
   RowSelectColumn,
 } from '../src';
+import './PaginationEditableTableDemo.css';
 
 interface Data {
   id: string;
@@ -90,6 +91,22 @@ function PaginationEditableDataTableDemo() {
     }
   };
 
+  const handleBatchRemove = async () => {
+    const selectedRowIds = data
+      .filter((_data, idx) => selectedRows.includes(idx))
+      .map((item) => item.id);
+
+    await asyncRemove(selectedRowIds);
+  };
+
+  const handleRowClassName = (index: number) => {
+    if (selectedRows.includes(index)) {
+      return 'sinoui-data-table-body-row_selected';
+    }
+
+    return '';
+  };
+
   return (
     <>
       <Form onSubmit={query as any}>
@@ -110,7 +127,7 @@ function PaginationEditableDataTableDemo() {
       {selectedRows.length > 0 && (
         <Row>
           <Column>
-            <Button>删除</Button>
+            <Button onClick={handleBatchRemove}>删除</Button>
           </Column>
         </Row>
       )}
@@ -119,6 +136,7 @@ function PaginationEditableDataTableDemo() {
         editingRows={editingRows}
         validate={validate}
         onRowChange={handleOnRowChange}
+        rowClassName={handleRowClassName}
       >
         <RowSelectColumn
           selectedRows={selectedRows}
