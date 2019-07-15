@@ -14,8 +14,8 @@ import useSimpleEditingList from '../src/useSimpleEditingList';
 
 - EditableDataTable - 可编辑数据表格组件
 - TableColumn - 定义数据表格列的组件
-- useEditingList - 可编辑表格数据的状态管理 hook（与后端 API 交互，不包括校验状态）
 - useSimpleEditingList - 可编辑表格数据的状态管理 hook （不与后端交互，但包括校验状态）
+- useEditingList - 可编辑表格数据的状态管理 hook（与后端 API 交互，不包括校验状态）
 
 ## EditableDataTable(0.1.0)
 
@@ -24,48 +24,6 @@ import useSimpleEditingList from '../src/useSimpleEditingList';
 ## TableColumn(0.1.0)
 
 <Props of={TableColumn} />
-
-## useEditingList（0.3.0）
-
-> 可编辑表格数据的状态管理 hook。
-
-```ts
-useEditingList<T>(url:string,defaultValue:T[],options?:Options<T>):Response<T>
-```
-
-### 参数配置
-
-| 参数名称     | 参数类型 | 默认值 | 说明               |
-| ------------ | -------- | ------ | ------------------ |
-| url          | string   |        | 与后端交互时的 url |
-| defaultValue | T[]      | []     | 默认列表数据       |
-| options      | Options  |        | 状态管理所需配置项 |
-
-其中，`options`具体配置可参考[use-rest-list-api 的 options](https://github.com/sinoui/use-rest-list-api#options)。
-
-### 返回值的数据结构
-
-| 返回值名称     | 类型                                                | 说明                                                                                                                                                                                        |
-| -------------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| items          | T[]                                                 | 列表数据                                                                                                                                                                                    |
-| editingRows    | boolean[]                                           | 处于编辑状态的行。`editingRows`数组需要与`data`数组保持一一对应的关系，`editingRows`数组中每一个数据项代表的是`data`数组中对应数据项的编辑状态，`true`表示编辑状态，`false`表示非编辑状态。 |
-| add            | `(item: Partial<T> = {}, index: number = -1)=>void` | 新增一条可编辑的空数据。`index`默认为-1，表示在末尾添加数据，`index`等于 0 时，表示在开始位置添加数据。                                                                                     |
-| remove         | (row:T,index:number)=>void                          | 删除一条数据                                                                                                                                                                                |
-| edit           | (index:number)=>void                                | 更新一条数据的编辑状态                                                                                                                                                                      |
-| save           | (row:T,index:number)=>void                          | 新增一条数据或者更新一条数据                                                                                                                                                                |
-| idPropertyName | string                                              | 数据的 id 属性名。                                                                                                                                                                          |
-
-### 使用方式
-
-```ts
-import { useEditingList } from '@sinouiincubator/editable-data-table';
-
-function Demo() {
-  const { items, add, remove } = useEditingList('/tests', []);
-
-  return null;
-}
-```
 
 ## useSimpleEditingList(0.2.0)
 
@@ -94,8 +52,7 @@ useSimpleEditingList(defaultValue:T[],options:Options):editingList
 | edit                   | (rowIndex: number) => void                             | 设置数据行处于编辑状态                                                                                  |
 | setReadonly            | (rowIndex: number) => void                             | 设置数据行处于只读状态                                                                                  |
 | add                    | `(item: Partial<T> = {}, index: number = -1)=>void`    | 新增一条可编辑的空数据。`index`默认为-1，表示在末尾添加数据，`index`等于 0 时，表示在开始位置添加数据。 |
-| remove                 | (index: number) => void                                | 删除数据行                                                                                              |
-| removeItems            | (indexes: number[]) => void                            | 删除一组数据行                                                                                          |
+| remove                 | (index: number \| number[]) => void                    | 删除一条或者一组数据行                                                                                  |
 | updateItem             | (index: number, item: T) => void                       | 更新数据行                                                                                              |
 | errors                 | [fieldName: string]: string[]                          | 校验错误                                                                                                |
 | touched                | [fieldName: string]: boolean[]                         | 编辑器被点击状态                                                                                        |
@@ -110,5 +67,84 @@ import { useSimpleEditingList } from '@sinouiincubator/editable-data-table';
 function Demo() {
   const editingList = useSimpleEditingList([], { alwaysEditing: true });
   return null;
+}
+```
+
+## useEditingList（0.3.0）
+
+> 可编辑表格数据的状态管理 hook。
+
+```ts
+useEditingList<T>(url:string,defaultValue:T[],options?:Options<T>):Response<T>
+```
+
+### 参数配置
+
+| 参数名称              | 参数类型                             | 默认值 | 说明                                                                        |
+| --------------------- | ------------------------------------ | ------ | --------------------------------------------------------------------------- |
+| url                   | string                               |        | 与后端交互时的 url                                                          |
+| defaultValue          | T[]                                  | []     | 默认列表数据                                                                |
+| options               | Options                              |        | 状态管理所需配置项，除了特定的配置项，还包括 use-rest-list-api 的 options。 |
+| options.alwaysEditing | boolean                              | false  | 如果为`true`，则表示所有数据行处于编辑状态。                                |
+| options.validate      | (item: T) => ErrorResult \|undefined |        | 验证行数据的函数                                                            |
+
+其中，`options`其他配置参考[use-rest-list-api 的 options](https://github.com/sinoui/use-rest-list-api#options)。
+
+### 返回值的数据结构
+
+| 返回值名称             | 类型                                                   | 说明                                                                                                    |
+| ---------------------- | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------- |
+| items                  | T[]                                                    | 列表数据                                                                                                |
+| setItems               | (newItems: T[]) => void                                | 设置列表数据                                                                                            |
+| editingRows            | boolean[]                                              | 数据行的编辑状态                                                                                        |
+| edit                   | (rowIndex: number) => void                             | 设置数据行处于编辑状态                                                                                  |
+| setReadonly            | (rowIndex: number) => void                             | 设置数据行处于只读状态                                                                                  |
+| add                    | `(item: Partial<T> = {}, index: number = -1)=>void`    | 新增一条可编辑的空数据。`index`默认为-1，表示在末尾添加数据，`index`等于 0 时，表示在开始位置添加数据。 |
+| remove                 | `(row: T | [T, number][], index: number => void`       | 删除一条或者一组数据行                                                                                  |
+| save                   | (item: T, index: number) => void                       | 更新数据行                                                                                              |
+| errors                 | [fieldName: string]: string[]                          | 校验错误                                                                                                |
+| touched                | [fieldName: string]: boolean[]                         | 编辑器被点击状态                                                                                        |
+| validateField          | (index: number, fieldName: string, rowData: T) => void | 校验单个数据行                                                                                          |
+| validateAllEditingRows | () => boolean                                          | 校验所有编辑器中的行                                                                                    |
+| idPropertyName         | string                                                 | 数据的 id 属性名。                                                                                      |
+| isLoading              | boolean                                                | 是否正在加载列表数据                                                                                    |
+| isError                | boolean                                                | 是否加载列表数据失败                                                                                    |
+
+### 使用方式
+
+```ts
+import { useEditingList } from '@sinouiincubator/editable-data-table';
+
+function Demo() {
+  const { items, add, remove } = useEditingList('/tests', []);
+
+  return null;
+}
+```
+
+### 删除一组数据 (0.6.0)
+
+需要指定一组数据行对象和对应的索引值。如下所示：
+
+```tsx
+import { useEditingList } from '@sinouiincubator/editable-data-table';
+
+function Demo() {
+  const { items, add, remove } = useEditingList('/tests', [
+    { id: '1', title: '标题1' },
+    { title: '标题2' },
+    { title: '标题3' },
+  ]);
+
+  const handleRemove = () => {
+    // 删除前两条数据
+    remove([[items[0], 0], [items[1], 1]]);
+  };
+
+  return (
+    <button type="button" onClick={handleRemove}>
+      删除前两条数据
+    </button>
+  );
 }
 ```

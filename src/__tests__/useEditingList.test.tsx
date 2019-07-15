@@ -32,6 +32,10 @@ function renderDemo() {
       add({}, 0);
     };
 
+    const handleRemoveMultiRows = () => {
+      remove([[items[0], 0], [items[1], 1]]);
+    };
+
     return (
       <div>
         {editingRows.map((editing) => (
@@ -52,6 +56,10 @@ function renderDemo() {
 
         <button type="button" onClick={handleAddAtFirst}>
           在开始位置添加
+        </button>
+
+        <button type="button" onClick={handleRemoveMultiRows}>
+          删除前两条数据
         </button>
       </div>
     );
@@ -163,6 +171,26 @@ it('删除未保存的数据', async () => {
   expect(editingCount).toBe(1);
 });
 
+it('删除一组数据', async () => {
+  (http.get as jest.Mock).mockResolvedValue([
+    { id: '1', userName: '张三' },
+    { userName: '李四' },
+    { id: '3', userName: '王五' },
+  ]);
+  (http.delete as jest.Mock).mockResolvedValue('删除成功');
+
+  const { result, waitForNextUpdate } = renderHook(() =>
+    useEdititngList('/test'),
+  );
+
+  await waitForNextUpdate();
+
+  const { remove } = result.current;
+  await remove([[{ id: '1', userName: '张三' }, 0], [{ userName: '李四' }, 1]]);
+  expect(http.delete).toHaveBeenCalledWith('/test/1');
+  expect(result.current.items.length).toBe(1);
+});
+
 it('编辑某一项', async () => {
   (http.get as jest.Mock).mockResolvedValue([{ id: '1', userName: '张三' }]);
 
@@ -192,6 +220,7 @@ it('保存一项新增列表项', async () => {
     useEdititngList('/test'),
   );
   await waitForNextUpdate();
+  result.current.edit(1);
   await result.current.save({ userName: '李四' }, 1);
 
   expect(http.post).toHaveBeenCalledTimes(1);
@@ -200,6 +229,7 @@ it('保存一项新增列表项', async () => {
     id: '02',
     userName: '李四',
   });
+  expect(result.current.editingRows).toEqual([false, false, false]);
 });
 
 it('保存一条已经存在的数据', async () => {
@@ -220,7 +250,7 @@ it('保存一条已经存在的数据', async () => {
   expect(result.current.editingRows).toEqual([false]);
   await waitForNextUpdate();
   result.current.edit(0);
-  expect(result.current.editingRows).toEqual([true]);
+  expect(result.current.editingRows).toEqual([true, false]);
 
   await result.current.save({ id: '03', userName: '李四' }, 1);
 
