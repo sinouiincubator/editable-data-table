@@ -21,6 +21,13 @@ export default function useEditingList<T>(
     save,
     isLoading,
     isError,
+    query,
+    fetch,
+    sortWith,
+    reload,
+    reset,
+    searchParams,
+    sorts,
   } = useRestListApi<T>(url, defaultValue, options);
   const {
     setItems,
@@ -87,6 +94,13 @@ export default function useEditingList<T>(
 
   return {
     ...rest,
+    query,
+    fetch,
+    sortWith,
+    reload,
+    reset,
+    searchParams,
+    sorts,
     isLoading,
     isError,
     remove: asyncRemove,
