@@ -2,7 +2,12 @@ import React, { useState, useMemo, useCallback } from 'react';
 import Pagination from 'sinoui-components/Pagination';
 import Button from 'sinoui-components/Button';
 import TextInput from 'sinoui-components/TextInput';
-import EditableDataTable, { useEditingList, TableColumn } from '../src';
+import EditableDataTable, {
+  useEditingList,
+  TableColumn,
+  RowSelectColumn,
+} from '../src';
+import './PaginationEditableTableDemo.css';
 
 interface Article {
   id: string;
@@ -111,6 +116,52 @@ function Demo() {
     editingList.query({ title: searchText });
   };
 
+  const handleBatchRemove = async () => {
+    const rows = [];
+    data
+      .map((item, idx) => rows.push([item, idx]))
+      .filter((_data, index) => editingList.selectedRows.includes(index));
+    await editingList.remove(rows);
+  };
+
+  const isAllSelected = useMemo(() => {
+    for (
+      let i = currentPage * pageSize;
+      i < (currentPage + 1) * pageSize;
+      i += 1
+    ) {
+      if (editingList.selectedRows.indexOf(i) === -1) {
+        return false;
+      }
+    }
+    return true;
+  }, [currentPage, editingList.selectedRows, pageSize]);
+
+  const toggleAllSelected = useCallback(() => {
+    let rows: number[] = editingList.selectedRows;
+    const start = currentPage * pageSize;
+    const end = (currentPage + 1) * pageSize;
+    if (isAllSelected) {
+      rows = rows.filter((idx) => idx < start || idx >= end);
+    } else {
+      for (let i = start; i < end; i += 1) {
+        if (rows.indexOf(i) === -1) {
+          rows.push(i);
+        }
+      }
+    }
+
+    editingList.setSelectedRows([...rows]);
+  }, [currentPage, editingList, isAllSelected, pageSize]);
+
+  const handleRowClassName = (index: number) => {
+    if (editingList.selectedRows.includes(index)) {
+      return 'sinoui-data-table-body-row_selected';
+    }
+
+    return '';
+  };
+
   return (
     <div>
       <TextInput
@@ -123,11 +174,21 @@ function Demo() {
       <Button raised onClick={add}>
         新增
       </Button>
+      <Button onClick={handleBatchRemove}>删除</Button>
       <EditableDataTable
         data={data}
         editingRows={editingRows}
         idPropertyName={editingList.idPropertyName}
+        rowClassName={handleRowClassName}
       >
+        <RowSelectColumn
+          startIndex={currentPage * pageSize}
+          selectedRows={editingList.selectedRows}
+          isAllSelected={isAllSelected}
+          isContainsSelected={editingList.isContainsSelected}
+          toggleAllSelected={toggleAllSelected}
+          toggleRowSelected={editingList.toggleRowSelected}
+        />
         <TableColumn name="id" title="id" />
         <TableColumn name="title" title="标题" editor="input" />
         <TableColumn

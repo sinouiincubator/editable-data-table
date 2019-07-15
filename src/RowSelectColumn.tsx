@@ -23,6 +23,7 @@ interface Props {
    * 选中一行时的回调函数
    */
   toggleRowSelected: (index: number) => void;
+  startIndex?: number;
 }
 
 function RowSelectColumn(props: Props) {
@@ -32,6 +33,7 @@ function RowSelectColumn(props: Props) {
     toggleAllSelected,
     selectedRows,
     toggleRowSelected,
+    startIndex = 0,
   } = props;
 
   return (
@@ -46,8 +48,8 @@ function RowSelectColumn(props: Props) {
       }
       render={(_value, _row, index, id, context) => (
         <Checkbox
-          checked={selectedRows.indexOf(index) !== -1}
-          onChange={() => toggleRowSelected(index)}
+          checked={selectedRows.indexOf(index + startIndex) !== -1}
+          onChange={() => toggleRowSelected(index + startIndex)}
         />
       )}
     />

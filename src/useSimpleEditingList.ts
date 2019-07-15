@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState, useCallback } from 'react';
-import { produce } from 'immer';
+import { produce, isDraft } from 'immer';
 import shallowEqual from 'shallowequal';
 import { ErrorResult, SimpleEditingListResult, TouchedState } from './types';
 
@@ -103,6 +103,22 @@ function useSimpleEditingList<T = any>(
     setErrors((prev) => addAt(prev, {}));
 
     setTouched((prev) => addAt(prev, {}));
+    setSelectedRows((prev) => {
+      if (index <= Math.min(...prev)) {
+        return prev.map((row) => row + 1);
+      }
+
+      if (index > Math.max(...prev)) {
+        return prev.map((row) => row - 1);
+      }
+
+      return prev.map((row) => {
+        if (row < index) {
+          return row - 1;
+        }
+        return row + 1;
+      });
+    });
   }, []);
 
   /**
@@ -115,6 +131,7 @@ function useSimpleEditingList<T = any>(
     setEditingRows(removeByIndexes);
     setErrors(removeByIndexes);
     setTouched(removeByIndexes);
+    setSelectedRows([]);
   }, []);
 
   /**
@@ -133,6 +150,26 @@ function useSimpleEditingList<T = any>(
         setEditingRows(removeByIndex);
         setErrors(removeByIndex);
         setTouched(removeByIndex);
+        setSelectedRows((prev) => {
+          if (prev.includes(index)) {
+            return prev.filter((_row, idx) => prev[idx] === index);
+          }
+
+          if (index <= Math.min(...prev)) {
+            return prev.map((row) => row - 1);
+          }
+
+          if (index > Math.max(...prev)) {
+            return prev.map((row) => row);
+          }
+
+          return prev.map((row) => {
+            if (row < index) {
+              return row;
+            }
+            return row - 1;
+          });
+        });
       }
     },
     [removeItems],
@@ -273,6 +310,7 @@ function useSimpleEditingList<T = any>(
     isContainsSelected: selectedRows.length > 0,
     toggleAllSelected,
     toggleRowSelected,
+    setSelectedRows,
   };
 }
 
