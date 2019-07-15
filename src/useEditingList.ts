@@ -35,7 +35,6 @@ export default function useEditingList<T>(
   }, [setItems, originItems]);
 
   const getItemId = useCallback((item: any) => item[keyName], [keyName]);
-
   /**
    * 删除数据行
    *
@@ -43,11 +42,11 @@ export default function useEditingList<T>(
    * @param index 数据行所在的索引位置
    */
   const asyncRemove = useCallback(
-    async (row: T | [T, number][], index: number) => {
+    async (row: T | [T, number][], index?: number) => {
       if (Array.isArray(row)) {
         const savedRowIds = row
           .map(([item]) => getItemId(item))
-          .filter((id) => !!id);
+          .filter(Boolean);
         if (savedRowIds.length > 0) {
           await remove(savedRowIds, false);
         }
@@ -56,7 +55,7 @@ export default function useEditingList<T>(
       }
 
       removeEditingItems(
-        Array.isArray(row) ? row.map(([, idx]) => idx) : index,
+        Array.isArray(row) ? row.map(([, idx]) => idx) : (index as number),
       );
     },
     [remove, removeEditingItems, getItemId],
