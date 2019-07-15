@@ -22,7 +22,11 @@ import React, { useState, useMemo, useCallback } from 'react';
 import Pagination from 'sinoui-components/Pagination';
 import Button from 'sinoui-components/Button';
 import TextInput from 'sinoui-components/TextInput';
-import EditableDataTable, { useEditingList, TableColumn } from '../src';
+import EditableDataTable, {
+  useEditingList,
+  TableColumn,
+  RowSelectColumn,
+} from '../src';
 
 interface Article {
   id: string;
@@ -107,6 +111,85 @@ function usePaginationEditingListActions<T>(
   return { add, save, edit, remove };
 }
 
+/**
+ * 生成序列数组
+ *
+ * @param start 开始
+ * @param end 结束
+ */
+function range(start: number, end: number) {
+  return new Array(end - start).fill(null).map((_, idx) => start + idx);
+}
+
+/**
+ * 分页的选中行状态
+ *
+ * @param editingList 可编辑列表
+ * @param currentPage 当前页
+ * @param pageSize 页大小
+ */
+function usePaginationSelectedRows(
+  editingList: any,
+  currentPage: number,
+  pageSize: number,
+) {
+  const start = currentPage * pageSize;
+  const end = Math.min(editingList.items.length, (currentPage + 1) * pageSize);
+
+  /**
+   * 是否全部选中
+   */
+  const isAllSelected = useMemo(() => {
+    return range(start, end).every(
+      (idx) => editingList.selectedRows.indexOf(idx) !== -1,
+    );
+  }, [currentPage, editingList.selectedRows, pageSize]);
+
+  /**
+   * 是否包含选中
+   */
+  const isContainsSelected = useMemo(() => {
+    return range(start, end).some(
+      (idx) => editingList.selectedRows.indexOf(idx) !== -1,
+    );
+  }, [currentPage, editingList.selectedRows, pageSize]);
+
+  /**
+   * 切换全选
+   */
+  const toggleAllSelected = useCallback(() => {
+    let rows: number[] = editingList.selectedRows;
+    if (isAllSelected) {
+      rows = rows.filter((idx) => idx < start || idx >= end);
+    } else {
+      rows = [
+        ...rows,
+        ...range(start, end).filter((idx) => rows.indexOf(idx) === -1),
+      ];
+    }
+
+    editingList.setSelectedRows(rows);
+  }, [currentPage, editingList, isAllSelected, pageSize]);
+
+  /**
+   * 删除所有选中的数据
+   */
+  const removeAllSelectedRows = async () => {
+    const rows = [];
+    editingList.items
+      .map((item, idx) => rows.push([item, idx]))
+      .filter((_data, index) => editingList.selectedRows.includes(index));
+    await editingList.remove(rows);
+  };
+
+  return {
+    isAllSelected,
+    isContainsSelected,
+    toggleAllSelected,
+    removeAllSelectedRows,
+  };
+}
+
 function Demo() {
   const editingList = useEditingList<Partial<Article>>(
     '/api/pagination-show-demo',
@@ -131,6 +214,20 @@ function Demo() {
     editingList.query({ title: searchText });
   };
 
+  const handleRowClassName = (index: number) => {
+    if (editingList.selectedRows.includes(index + currentPage * pageSize)) {
+      return 'sinoui-data-table-body-row_selected';
+    }
+
+    return '';
+  };
+
+  const paginationSelectedRows = usePaginationSelectedRows(
+    editingList,
+    currentPage,
+    pageSize,
+  );
+
   return (
     <div>
       <TextInput
@@ -143,11 +240,23 @@ function Demo() {
       <Button raised onClick={add}>
         新增
       </Button>
+      <Button onClick={paginationSelectedRows.removeAllSelectedRows}>
+        删除
+      </Button>
       <EditableDataTable
         data={data}
         editingRows={editingRows}
         idPropertyName={editingList.idPropertyName}
+        rowClassName={handleRowClassName}
       >
+        <RowSelectColumn
+          startIndex={currentPage * pageSize}
+          selectedRows={editingList.selectedRows}
+          isAllSelected={paginationSelectedRows.isAllSelected}
+          isContainsSelected={paginationSelectedRows.isContainsSelected}
+          toggleAllSelected={paginationSelectedRows.toggleAllSelected}
+          toggleRowSelected={editingList.toggleRowSelected}
+        />
         <TableColumn name="id" title="id" />
         <TableColumn name="title" title="标题" editor="input" />
         <TableColumn
@@ -201,6 +310,8 @@ export default Demo;
 - [新增数据](#新增数据)
 - [编辑与删除数据](#编辑与删除数据)
 - [查询列表](#查询列表)
+- [选择](#选择)
+- [删除选中数据](#删除选中数据)
 
 ## 加载并展现列表数据
 
@@ -869,3 +980,164 @@ function validate(rowData) {
   simpleForm={SimpleSearchForm}
 />
 ```
+
+## 选择
+
+这个场景的选择因分页和一次性加载的要求，所以处理方式也会比[普通选择]()要复杂一些。`useEditingList`默认集成了选择行状态管理逻辑，但是需要二次处理才能适合当前这个场景。
+
+首先，我们使用[RowTableColumn]()来渲染选择列：
+
+```tsx
+<RowSelectColumn
+  startIndex={currentPage * pageSize}
+  selectedRows={editingList.selectedRows}
+  isAllSelected={editingList.isAllSelected}
+  isContainsSelected={editingList.isContainsSelected}
+  toggleAllSelected={editingList.toggleAllSelected}
+  toggleRowSelected={editingList.toggleRowSelected}
+/>
+```
+
+这个组件的三个属性需要做分页调整：
+
+- `isAllSelected` - 判断是否全部选中。**更准确地说**，应该是判断当前页的数据是否全部选中。
+- `isContainsSelected` - 判断是否包含选中数据。**更准确地说**，应该是判断当前页是否有选中的数据行。
+- `toggleAllSelected` - 切换全选。**更准确地说**，应该是切换当前页所有数据的选中状态，要么全选，要么全部取消选中。
+
+以上三个属性应该只跟当前页的数据相关，但是`editingList`提供的选择状态是与整个列表相关的，所以需要做二次处理。
+
+首先，我们创建一个自定义 hook，名称为`usePaginationSelectedRows`:
+
+```ts
+function usePaginationSelectedRows(
+  editingList: any,
+  currentPage: number,
+  pageSize: number,
+) {
+  const start = currentPage * pageSize;
+  const end = Math.min(editingList.items.length, (currentPage + 1) * pageSize);
+
+  // TODO: 下面的isAllSelected、isContainsSelected、toggleAllSelected的代码都放在这
+
+  return {
+    isAllSelected,
+    isContainsSelected,
+    toggleAllSelected,
+  };
+}
+```
+
+然后，我们来处理`isAllSelected`，它表示当前页是否全部选中，那么我们只需要拿到当前页所有行，然后看看每一行是否都在`editingList.selectedRows`中即可。
+
+为了方便生成当前页所有行的索引数组，创建一个 range 方法：
+
+```tsx
+/**
+ * 生成序列数组
+ *
+ * @param start 开始
+ * @param end 结束
+ */
+function range(start: number, end: number) {
+  return new Array(end - start).fill(null).map((_, idx) => start + idx);
+}
+```
+
+`isAllSelected`的计算过程：
+
+```tsx
+/**
+ * 是否全部选中
+ */
+const isAllSelected = useMemo(() => {
+  return range(start, end).every(
+    (idx) => editingList.selectedRows.indexOf(idx) !== -1,
+  );
+}, [currentPage, editingList.selectedRows, pageSize]);
+```
+
+接着处理`isContainsSelected`，它表示当前页是否有选中的数据行：
+
+```tsx
+/**
+ * 是否包含选中
+ */
+const isContainsSelected = useMemo(() => {
+  return range(start, end).some(
+    (idx) => editingList.selectedRows.indexOf(idx) !== -1,
+  );
+}, [currentPage, editingList.selectedRows, pageSize]);
+```
+
+然后处理一下`toggleAllSelected`，它只能切换当前页行的选中状态：
+
+```tsx
+/**
+ * 切换全选
+ */
+const toggleAllSelected = useCallback(() => {
+  let rows: number[] = editingList.selectedRows;
+  if (isAllSelected) {
+    rows = rows.filter((idx) => idx < start || idx >= end);
+  } else {
+    rows = [
+      ...rows,
+      ...range(start, end).filter((idx) => rows.indexOf(idx) === -1),
+    ];
+  }
+
+  editingList.setSelectedRows(rows);
+}, [currentPage, editingList, isAllSelected, pageSize]);
+```
+
+最后，在`Demo`组件中使用`usePaginationSelectedRows`:
+
+```tsx
+function Demo() {
+  // ...
+  const paginationSelectedRows = usePaginationSelectedRows(
+    editingList,
+    currentPage,
+    pageSize,
+  );
+
+  return (
+    <EditableDataTable>
+      <RowSelectColumn
+        startIndex={currentPage * pageSize}
+        selectedRows={editingList.selectedRows}
+        isAllSelected={paginationSelectedRows.isAllSelected}
+        isContainsSelected={paginationSelectedRows.isContainsSelected}
+        toggleAllSelected={paginationSelectedRows.toggleAllSelected}
+        toggleRowSelected={editingList.toggleRowSelected}
+      />
+    </EditableDataTable>
+  );
+}
+```
+
+## 删除选中数据
+
+在`usePaginationSelectedRows`中添加一个`removeAllSelectedRows`方法：
+
+```tsx
+function usePaginationSelectedRows() {
+  /**
+   * 删除所有选中的数据
+   */
+  const removeAllSelectedRows = async () => {
+    const rows = [];
+    editingList.items
+      .map((item, idx) => rows.push([item, idx]))
+      .filter((_data, index) => editingList.selectedRows.includes(index));
+    await editingList.remove(rows);
+  };
+
+  return {
+    // ...
+    removeAllSelectedRows,
+  };
+}
+```
+
+将`paginationSelectedRows.removeAllSelectedRows`方法绑定到删除按钮的点击事件上即可。
