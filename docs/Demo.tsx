@@ -92,6 +92,84 @@ function usePaginationEditingListActions<T>(
   return { add, save, edit, remove };
 }
 
+/**
+ * 生成序列数组
+ *
+ * @param start 开始
+ * @param end 结束
+ */
+function range(start: number, end: number) {
+  return new Array(end - start).fill(null).map((_, idx) => start + idx);
+}
+
+/**
+ * 分页的选中行状态
+ *
+ * @param editingList 可编辑列表
+ * @param currentPage 当前页
+ * @param pageSize 页大小
+ */
+function usePaginationSelectedRows(
+  editingList: any,
+  currentPage: number,
+  pageSize: number,
+) {
+  /**
+   * 是否全部选中
+   */
+  const isAllSelected = useMemo(() => {
+    return range(currentPage * pageSize, (currentPage + 1) * pageSize).every(
+      (idx) => editingList.selectedRows.indexOf(idx) !== -1,
+    );
+  }, [currentPage, editingList.selectedRows, pageSize]);
+
+  /**
+   * 是否包含选中
+   */
+  const isContainsSelected = useMemo(() => {
+    return range(currentPage * pageSize, (currentPage + 1) * pageSize).some(
+      (idx) => editingList.selectedRows.indexOf(idx) !== -1,
+    );
+  }, [currentPage, editingList.selectedRows, pageSize]);
+
+  /**
+   * 切换全选
+   */
+  const toggleAllSelected = useCallback(() => {
+    let rows: number[] = editingList.selectedRows;
+    const start = currentPage * pageSize;
+    const end = (currentPage + 1) * pageSize;
+    if (isAllSelected) {
+      rows = rows.filter((idx) => idx < start || idx >= end);
+    } else {
+      rows = [
+        ...rows,
+        ...range(start, end).filter((idx) => rows.indexOf(idx) === -1),
+      ];
+    }
+
+    editingList.setSelectedRows(rows);
+  }, [currentPage, editingList, isAllSelected, pageSize]);
+
+  /**
+   * 删除所有选中的数据
+   */
+  const removeAllSelectedRows = async () => {
+    const rows = [];
+    editingList.items
+      .map((item, idx) => rows.push([item, idx]))
+      .filter((_data, index) => editingList.selectedRows.includes(index));
+    await editingList.remove(rows);
+  };
+
+  return {
+    isAllSelected,
+    isContainsSelected,
+    toggleAllSelected,
+    removeAllSelectedRows,
+  };
+}
+
 function Demo() {
   const editingList = useEditingList<Partial<Article>>(
     '/api/pagination-show-demo',
@@ -116,51 +194,19 @@ function Demo() {
     editingList.query({ title: searchText });
   };
 
-  const handleBatchRemove = async () => {
-    const rows = [];
-    data
-      .map((item, idx) => rows.push([item, idx]))
-      .filter((_data, index) => editingList.selectedRows.includes(index));
-    await editingList.remove(rows);
-  };
-
-  const isAllSelected = useMemo(() => {
-    for (
-      let i = currentPage * pageSize;
-      i < (currentPage + 1) * pageSize;
-      i += 1
-    ) {
-      if (editingList.selectedRows.indexOf(i) === -1) {
-        return false;
-      }
-    }
-    return true;
-  }, [currentPage, editingList.selectedRows, pageSize]);
-
-  const toggleAllSelected = useCallback(() => {
-    let rows: number[] = editingList.selectedRows;
-    const start = currentPage * pageSize;
-    const end = (currentPage + 1) * pageSize;
-    if (isAllSelected) {
-      rows = rows.filter((idx) => idx < start || idx >= end);
-    } else {
-      for (let i = start; i < end; i += 1) {
-        if (rows.indexOf(i) === -1) {
-          rows.push(i);
-        }
-      }
-    }
-
-    editingList.setSelectedRows([...rows]);
-  }, [currentPage, editingList, isAllSelected, pageSize]);
-
   const handleRowClassName = (index: number) => {
-    if (editingList.selectedRows.includes(index)) {
+    if (editingList.selectedRows.includes(index + currentPage * pageSize)) {
       return 'sinoui-data-table-body-row_selected';
     }
 
     return '';
   };
+
+  const paginationSelectedRows = usePaginationSelectedRows(
+    editingList,
+    currentPage,
+    pageSize,
+  );
 
   return (
     <div>
@@ -174,7 +220,9 @@ function Demo() {
       <Button raised onClick={add}>
         新增
       </Button>
-      <Button onClick={handleBatchRemove}>删除</Button>
+      <Button onClick={paginationSelectedRows.removeAllSelectedRows}>
+        删除
+      </Button>
       <EditableDataTable
         data={data}
         editingRows={editingRows}
@@ -184,9 +232,9 @@ function Demo() {
         <RowSelectColumn
           startIndex={currentPage * pageSize}
           selectedRows={editingList.selectedRows}
-          isAllSelected={isAllSelected}
-          isContainsSelected={editingList.isContainsSelected}
-          toggleAllSelected={toggleAllSelected}
+          isAllSelected={paginationSelectedRows.isAllSelected}
+          isContainsSelected={paginationSelectedRows.isContainsSelected}
+          toggleAllSelected={paginationSelectedRows.toggleAllSelected}
           toggleRowSelected={editingList.toggleRowSelected}
         />
         <TableColumn name="id" title="id" />
