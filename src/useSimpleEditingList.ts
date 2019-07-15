@@ -39,6 +39,8 @@ function useSimpleEditingList<T = any>(
   const [touched, setTouched] = useState<TouchedState[]>(() =>
     new Array(defaultItems.length).fill({}),
   );
+  const [selectedRows, setSelectedRows] = useState<number[]>([]);
+
   const optionsRef = useRef(options);
 
   useEffect(() => {
@@ -222,6 +224,28 @@ function useSimpleEditingList<T = any>(
     );
   };
 
+  const toggleAllSelected = useCallback(() => {
+    setSelectedRows((prev) => {
+      if (prev.length !== items.length) {
+        return new Array(items.length).fill(null).map((_, index) => index);
+      }
+      return [];
+    });
+  }, [items.length]);
+
+  const toggleRowSelected = useCallback((index: number) => {
+    setSelectedRows(
+      produce((draft) => {
+        const idx = draft.indexOf(index);
+        if (idx === -1) {
+          draft.push(index);
+        } else {
+          draft.splice(idx, 1);
+        }
+      }),
+    );
+  }, []);
+
   return {
     items,
     setItems: replaceItems,
@@ -236,6 +260,12 @@ function useSimpleEditingList<T = any>(
     touched,
     validateField,
     validateAllEditingRows,
+    selectedRows,
+    isAllSelected:
+      selectedRows.length > 0 && selectedRows.length === items.length,
+    isContainsSelected: selectedRows.length > 0,
+    toggleAllSelected,
+    toggleRowSelected,
   };
 }
 

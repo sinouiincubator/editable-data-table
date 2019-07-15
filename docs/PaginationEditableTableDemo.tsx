@@ -11,7 +11,12 @@ import Form, {
   Label,
   TextInput as TextInputField,
 } from '@sinoui/forms';
-import EditableDataTable, { TableColumn, useSimpleEditingList } from '../src';
+import { Row, Column } from 'sinoui-components/Grid';
+import EditableDataTable, {
+  TableColumn,
+  useSimpleEditingList,
+  RowSelectColumn,
+} from '../src';
 
 interface Data {
   id: string;
@@ -50,13 +55,19 @@ function PaginationEditableDataTableDemo() {
     update,
     query,
   } = useRestPageApi<Data>('/api/pagination-demo', []);
-  const { editingRows, setItems, items: data } = useSimpleEditingList<Data>(
-    items,
-    {
-      alwaysEditing: true,
-      validate,
-    },
-  );
+  const {
+    editingRows,
+    setItems,
+    items: data,
+    selectedRows,
+    isAllSelected,
+    isContainsSelected,
+    toggleAllSelected,
+    toggleRowSelected,
+  } = useSimpleEditingList<Data>(items, {
+    alwaysEditing: true,
+    validate,
+  });
 
   useEffect(() => {
     setItems(items);
@@ -82,20 +93,40 @@ function PaginationEditableDataTableDemo() {
   return (
     <>
       <Form onSubmit={query as any}>
-        <FormItem>
-          <Label>姓名</Label>
-          <TextInputField name="title" />
-        </FormItem>
-        <Button type="submit" raised>
-          查询
-        </Button>
+        <Row>
+          <Column flex={16}>
+            <FormItem>
+              <Label>姓名</Label>
+              <TextInputField name="title" />
+            </FormItem>
+          </Column>
+          <Column flex={8}>
+            <Button type="submit" raised>
+              查询
+            </Button>
+          </Column>
+        </Row>
       </Form>
+      {selectedRows.length > 0 && (
+        <Row>
+          <Column>
+            <Button>删除</Button>
+          </Column>
+        </Row>
+      )}
       <EditableDataTable
         data={data}
         editingRows={editingRows}
         validate={validate}
         onRowChange={handleOnRowChange}
       >
+        <RowSelectColumn
+          selectedRows={selectedRows}
+          isAllSelected={isAllSelected}
+          isContainsSelected={isContainsSelected}
+          toggleAllSelected={toggleAllSelected}
+          toggleRowSelected={toggleRowSelected}
+        />
         <TableColumn title="序号" order />
         <TableColumn title="标题" name="title" editor={TextInput} />
         <TableColumn title="出生日期" name="birthday" editor={CusDatePicker} />

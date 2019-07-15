@@ -79,4 +79,24 @@ export interface SimpleEditingListResult<T> {
    * 校验所有编辑中的数据行
    */
   validateAllEditingRows(): boolean;
+  /**
+   * 选中行
+   */
+  selectedRows: number[];
+  /**
+   * 是否全选
+   */
+  isAllSelected: boolean;
+  /**
+   * 是否选中部分
+   */
+  isContainsSelected: boolean;
+  /**
+   * 全选时的回调函数
+   */
+  toggleAllSelected: () => void;
+  /**
+   * 选中一行时的回调函数
+   */
+  toggleRowSelected: (index: number) => void;
 }
