@@ -94,8 +94,7 @@ useSimpleEditingList(defaultValue:T[],options:Options):editingList
 | edit                   | (rowIndex: number) => void                             | 设置数据行处于编辑状态                                                                                  |
 | setReadonly            | (rowIndex: number) => void                             | 设置数据行处于只读状态                                                                                  |
 | add                    | `(item: Partial<T> = {}, index: number = -1)=>void`    | 新增一条可编辑的空数据。`index`默认为-1，表示在末尾添加数据，`index`等于 0 时，表示在开始位置添加数据。 |
-| remove                 | (index: number) => void                                | 删除数据行                                                                                              |
-| removeItems            | (indexes: number[]) => void                            | 删除一组数据行                                                                                          |
+| remove                 | `(index: number | number[]) => void`                   | 删除一条或者一组数据行                                                                                  |
 | updateItem             | (index: number, item: T) => void                       | 更新数据行                                                                                              |
 | errors                 | [fieldName: string]: string[]                          | 校验错误                                                                                                |
 | touched                | [fieldName: string]: boolean[]                         | 编辑器被点击状态                                                                                        |

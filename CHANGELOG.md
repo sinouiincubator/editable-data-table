@@ -1,5 +1,9 @@
 # 版本变更说明
 
+## v0.6.0
+
+- breakchange: 去掉 useSimpleEditingList 的 removeItems 方法，remove 方法支持删除多个数据项。
+
 ## v0.5.2 - 2019.7.12
 
 - fix: 修复 useEditingList 的 options 没有起到作用的缺陷

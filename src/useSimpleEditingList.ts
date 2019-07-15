@@ -3,7 +3,7 @@ import { produce } from 'immer';
 import shallowEqual from 'shallowequal';
 import { ErrorResult, SimpleEditingListResult, TouchedState } from './types';
 
-interface Options<T> {
+export interface SimpleEditingListOptions<T> {
   /**
    * 单元格表单域是否一直处于编辑状态。
    */
@@ -27,7 +27,7 @@ interface Options<T> {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function useSimpleEditingList<T = any>(
   defaultItems: T[] = [],
-  options: Options<T> = {},
+  options: SimpleEditingListOptions<T> = {},
 ): SimpleEditingListResult<T> {
   const [items, setItems] = useState<T[]>(defaultItems);
   const [editingRows, setEditingRows] = useState<boolean[]>(() =>
@@ -103,20 +103,6 @@ function useSimpleEditingList<T = any>(
   }, []);
 
   /**
-   * 删除数据
-   */
-  const remove = useCallback((index: number) => {
-    const removeByIndex = produce((draft) => {
-      draft.splice(index, 1);
-    });
-
-    setItems(removeByIndex);
-    setEditingRows(removeByIndex);
-    setErrors(removeByIndex);
-    setTouched(removeByIndex);
-  }, []);
-
-  /**
    * 删除一组数据
    */
   const removeItems = useCallback((indexes: number[]) => {
@@ -127,6 +113,27 @@ function useSimpleEditingList<T = any>(
     setErrors(removeByIndexes);
     setTouched(removeByIndexes);
   }, []);
+
+  /**
+   * 删除数据
+   */
+  const remove = useCallback(
+    (index: number | number[]) => {
+      if (Array.isArray(index)) {
+        removeItems(index);
+      } else {
+        const removeByIndex = produce((draft) => {
+          draft.splice(index, 1);
+        });
+
+        setItems(removeByIndex);
+        setEditingRows(removeByIndex);
+        setErrors(removeByIndex);
+        setTouched(removeByIndex);
+      }
+    },
+    [removeItems],
+  );
 
   /**
    * 更新数据项
@@ -230,7 +237,6 @@ function useSimpleEditingList<T = any>(
     setReadonly,
     add,
     remove,
-    removeItems,
     updateItem,
     errors,
     touched,

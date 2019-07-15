@@ -33,7 +33,7 @@ function SimpleDemo({ editingList }: { editingList: any }) {
         <button
           type="button"
           onClick={() =>
-            editingList.removeItems(
+            editingList.remove(
               editingList.items.map((_: any, index: number) => index),
             )
           }

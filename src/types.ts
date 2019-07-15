@@ -45,13 +45,7 @@ export interface SimpleEditingListResult<T> {
    *
    * @param index 数据行所在的索引位置
    */
-  remove(index: number): void;
-  /**
-   * 删除一组数据行
-   *
-   * @param indexes 一组数据行所在的索引位置
-   */
-  removeItems(indexes: number[]): void;
+  remove(index: number | number[]): void;
   /**
    * 更新数据行
    *
