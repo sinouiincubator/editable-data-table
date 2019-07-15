@@ -109,5 +109,12 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "jest": {
+    "transformIgnorePatterns": [
+      "node_modules/(?!(@sinoui|sinoui-components|lodash-es)/)",
+      "^.+\\.module\\.(css|sass|scss)$",
+      "^.+[/\\\\]dist[/\\\\]"
+    ]
   }
 }

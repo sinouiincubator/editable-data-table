@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState, useCallback } from 'react';
-import { produce, isDraft } from 'immer';
+import { produce } from 'immer';
 import shallowEqual from 'shallowequal';
 import { ErrorResult, SimpleEditingListResult, TouchedState } from './types';
 
@@ -104,6 +104,8 @@ function useSimpleEditingList<T = any>(
 
     setTouched((prev) => addAt(prev, {}));
     setSelectedRows((prev) => {
+      console.log('prev==========', prev);
+      console.log(index);
       if (index <= Math.min(...prev)) {
         return prev.map((row) => row + 1);
       }
@@ -114,7 +116,7 @@ function useSimpleEditingList<T = any>(
 
       return prev.map((row) => {
         if (row < index) {
-          return row - 1;
+          return row;
         }
         return row + 1;
       });
@@ -152,7 +154,7 @@ function useSimpleEditingList<T = any>(
         setTouched(removeByIndex);
         setSelectedRows((prev) => {
           if (prev.includes(index)) {
-            return prev.filter((_row, idx) => prev[idx] === index);
+            return prev.filter((_row, idx) => prev[idx] !== index);
           }
 
           if (index <= Math.min(...prev)) {

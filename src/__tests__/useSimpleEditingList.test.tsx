@@ -1,4 +1,5 @@
 import React, { useCallback } from 'react';
+import { renderHook } from '@testing-library/react-hooks';
 import { render, cleanup, fireEvent } from '@testing-library/react';
 import { ThemeProvider } from 'sinoui-components/styles';
 import defaultTheme from 'sinoui-components/styles/defaultTheme';
@@ -7,6 +8,9 @@ import useSimpleEditingList from '../useSimpleEditingList';
 import EditableDataTable from '../EditableDataTable';
 import TableColumn from '../TableColumn';
 import { ErrorResult } from '../types';
+import RowSelectColumn from '../RowSelectColumn';
+
+jest.mock('@sinoui/http');
 
 afterEach(cleanup);
 
@@ -58,6 +62,13 @@ function SimpleDemo({ editingList }: { editingList: any }) {
           touched={editingList.touched}
           onFieldChange={editingList.validateField}
         >
+          <RowSelectColumn
+            selectedRows={editingList.selectedRows}
+            isAllSelected={editingList.isAllSelected}
+            isContainsSelected={editingList.isContainsSelected}
+            toggleAllSelected={editingList.toggleAllSelected}
+            toggleRowSelected={editingList.toggleRowSelected}
+          />
           <TableColumn name="title" title="标题" editor="input" />
           <TableColumn
             title="编辑状态"
@@ -323,4 +334,163 @@ it('将编辑状态设置为只读', () => {
   fireEvent.click(getByText('只读'));
 
   expect(queryByText('editing')).toBeFalsy();
+});
+
+it('全选', () => {
+  const { result } = renderHook(() =>
+    useSimpleEditingList([
+      { id: '1', title: '标题1' },
+      { id: '2', title: '标题2' },
+      { id: '3', title: '标题3' },
+      { id: '4', title: '标题4' },
+      { id: '5', title: '标题5' },
+      { id: '6', title: '标题6' },
+      { id: '7', title: '标题7' },
+      { id: '8', title: '标题8' },
+    ]),
+  );
+  result.current.toggleAllSelected();
+
+  expect(result.current.selectedRows.length).toBe(8);
+});
+
+it('在选中项之前增加一条数据', () => {
+  const { result } = renderHook(() =>
+    useSimpleEditingList([
+      { id: '1', title: '标题1' },
+      { id: '2', title: '标题2' },
+      { id: '3', title: '标题3' },
+      { id: '4', title: '标题4' },
+      { id: '5', title: '标题5' },
+      { id: '6', title: '标题6' },
+      { id: '7', title: '标题7' },
+      { id: '8', title: '标题8' },
+    ]),
+  );
+
+  result.current.toggleRowSelected(2);
+
+  result.current.add({ id: '9', title: '标题9' }, 0);
+
+  expect(result.current.selectedRows).toEqual([3]);
+});
+
+it('在选中项之后增加一条数据', () => {
+  const { result } = renderHook(() =>
+    useSimpleEditingList([
+      { id: '1', title: '标题1' },
+      { id: '2', title: '标题2' },
+      { id: '3', title: '标题3' },
+      { id: '4', title: '标题4' },
+    ]),
+  );
+
+  result.current.toggleRowSelected(2);
+
+  result.current.add({ id: '9', title: '标题9' }, 4);
+
+  expect(result.current.selectedRows).toEqual([1]);
+});
+
+it('在两个选中项之间插入一条数据', () => {
+  const { result } = renderHook(() =>
+    useSimpleEditingList([
+      { id: '1', title: '标题1' },
+      { id: '2', title: '标题2' },
+      { id: '3', title: '标题3' },
+      { id: '4', title: '标题4' },
+    ]),
+  );
+
+  result.current.toggleRowSelected(1);
+  result.current.toggleRowSelected(3);
+
+  result.current.add({ id: '9', title: '标题9' }, 2);
+
+  expect(result.current.selectedRows).toEqual([1, 4]);
+  expect(result.current.isContainsSelected).toBeTruthy();
+});
+
+it('删除选中项', () => {
+  const { result } = renderHook(() =>
+    useSimpleEditingList([
+      { id: '1', title: '标题1' },
+      { id: '2', title: '标题2' },
+      { id: '3', title: '标题3' },
+      { id: '4', title: '标题4' },
+    ]),
+  );
+
+  result.current.toggleRowSelected(1);
+  result.current.toggleRowSelected(3);
+  result.current.remove([1, 3]);
+  expect(result.current.selectedRows.length).toBe(0);
+});
+
+it('删除两个选中项中的其中一个', () => {
+  const { result } = renderHook(() =>
+    useSimpleEditingList([
+      { id: '1', title: '标题1' },
+      { id: '2', title: '标题2' },
+      { id: '3', title: '标题3' },
+      { id: '4', title: '标题4' },
+    ]),
+  );
+
+  result.current.toggleRowSelected(1);
+  result.current.toggleRowSelected(3);
+  result.current.remove(1);
+
+  expect(result.current.selectedRows).toEqual([3]);
+});
+
+it('删除选中项前面的数据', () => {
+  const { result } = renderHook(() =>
+    useSimpleEditingList([
+      { id: '1', title: '标题1' },
+      { id: '2', title: '标题2' },
+      { id: '3', title: '标题3' },
+      { id: '4', title: '标题4' },
+    ]),
+  );
+
+  result.current.toggleRowSelected(1);
+  result.current.toggleRowSelected(3);
+  result.current.remove(0);
+
+  expect(result.current.selectedRows).toEqual([0, 2]);
+});
+
+it('删除选中项后面的数据', () => {
+  const { result } = renderHook(() =>
+    useSimpleEditingList([
+      { id: '1', title: '标题1' },
+      { id: '2', title: '标题2' },
+      { id: '3', title: '标题3' },
+      { id: '4', title: '标题4' },
+    ]),
+  );
+
+  result.current.toggleRowSelected(0);
+  result.current.toggleRowSelected(2);
+  result.current.remove(3);
+
+  expect(result.current.selectedRows).toEqual([0, 2]);
+});
+
+it('删除两个选中项之间的数据', () => {
+  const { result } = renderHook(() =>
+    useSimpleEditingList([
+      { id: '1', title: '标题1' },
+      { id: '2', title: '标题2' },
+      { id: '3', title: '标题3' },
+      { id: '4', title: '标题4' },
+    ]),
+  );
+
+  result.current.toggleRowSelected(0);
+  result.current.toggleRowSelected(2);
+  result.current.remove(1);
+
+  expect(result.current.selectedRows).toEqual([0, 1]);
 });
