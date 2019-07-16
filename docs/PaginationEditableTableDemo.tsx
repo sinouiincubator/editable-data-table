@@ -17,7 +17,7 @@ import EditableDataTable, {
   useSimpleEditingList,
   RowSelectColumn,
 } from '../src';
-import './PaginationEditableTableDemo.css';
+import './SelectRow.css';
 
 interface Data {
   id: string;
