@@ -1,8 +1,0 @@
-node_modules
-.cache
-.docz
-coverage
-dist
-examples
-src
-docs
