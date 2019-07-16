@@ -405,45 +405,45 @@ function Demo() {
 
 <Playground>
   {() => {
-    const { items,add,remove,edit,editingRows,setItems,setReadonly } = useSimpleEditingList([]);
+    const {
+      items,
+      add,
+      remove,
+      edit,
+      editingRows,
+      setReadonly,
+    } = useSimpleEditingList([]);
 
-return (
-<>
-
-  <Button onClick={()=>add({})}>新增</Button>
-  <EditableDataTable
-    data={items}
-    editingRows={editingRows}
-  >
-    <TableColumn title="序号" order />
-    <TableColumn title="标题" name="title" editor={TextInput} />
-    <TableColumn title="备注" name="note" editor={TextInput}/>
-    <TableColumn
-      title="操作"
-      name="id"
-      render={(value, row, index, id, context) => (
-        <>
-          {context.editing ? (
-            <Button
-              autoWidth
-              onClick={() => setReadonly(index)}
-            >
-              保存
-            </Button>
-          ) : (
-            <Button autoWidth onClick={() => edit(index)}>
-              编辑
-            </Button>
-          )}
-          <Button autoWidth onClick={() => remove(index)}>
-            删除
-          </Button>
-        </>
-      )}
-    />
-  </EditableDataTable>
-  </>
-)
+    return (
+      <>
+        <Button onClick={() => add({})}>新增</Button>
+        <EditableDataTable data={items} editingRows={editingRows}>
+          <TableColumn title="序号" order />
+          <TableColumn title="标题" name="title" editor={TextInput} />
+          <TableColumn title="备注" name="note" editor={TextInput} />
+          <TableColumn
+            title="操作"
+            name="id"
+            render={(_value, _row, index, _id, context) => (
+              <>
+                {context.editing ? (
+                  <Button autoWidth onClick={() => setReadonly(index)}>
+                    保存
+                  </Button>
+                ) : (
+                  <Button autoWidth onClick={() => edit(index)}>
+                    编辑
+                  </Button>
+                )}
+                <Button autoWidth onClick={() => remove(index)}>
+                  删除
+                </Button>
+              </>
+            )}
+          />
+        </EditableDataTable>
+      </>
+    );
 
 }}
 

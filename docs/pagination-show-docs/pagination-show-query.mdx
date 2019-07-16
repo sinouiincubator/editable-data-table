@@ -1,0 +1,33 @@
+---
+name: 查询
+route: /pagination-show-query
+menu: 分页展示数据
+---
+
+# 查询列表
+
+`editingList.query(searechParams)`是用来查询的方法，可以在查询表单提交时调用这个方法，完成查询事宜。
+
+举一个与某内部项目查询表单组件的组合，完成表格数据查询的功能。
+
+例子 1：`SearchForm`是查询表单组件，`SearchButton`是查询按钮。点击查询按钮，查询表单会发出提交（submit）事件。
+
+```tsx
+<SearchForm onSubmit={editingList.query}>
+  <SearchFormItem>
+    <Label>标题</Label>
+    <TextInput name="title" />
+  </SearchFormItem>
+  <SearchButton />
+</SearchForm>
+```
+
+例子 2：`SearchFormState`是用来切换简单和复杂查询表单的组件，`advancedForm`和`simpleForm`两个属性分别用来指定复杂和查询表单。它有`onSubmit`属性，在查询表单的查询按钮被点击时，调用相对应的回调函数。
+
+```tsx
+<SearchFormState
+  onSubmit={editingList.query}
+  advancedForm={AdvancedSearchForm}
+  simpleForm={SimpleSearchForm}
+/>
+```

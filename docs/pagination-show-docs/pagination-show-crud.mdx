@@ -1,0 +1,298 @@
+---
+name: 新增、编辑与删除
+route: /pagination-show-crud
+menu: 分页展示数据
+---
+
+# 新增、编辑与删除
+
+## 新增数据
+
+点击新增按钮时，在当前页新增一条数据。这个要求需要注意的是**在当前页**新增一条数据。所以我们应该按照下面的方式新增数据：
+
+```tsx
+editingList.add({}, currentPage * pageSize);
+```
+
+示例代码：
+
+```tsx
+import Button from 'sinoui-components/Button';
+
+function Demo() {
+  const handleAdd = () => {
+    editingList.add({}, currentPage * pageSize);
+  };
+
+  return (
+    <div>
+      <Button raised onClick={handleAdd}>
+        新增
+      </Button>
+    </div>
+  );
+}
+```
+
+## 编辑与删除数据
+
+`editingList`提供的`edit`、`save`和`remove`方法都是根据数据在整个列表的索引位置进行操作的。所以我们在使用这些方法时，需要与分页状态相结合。
+
+首先我们通过`TableColumn`添加一个操作列：在编辑状态时，有保存和删除按钮；在非编辑状态时，有编辑和删除按钮。
+
+```tsx
+<EditableDataTable>
+  <TableColumn
+    title="操作"
+    render={(value, rowData, index, id, context) => (
+      <>
+        {context.editing ? <Button>保存</Button> : <Button>编辑</Button>}
+        <Button color="danger">删除</Button>
+      </>
+    )}
+  />
+</EditableDataTable>
+```
+
+保存按钮的点击事件回调函数：
+
+```tsx
+<Button
+  onClick={() => editingList.save(rowData, currentPage * pageSize + index)}
+>
+  保存
+</Button>
+```
+
+重点是`currentPage * pageSize + index`。
+
+编辑按钮：
+
+```tsx
+<Button onClick={() => editingList.edit(currentPage * pageSize + index)}>
+  编辑
+</Button>
+```
+
+删除按钮：
+
+```tsx
+<Button
+  onClick={() => editingList.remove(rowData, currentPage * pageSize + index)}
+>
+  删除
+</Button>
+```
+
+当然，别忘了将`editingList.editingRows`传给`EditableDataTable.editingRows`，并且定义单元格编辑器：
+
+```tsx
+<EditableDataTable editingRows={editingList.editingRows}>
+  <TableColumn title="标题" name="title" editor="input" />
+</EditableDataTable>
+```
+
+## 提炼状态管理
+
+增加、删除、修改、编辑四个动作都与翻页有关系，我们可以将这四个方法提炼到一个自定义 hook：
+
+```tsx
+/**
+ * 获取分页编辑列表的动作
+ *
+ * @param editingList 编辑列表
+ * @param currentPage 当前页
+ * @param pageSize 页大小
+ */
+function usePaginationEditingListActions<T>(
+  editingList: any,
+  currentPage: number,
+  pageSize: number,
+) {
+  const add = useCallback(() => {
+    editingList.add({}, currentPage * pageSize);
+  }, [currentPage, editingList, pageSize]);
+
+  const save = useCallback(
+    (item: T, index: number) => {
+      return editingList.save(item, currentPage * pageSize + index);
+    },
+    [currentPage, editingList, pageSize],
+  );
+
+  const edit = useCallback(
+    (index: number) => {
+      editingList.edit(currentPage * pageSize + index);
+    },
+    [currentPage, editingList, pageSize],
+  );
+
+  const remove = useCallback(
+    (item: T, index: number) => {
+      return editingList.remove(item, currentPage * pageSize + index);
+    },
+    [currentPage, editingList, pageSize],
+  );
+
+  return { add, save, edit, remove };
+}
+```
+
+之后我们的代码就是这样子的：
+
+```tsx
+import React, { useState, useMemo, useCallback } from 'react';
+import Pagination from 'sinoui-components/Pagination';
+import Button from 'sinoui-components/Button';
+import TextInput from 'sinoui-components/TextInput';
+import EditableDataTable, { useEditingList, TableColumn } from '../src';
+
+interface Article {
+  id: string;
+  title: string;
+}
+
+/**
+ * 分页状态hook
+ */
+function usePagination(
+  defaultCurrentPage: number = 0,
+  defaultPageSize: number = 10,
+): [number, number, (pageNo: number, pageSize: number) => void] {
+  const [currentPage, setCurrentPage] = useState(defaultCurrentPage);
+  const [pageSize, setPageSize] = useState(defaultPageSize);
+
+  const update = (pageNo: number, newPageSize: number) => {
+    setCurrentPage(pageNo);
+    setPageSize(newPageSize);
+  };
+
+  return [currentPage, pageSize, update];
+}
+
+/**
+ * 获取分页列表
+ *
+ * @param items 列表
+ * @param currentPage 当前页
+ * @param pageSize 页大小
+ */
+function usePaginationList<T>(
+  items: T[],
+  currentPage: number,
+  pageSize: number,
+) {
+  const data = useMemo(
+    () => items.slice(currentPage * pageSize, (currentPage + 1) * pageSize),
+    [items, pageSize, currentPage],
+  );
+
+  return data;
+}
+
+/**
+ * 获取分页编辑列表的动作
+ *
+ * @param editingList 编辑列表
+ * @param currentPage 当前页
+ * @param pageSize 页大小
+ */
+function usePaginationEditingListActions<T>(
+  editingList: any,
+  currentPage: number,
+  pageSize: number,
+) {
+  const add = useCallback(() => {
+    editingList.add({}, currentPage * pageSize);
+  }, [currentPage, editingList, pageSize]);
+
+  const save = useCallback(
+    (item: T, index: number) => {
+      return editingList.save(item, currentPage * pageSize + index);
+    },
+    [currentPage, editingList, pageSize],
+  );
+
+  const edit = useCallback(
+    (index: number) => {
+      editingList.edit(currentPage * pageSize + index);
+    },
+    [currentPage, editingList, pageSize],
+  );
+
+  const remove = useCallback(
+    (item: T, index: number) => {
+      return editingList.remove(item, currentPage * pageSize + index);
+    },
+    [currentPage, editingList, pageSize],
+  );
+
+  return { add, save, edit, remove };
+}
+
+function Demo() {
+  const editingList = useEditingList<Partial<Article>>(
+    '/api/pagination-show-demo',
+    [],
+  );
+  const [currentPage, pageSize, update] = usePagination();
+  const data = usePaginationList(editingList.items, currentPage, pageSize);
+  const editingRows = usePaginationList(
+    editingList.editingRows,
+    currentPage,
+    pageSize,
+  );
+
+  const { add, save, edit, remove } = usePaginationEditingListActions(
+    editingList,
+    currentPage,
+    pageSize,
+  );
+
+  return (
+    <div>
+      <Button raised onClick={add}>
+        新增
+      </Button>
+      <EditableDataTable
+        data={data}
+        editingRows={editingRows}
+        idPropertyName={editingList.idPropertyName}
+      >
+        <TableColumn name="id" title="id" />
+        <TableColumn name="title" title="标题" editor="input" />
+        <TableColumn
+          title="操作"
+          name="id"
+          render={(_value, item, index, _id, context) => (
+            <>
+              {context.editing ? (
+                <Button autoWidth onClick={() => save(item, index)}>
+                  保存
+                </Button>
+              ) : (
+                <Button autoWidth onClick={() => edit(index)}>
+                  编辑
+                </Button>
+              )}
+              <Button
+                autoWidth
+                color="danger"
+                onClick={() => remove(item, index)}
+              >
+                删除
+              </Button>
+            </>
+          )}
+        />
+      </EditableDataTable>
+      <Pagination
+        pageSize={pageSize}
+        total={editingList.items.length}
+        currentPage={currentPage + 1}
+        onChange={(pageNo, size) => update(pageNo - 1, size)}
+      />
+    </div>
+  );
+}
+```
