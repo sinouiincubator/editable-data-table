@@ -1,5 +1,9 @@
 # 版本变更说明
 
+## v0.6.1 - 2019.7.16
+
+- fix: useSimpleEditingList，没有数据时，应不是全选状态
+
 ## v0.6.0 - 2019.7.16
 
 - breakchange: 去掉 useSimpleEditingList 的 removeItems 方法，remove 方法支持删除多个数据项。

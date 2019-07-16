@@ -121,8 +121,11 @@ function usePaginationSelectedRows(
    * 是否全部选中
    */
   const isAllSelected = useMemo(() => {
-    return range(start, end).every(
-      (idx) => editingList.selectedRows.indexOf(idx) !== -1,
+    return (
+      start < end &&
+      range(start, end).every(
+        (idx) => editingList.selectedRows.indexOf(idx) !== -1,
+      )
     );
   }, [editingList.selectedRows, end, start]);
 
@@ -130,8 +133,11 @@ function usePaginationSelectedRows(
    * 是否包含选中
    */
   const isContainsSelected = useMemo(() => {
-    return range(start, end).some(
-      (idx) => editingList.selectedRows.indexOf(idx) !== -1,
+    return (
+      start < end &&
+      range(start, end).some(
+        (idx) => editingList.selectedRows.indexOf(idx) !== -1,
+      )
     );
   }, [editingList.selectedRows, end, start]);
 

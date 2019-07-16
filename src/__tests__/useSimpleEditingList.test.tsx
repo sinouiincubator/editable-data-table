@@ -528,3 +528,9 @@ it('同时选中多行', () => {
 
   expect(result.current.selectedRows).toEqual([0, 1, 2]);
 });
+
+it('没有数据时，应不是全选状态', () => {
+  const { result } = renderHook(() => useSimpleEditingList());
+
+  expect(result.current.isAllSelected).toEqual(false);
+});

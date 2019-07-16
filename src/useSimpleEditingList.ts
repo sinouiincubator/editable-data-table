@@ -246,11 +246,12 @@ function useSimpleEditingList<T = any>(
   /**
    * 是否所有的数据行都是选中的
    */
-  const isAllSelected = selectedRows.every(Boolean);
+  const isAllSelected = selectedRows.length > 0 && selectedRows.every(Boolean);
   /**
    * 是否包含选中的数据行
    */
-  const isContainsSelected = selectedRows.some(Boolean);
+  const isContainsSelected =
+    selectedRows.length > 0 && selectedRows.some(Boolean);
 
   /**
    * 切换全部选中状态
