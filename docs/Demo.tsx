@@ -114,51 +114,42 @@ function usePaginationSelectedRows(
   currentPage: number,
   pageSize: number,
 ) {
+  const start = currentPage * pageSize;
+  const end = Math.min(editingList.items.length, (currentPage + 1) * pageSize);
+
   /**
    * 是否全部选中
    */
   const isAllSelected = useMemo(() => {
-    return range(currentPage * pageSize, (currentPage + 1) * pageSize).every(
+    return range(start, end).every(
       (idx) => editingList.selectedRows.indexOf(idx) !== -1,
     );
-  }, [currentPage, editingList.selectedRows, pageSize]);
+  }, [editingList.selectedRows, end, start]);
 
   /**
    * 是否包含选中
    */
   const isContainsSelected = useMemo(() => {
-    return range(currentPage * pageSize, (currentPage + 1) * pageSize).some(
+    return range(start, end).some(
       (idx) => editingList.selectedRows.indexOf(idx) !== -1,
     );
-  }, [currentPage, editingList.selectedRows, pageSize]);
+  }, [editingList.selectedRows, end, start]);
 
   /**
    * 切换全选
    */
   const toggleAllSelected = useCallback(() => {
-    let rows: number[] = editingList.selectedRows;
-    const start = currentPage * pageSize;
-    const end = (currentPage + 1) * pageSize;
-    if (isAllSelected) {
-      rows = rows.filter((idx) => idx < start || idx >= end);
-    } else {
-      rows = [
-        ...rows,
-        ...range(start, end).filter((idx) => rows.indexOf(idx) === -1),
-      ];
-    }
-
-    editingList.setSelectedRows(rows);
-  }, [currentPage, editingList, isAllSelected, pageSize]);
+    editingList.setRowsSelected(range(start, end), !isAllSelected);
+  }, [editingList, end, isAllSelected, start]);
 
   /**
    * 删除所有选中的数据
    */
   const removeAllSelectedRows = async () => {
-    const rows = editingList.items
+    const selectedRows = editingList.items
       .map((item, idx) => [item, idx])
       .filter((_data, index) => editingList.selectedRows.includes(index));
-    await editingList.remove(rows);
+    await editingList.remove(selectedRows);
   };
 
   return {

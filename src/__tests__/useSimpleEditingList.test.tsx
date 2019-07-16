@@ -495,7 +495,7 @@ it('删除两个选中项之间的数据', () => {
   expect(result.current.selectedRows).toEqual([0, 1]);
 });
 
-it('删除已选选择的数据行', () => {
+it('删除已选择的数据行', () => {
   const { result } = renderHook(() =>
     useSimpleEditingList([
       { id: '1', title: '标题1' },
@@ -512,4 +512,19 @@ it('删除已选选择的数据行', () => {
   result.current.remove(1);
 
   expect(result.current.selectedRows).toEqual([0, 1]);
+});
+
+it('同时选中多行', () => {
+  const { result } = renderHook(() =>
+    useSimpleEditingList([
+      { id: '1', title: '标题1' },
+      { id: '2', title: '标题2' },
+      { id: '3', title: '标题3' },
+      { id: '4', title: '标题4' },
+    ]),
+  );
+
+  result.current.setRowsSelected([0, 1, 2], true);
+
+  expect(result.current.selectedRows).toEqual([0, 1, 2]);
 });

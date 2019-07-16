@@ -137,7 +137,7 @@ function usePaginationSelectedRows(
   const end = Math.min(editingList.items.length, (currentPage + 1) * pageSize);
 
   /**
-   * 是否全部选中
+   * 当前页的数据行是否全部选中
    */
   const isAllSelected = useMemo(() => {
     return range(start, end).every(
@@ -146,7 +146,7 @@ function usePaginationSelectedRows(
   }, [currentPage, editingList.selectedRows, pageSize]);
 
   /**
-   * 是否包含选中
+   * 是否包含当前页的选中行
    */
   const isContainsSelected = useMemo(() => {
     return range(start, end).some(
@@ -155,21 +155,11 @@ function usePaginationSelectedRows(
   }, [currentPage, editingList.selectedRows, pageSize]);
 
   /**
-   * 切换全选
+   * 切换当前页的全选
    */
   const toggleAllSelected = useCallback(() => {
-    let rows: number[] = editingList.selectedRows;
-    if (isAllSelected) {
-      rows = rows.filter((idx) => idx < start || idx >= end);
-    } else {
-      rows = [
-        ...rows,
-        ...range(start, end).filter((idx) => rows.indexOf(idx) === -1),
-      ];
-    }
-
-    editingList.setSelectedRows(rows);
-  }, [currentPage, editingList, isAllSelected, pageSize]);
+    editingList.setRowsSelected(range(start, end), !isAllSelected);
+  }, [editingList, end, isAllSelected, start]);
 
   /**
    * 删除所有选中的数据
@@ -1075,18 +1065,8 @@ const isContainsSelected = useMemo(() => {
  * 切换全选
  */
 const toggleAllSelected = useCallback(() => {
-  let rows: number[] = editingList.selectedRows;
-  if (isAllSelected) {
-    rows = rows.filter((idx) => idx < start || idx >= end);
-  } else {
-    rows = [
-      ...rows,
-      ...range(start, end).filter((idx) => rows.indexOf(idx) === -1),
-    ];
-  }
-
-  editingList.setSelectedRows(rows);
-}, [currentPage, editingList, isAllSelected, pageSize]);
+  editingList.setRowsSelected(range(start, end), !isAllSelected);
+}, [editingList, end, isAllSelected, start]);
 ```
 
 最后，在`Demo`组件中使用`usePaginationSelectedRows`:

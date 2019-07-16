@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState, useCallback } from 'react';
+import { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import { produce } from 'immer';
 import shallowEqual from 'shallowequal';
 import { ErrorResult, SimpleEditingListResult, TouchedState } from './types';
@@ -40,7 +40,9 @@ function useSimpleEditingList<T = any>(
   const [touched, setTouched] = useState<TouchedState[]>(() =>
     new Array(defaultItems.length).fill({}),
   );
-  const [selectedRows, setSelectedRows] = useState<number[]>([]);
+  const [selectedRows, setSelectedRows] = useState<boolean[]>(() =>
+    new Array(defaultItems.length).fill(false),
+  );
 
   const optionsRef = useRef(options);
 
@@ -83,7 +85,7 @@ function useSimpleEditingList<T = any>(
 
     setErrors(new Array(newItems.length).fill({}));
     setTouched(new Array(newItems.length).fill({}));
-    setSelectedRows([]);
+    setSelectedRows(new Array(newItems.length).fill(false));
   }, []);
 
   /**
@@ -105,14 +107,7 @@ function useSimpleEditingList<T = any>(
 
     setTouched((prev) => addAt(prev, {}));
 
-    setSelectedRows((prev) => {
-      return prev.map((row) => {
-        if (row < index) {
-          return row;
-        }
-        return row + 1;
-      });
-    });
+    setSelectedRows((prev) => addAt(prev, false));
   }, []);
 
   /**
@@ -125,7 +120,7 @@ function useSimpleEditingList<T = any>(
     setEditingRows(removeByIndexes);
     setErrors(removeByIndexes);
     setTouched(removeByIndexes);
-    setSelectedRows([]);
+    setSelectedRows(removeByIndexes);
   }, []);
 
   /**
@@ -144,16 +139,7 @@ function useSimpleEditingList<T = any>(
         setEditingRows(removeByIndex);
         setErrors(removeByIndex);
         setTouched(removeByIndex);
-        setSelectedRows((prev) => {
-          return prev
-            .filter((item) => item !== index)
-            .map((row) => {
-              if (row < index) {
-                return row;
-              }
-              return row - 1;
-            });
-        });
+        setSelectedRows(removeByIndex);
       }
     },
     [removeItems],
@@ -258,16 +244,20 @@ function useSimpleEditingList<T = any>(
   };
 
   /**
+   * 是否所有的数据行都是选中的
+   */
+  const isAllSelected = selectedRows.every(Boolean);
+  /**
+   * 是否包含选中的数据行
+   */
+  const isContainsSelected = selectedRows.some(Boolean);
+
+  /**
    * 切换全部选中状态
    */
   const toggleAllSelected = useCallback(() => {
-    setSelectedRows((prev) => {
-      if (prev.length !== items.length) {
-        return new Array(items.length).fill(null).map((_, index) => index);
-      }
-      return [];
-    });
-  }, [items.length]);
+    setSelectedRows(new Array(items.length).fill(!isAllSelected));
+  }, [items.length, isAllSelected]);
 
   /**
    * 切换行的选中状态
@@ -277,15 +267,32 @@ function useSimpleEditingList<T = any>(
   const toggleRowSelected = useCallback((index: number) => {
     setSelectedRows(
       produce((draft) => {
-        const idx = draft.indexOf(index);
-        if (idx === -1) {
-          draft.push(index);
-        } else {
-          draft.splice(idx, 1);
-        }
+        draft[index] = !draft[index];
       }),
     );
   }, []);
+
+  const setRowsSelected = useCallback(
+    (rowIndexes: number[], selected: boolean) => {
+      setSelectedRows(
+        produce((draft) => {
+          rowIndexes.forEach((idx) => {
+            draft[idx] = selected;
+          });
+        }),
+      );
+    },
+    [setSelectedRows],
+  );
+
+  const externalSelectedRows = useMemo(
+    () =>
+      selectedRows
+        .map((selected, index) => [selected, index] as [boolean, number])
+        .filter(([selected]) => !!selected)
+        .map(([, index]) => index),
+    [selectedRows],
+  );
 
   return {
     items,
@@ -300,13 +307,13 @@ function useSimpleEditingList<T = any>(
     touched,
     validateField,
     validateAllEditingRows,
-    selectedRows,
-    isAllSelected:
-      selectedRows.length > 0 && selectedRows.length === items.length,
-    isContainsSelected: selectedRows.length > 0,
+    selectedRows: externalSelectedRows,
+    isAllSelected,
+    isContainsSelected,
     toggleAllSelected,
     toggleRowSelected,
     setSelectedRows,
+    setRowsSelected,
   };
 }
 

@@ -93,5 +93,13 @@ export interface SimpleEditingListResult<T> {
    * 选中一行时的回调函数
    */
   toggleRowSelected: (index: number) => void;
-  setSelectedRows: (rows: number[]) => void;
+  /**
+   * 设置行选择状态
+   */
+  setSelectedRows: (selectedRows: boolean[]) => void;
+
+  /**
+   * 同时设置多行的选中状态
+   */
+  setRowsSelected: (rows: number[], selected: boolean) => void;
 }
