@@ -1,14 +1,13 @@
 # 版本变更说明
 
-## v0.6.0
+## v0.6.0 - 2019.7.16
 
 - breakchange: 去掉 useSimpleEditingList 的 removeItems 方法，remove 方法支持删除多个数据项。
 - breakchange: useEditingList 不再暴露出多余的 useRestListApi 的返回值。
 - feat: useEditingList 支持删除一组数据
 - feat: useEditingList 支持校验状态维护
 - refactor: useEditingList 内部采用 useSimpleEditingList 作为可编辑列表内部状态管理。
-- feat: useSimpleEditingList 支持列表数据的行选中
-- feat: useEditingList 支持列表数据的行选中
+- feat: useSimpleEditingList 和 useEditingList 均支持行选择状态管理
 
 ## v0.5.2 - 2019.7.12
 
