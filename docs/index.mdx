@@ -10,8 +10,11 @@ import EditableDataTable from '../src/EditableDataTable';
 import useEditingList from '../src/useEditingList';
 import Button from 'sinoui-components/Button';
 import TextInput from 'sinoui-components/TextInput';
+import Confirm from 'sinoui-components/Confirm';
 import produce from 'immer';
 import useSimpleEditingList from '../src/useSimpleEditingList';
+import RowSelectColumn from '../src/RowSelectColumn';
+import './SelectRow.css';
 
 # 可编辑表格
 
@@ -339,6 +342,113 @@ function validate(rowData) {
 
 </Playground>
 
+## 使用 useSimpleEditingList
+
+使用其简化可编辑列表的开发，不与后端交互，但包含校验。
+
+- 只有使用`setItems`才能更换列表数据
+- `useSimpleEditingList(defaultItems)`只是指定默认数据
+
+```tsx
+import EditableDataTable, {
+  useEiditingList,
+  TableColumn,
+} from '@sinouiincubator/editable-data-table';
+import Button from 'sinoui-components/Button';
+import TextInput from 'sinoui-components/TextInput';
+
+function Demo() {
+  const {
+    items,
+    add,
+    remove,
+    edit,
+    editingRows,
+    setItems,
+    setReadonly,
+  } = useSimpleEditingList([]);
+
+  return (
+    <>
+      <Button onClick={() => add({})}>新增</Button>
+      <EditableDataTable data={items} editingRows={editingRows}>
+        <TableColumn title="序号" order />
+        <TableColumn title="标题" name="title" editor={TextInput} />
+        <TableColumn title="备注" name="note" editor={TextInput} />
+        <TableColumn
+          title="操作"
+          name="id"
+          render={(value, row, index, id, context) => (
+            <>
+              {context.editing ? (
+                <Button autoWidth onClick={() => setReadonly(index)}>
+                  保存
+                </Button>
+              ) : (
+                <Button autoWidth onClick={() => edit(index)}>
+                  编辑
+                </Button>
+              )}
+              <Button autoWidth onClick={() => remove(index)}>
+                删除
+              </Button>
+            </>
+          )}
+        />
+      </EditableDataTable>
+    </>
+  );
+}
+```
+
+示例：
+
+<Playground>
+  {() => {
+    const { items,add,remove,edit,editingRows,setItems,setReadonly } = useSimpleEditingList([]);
+
+return (
+<>
+
+  <Button onClick={()=>add({})}>新增</Button>
+  <EditableDataTable
+    data={items}
+    editingRows={editingRows}
+  >
+    <TableColumn title="序号" order />
+    <TableColumn title="标题" name="title" editor={TextInput} />
+    <TableColumn title="备注" name="note" editor={TextInput}/>
+    <TableColumn
+      title="操作"
+      name="id"
+      render={(value, row, index, id, context) => (
+        <>
+          {context.editing ? (
+            <Button
+              autoWidth
+              onClick={() => setReadonly(index)}
+            >
+              保存
+            </Button>
+          ) : (
+            <Button autoWidth onClick={() => edit(index)}>
+              编辑
+            </Button>
+          )}
+          <Button autoWidth onClick={() => remove(index)}>
+            删除
+          </Button>
+        </>
+      )}
+    />
+  </EditableDataTable>
+  </>
+)
+
+}}
+
+</Playground>
+
 ## 使用 useEditingList
 
 可以使用 useEditingList 简化增删改查场景的开发：
@@ -447,9 +557,9 @@ add({}, 0);
       }
       return result;
     };
-
+    
     const { items, add, edit, save, remove, idPropertyName,editingRows } = useEditingList('/api/tests',[]);
-
+    
     const handleSave =  (row, index, context) => {
       if (!context.validate()) {
         alert('数据填写不完整');
@@ -461,7 +571,7 @@ add({}, 0);
         });
       }
     };
-
+    
     return (
     <>
       <Button onClick={add}>新增</Button>
@@ -506,108 +616,160 @@ add({}, 0);
 
 </Playground>
 
-## 使用 useSimpleEditingList
+## 选择数据行
 
-使用其简化可编辑列表的开发，不与后端交互，但包含校验。
+- 可以使用`useSimpleEditingList`和`RowSelectColumn`组合实现选择数据行的功能
+- 可以使用`EditableDataTable`的`rowClassName`属性定制选中行的样式
 
-- 只有使用`setItems`才能更换列表数据
-- `useSimpleEditingList(defaultItems)`只是指定默认数据
+`SelectDemo.tsx`
 
 ```tsx
-import EditableDataTable, {
-  useEiditingList,
-  TableColumn,
-} from '@sinouiincubator/editable-data-table';
-import Button from 'sinoui-components/Button';
+import React from 'react';
 import TextInput from 'sinoui-components/TextInput';
+import Button from 'sinoui-components/Button';
+import Confirm from 'sinoui-components/Confirm';
+import EditableDataTable, {
+  TableColumn,
+  useSimpleEditingList,
+  RowSelectColumn,
+} from '../src';
+import './SelectRow.css';
 
-function Demo() {
+interface Data {
+  id?: string;
+  title?: string;
+  note?: string;
+}
+
+const data = [
+  { id: '1', title: '标题1', note: '备注1' },
+  { id: '2', title: '标题2', note: '备注2' },
+  { id: '3', title: '标题3', note: '备注3' },
+  { id: '4', title: '标题4', note: '备注4' },
+];
+
+function SelectDemo() {
   const {
-    items,
-    add,
-    remove,
-    edit,
     editingRows,
-    setItems,
-    setReadonly,
-  } = useSimpleEditingList([]);
+    items,
+    remove,
+    selectedRows,
+    isAllSelected,
+    isContainsSelected,
+    toggleAllSelected,
+    toggleRowSelected,
+  } = useSimpleEditingList<Data>(data, {
+    alwaysEditing: true,
+  });
+
+  /**
+   * 自定义数据行的样式，如果是选中行，设置一个class名称
+   * @param index 数据行的索引
+   */
+  const handleRowClassName = (index: number) => {
+    if (selectedRows.indexOf(index) !== -1) {
+      return 'sinoui-data-table-body-row_selected';
+    }
+    return '';
+  };
 
   return (
     <>
-      <Button onClick={() => add({})}>新增</Button>
-      <EditableDataTable data={items} editingRows={editingRows}>
+      <Confirm
+        message={`是否确定删除第${selectedRows
+          .map((row) => row + 1)
+          .join('、')}条数据？`}
+        onOk={() => remove(selectedRows)}
+      >
+        <Button>删除</Button>
+      </Confirm>
+
+      <EditableDataTable
+        data={items}
+        editingRows={editingRows}
+        rowClassName={handleRowClassName}
+      >
+        <RowSelectColumn
+          selectedRows={selectedRows}
+          isAllSelected={isAllSelected}
+          isContainsSelected={isContainsSelected}
+          toggleAllSelected={toggleAllSelected}
+          toggleRowSelected={toggleRowSelected}
+        />
         <TableColumn title="序号" order />
         <TableColumn title="标题" name="title" editor={TextInput} />
         <TableColumn title="备注" name="note" editor={TextInput} />
-        <TableColumn
-          title="操作"
-          name="id"
-          render={(value, row, index, id, context) => (
-            <>
-              {context.editing ? (
-                <Button autoWidth onClick={() => setReadonly(index)}>
-                  保存
-                </Button>
-              ) : (
-                <Button autoWidth onClick={() => edit(index)}>
-                  编辑
-                </Button>
-              )}
-              <Button autoWidth onClick={() => remove(index)}>
-                删除
-              </Button>
-            </>
-          )}
-        />
       </EditableDataTable>
     </>
   );
 }
 ```
 
-示例：
+`SelectRow.css`
+
+```css
+.sinoui-editable-data-table .sinoui-data-table-body-row_selected {
+  background-color: rgba(0, 0, 0, 0.12);
+}
+```
+
+运行效果：
 
 <Playground>
   {() => {
-    const { items,add,remove,edit,editingRows,setItems,setReadonly } = useSimpleEditingList([]);
+    const data = [
+      { id: '1', title: '标题 1', note: '备注 1' },
+      { id: '2', title: '标题 2', note: '备注 2' },
+      { id: '3', title: '标题 3', note: '备注 3' },
+      { id: '4', title: '标题 4', note: '备注 4' },
+    ];
+
+    const {
+      editingRows,
+      items,
+      remove,
+      selectedRows,
+      isAllSelected,
+      isContainsSelected,
+      toggleAllSelected,
+      toggleRowSelected,
+    } = useSimpleEditingList(data, {alwaysEditing: true});
+
+    const handleRowClassName = (index) => {
+      if (selectedRows.indexOf(index) !== -1) {
+          return 'sinoui-data-table-body-row_selected';
+        }
+      return '';
+    };
 
     return (
       <>
-      <Button onClick={()=>add({})}>新增</Button>
-      <EditableDataTable
-        data={items}
-        editingRows={editingRows}
-      >
+        <Confirm
+          message={`是否确定删除第${selectedRows.map((row) => row + 1).join('、')}条数据？`}
+          onOk={() => remove(selectedRows)}
+        >
+          <Button>删除</Button>
+        </Confirm>
+
+        <EditableDataTable
+          data={items}
+          editingRows={editingRows}
+          rowClassName={handleRowClassName}
+        >
+        <RowSelectColumn
+          selectedRows={selectedRows}
+          isAllSelected={isAllSelected}
+          isContainsSelected={isContainsSelected}
+          toggleAllSelected={toggleAllSelected}
+          toggleRowSelected={toggleRowSelected}
+        />
         <TableColumn title="序号" order />
         <TableColumn title="标题" name="title" editor={TextInput} />
-        <TableColumn title="备注" name="note" editor={TextInput}/>
-        <TableColumn
-          title="操作"
-          name="id"
-          render={(value, row, index, id, context) => (
-            <>
-              {context.editing ? (
-                <Button
-                  autoWidth
-                  onClick={() => setReadonly(index)}
-                >
-                  保存
-                </Button>
-              ) : (
-                <Button autoWidth onClick={() => edit(index)}>
-                  编辑
-                </Button>
-              )}
-              <Button autoWidth onClick={() => remove(index)}>
-                删除
-              </Button>
-            </>
-          )}
-        />
+        <TableColumn title="备注" name="note" editor={TextInput} />
       </EditableDataTable>
-      </>
-    )
+    </>
 
+);
 }}
 
 </Playground>
