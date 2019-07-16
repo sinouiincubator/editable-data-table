@@ -23,6 +23,7 @@ export interface SimpleEditingListOptions<T> {
  * * 列表数据管理
  * * 可编辑状态维护
  * * 单元格编辑器校验
+ * * 行选择状态
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function useSimpleEditingList<T = any>(
@@ -103,17 +104,8 @@ function useSimpleEditingList<T = any>(
     setErrors((prev) => addAt(prev, {}));
 
     setTouched((prev) => addAt(prev, {}));
+
     setSelectedRows((prev) => {
-      console.log('prev==========', prev);
-      console.log(index);
-      if (index <= Math.min(...prev)) {
-        return prev.map((row) => row + 1);
-      }
-
-      if (index > Math.max(...prev)) {
-        return prev.map((row) => row - 1);
-      }
-
       return prev.map((row) => {
         if (row < index) {
           return row;
@@ -153,24 +145,14 @@ function useSimpleEditingList<T = any>(
         setErrors(removeByIndex);
         setTouched(removeByIndex);
         setSelectedRows((prev) => {
-          if (prev.includes(index)) {
-            return prev.filter((_row, idx) => prev[idx] !== index);
-          }
-
-          if (index <= Math.min(...prev)) {
-            return prev.map((row) => row - 1);
-          }
-
-          if (index > Math.max(...prev)) {
-            return prev.map((row) => row);
-          }
-
-          return prev.map((row) => {
-            if (row < index) {
-              return row;
-            }
-            return row - 1;
-          });
+          return prev
+            .filter((item) => item !== index)
+            .map((row) => {
+              if (row < index) {
+                return row;
+              }
+              return row - 1;
+            });
         });
       }
     },
@@ -189,7 +171,11 @@ function useSimpleEditingList<T = any>(
   }, []);
 
   /**
-   * 验证一个单元格
+   * 验证一个单元格的值
+   *
+   * @param index 单元格所在数据行索引位置
+   * @param fieldName 单元格对应的字段名称
+   * @param rowData 单元格所在行的数据对象
    */
   const validateField = useCallback(
     (index: number, fieldName: string, rowData: T) => {
@@ -271,6 +257,9 @@ function useSimpleEditingList<T = any>(
     );
   };
 
+  /**
+   * 切换全部选中状态
+   */
   const toggleAllSelected = useCallback(() => {
     setSelectedRows((prev) => {
       if (prev.length !== items.length) {
@@ -280,6 +269,11 @@ function useSimpleEditingList<T = any>(
     });
   }, [items.length]);
 
+  /**
+   * 切换行的选中状态
+   *
+   * @param index 数据行所在索引位置
+   */
   const toggleRowSelected = useCallback((index: number) => {
     setSelectedRows(
       produce((draft) => {

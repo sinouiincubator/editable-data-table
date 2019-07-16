@@ -389,7 +389,7 @@ it('在选中项之后增加一条数据', () => {
 
   result.current.add({ id: '9', title: '标题9' }, 4);
 
-  expect(result.current.selectedRows).toEqual([1]);
+  expect(result.current.selectedRows).toEqual([2]);
 });
 
 it('在两个选中项之间插入一条数据', () => {
@@ -441,7 +441,7 @@ it('删除两个选中项中的其中一个', () => {
   result.current.toggleRowSelected(3);
   result.current.remove(1);
 
-  expect(result.current.selectedRows).toEqual([3]);
+  expect(result.current.selectedRows).toEqual([2]);
 });
 
 it('删除选中项前面的数据', () => {
@@ -490,6 +490,25 @@ it('删除两个选中项之间的数据', () => {
 
   result.current.toggleRowSelected(0);
   result.current.toggleRowSelected(2);
+  result.current.remove(1);
+
+  expect(result.current.selectedRows).toEqual([0, 1]);
+});
+
+it('删除已选选择的数据行', () => {
+  const { result } = renderHook(() =>
+    useSimpleEditingList([
+      { id: '1', title: '标题1' },
+      { id: '2', title: '标题2' },
+      { id: '3', title: '标题3' },
+      { id: '4', title: '标题4' },
+    ]),
+  );
+
+  result.current.toggleRowSelected(0);
+  result.current.toggleRowSelected(1);
+  result.current.toggleRowSelected(2);
+
   result.current.remove(1);
 
   expect(result.current.selectedRows).toEqual([0, 1]);
