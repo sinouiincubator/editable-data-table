@@ -58,6 +58,13 @@ useSimpleEditingList(defaultValue:T[],options:Options):editingList
 | touched                | [fieldName: string]: boolean[]                         | 编辑器被点击状态                                                                                        |
 | validateField          | (index: number, fieldName: string, rowData: T) => void | 校验单个数据行                                                                                          |
 | validateAllEditingRows | () => boolean                                          | 校验所有编辑器中的行                                                                                    |
+| selectedRows           | number[]                                               | 选中行的索引                                                                                            |
+| isAllSelected          | boolean                                                | 是否全部选中                                                                                            |
+| isContainsSelected     | boolean                                                | 是否选中部分数据                                                                                        |
+| toggleAllSelected      | () => void                                             | 点击全选时的回调函数                                                                                    |
+| toggleRowSelected      | (index: number) => void                                | 选中一行时的回调函数                                                                                    |
+| setSelectedRows        | (selectedRows: boolean[]) => void                      | 设置行选择状态                                                                                          |
+| setRowsSelected        | (rows: number[], selected: boolean) => void            | 同时设置多行的选中状态                                                                                  |
 
 ### 使用方式
 
@@ -109,6 +116,13 @@ useEditingList<T>(url:string,defaultValue:T[],options?:Options<T>):Response<T>
 | idPropertyName         | string                                                 | 数据的 id 属性名。                                                                                      |
 | isLoading              | boolean                                                | 是否正在加载列表数据                                                                                    |
 | isError                | boolean                                                | 是否加载列表数据失败                                                                                    |
+| selectedRows           | number[]                                               | 选中行的索引                                                                                            |
+| isAllSelected          | boolean                                                | 是否全部选中                                                                                            |
+| isContainsSelected     | boolean                                                | 是否选中部分数据                                                                                        |
+| toggleAllSelected      | () => void                                             | 点击全选时的回调函数                                                                                    |
+| toggleRowSelected      | (index: number) => void                                | 选中一行时的回调函数                                                                                    |
+| setSelectedRows        | (selectedRows: boolean[]) => void                      | 设置行选择状态                                                                                          |
+| setRowsSelected        | (rows: number[], selected: boolean) => void            | 同时设置多行的选中状态                                                                                  |
 
 ### 使用方式
 
