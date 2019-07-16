@@ -155,9 +155,8 @@ function usePaginationSelectedRows(
    * 删除所有选中的数据
    */
   const removeAllSelectedRows = async () => {
-    const rows = [];
-    editingList.items
-      .map((item, idx) => rows.push([item, idx]))
+    const rows = editingList.items
+      .map((item, idx) => [item, idx])
       .filter((_data, index) => editingList.selectedRows.includes(index));
     await editingList.remove(rows);
   };
