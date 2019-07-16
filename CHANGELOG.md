@@ -7,6 +7,8 @@
 - feat: useEditingList 支持删除一组数据
 - feat: useEditingList 支持校验状态维护
 - refactor: useEditingList 内部采用 useSimpleEditingList 作为可编辑列表内部状态管理。
+- feat: useSimpleEditingList 支持列表数据的行选中
+- feat: useEditingList 支持列表数据的行选中
 
 ## v0.5.2 - 2019.7.12
 
