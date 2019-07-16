@@ -46,7 +46,7 @@ function RowSelectColumn(props: Props) {
           onChange={toggleAllSelected}
         />
       }
-      render={(_value, _row, index, id, context) => (
+      render={(_value, _row, index) => (
         <Checkbox
           checked={selectedRows.indexOf(index + startIndex) !== -1}
           onChange={() => toggleRowSelected(index + startIndex)}
