@@ -49,6 +49,7 @@ export default {
     },
   ],
   wrapper: 'docs/Wrapper.tsx',
+  indexHtml: 'docs/index.html',
   base: getBaseUrl(),
   plugins: [proxyPlugin()],
   onCreateWebpackChain: (config) => {

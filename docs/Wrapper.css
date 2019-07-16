@@ -1,0 +1,8 @@
+input,
+select {
+  width: 100%;
+}
+
+.scrollbar-container {
+  max-height: 100%;
+}
