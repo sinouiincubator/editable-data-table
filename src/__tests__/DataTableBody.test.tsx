@@ -21,6 +21,7 @@ it('指定undefined时，不渲染', () => {
 
 it('渲染一组数组', () => {
   function TableCell() {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data } = useContext(DataTableRowContext) as any;
 
     return <td>{data.id}</td>;
