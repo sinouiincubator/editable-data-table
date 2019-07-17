@@ -102,19 +102,12 @@
     "react-textarea-autosize": "^7.1.0",
     "redux": "^4.0.2",
     "style-loader": "^0.23.1",
-    "ts-lib-tools": "^0.2.14",
+    "ts-lib-tools": "^0.2.15",
     "typescript": "^3.5.2",
     "uuid": "^3.3.2",
     "webpack-docz-ghpages-plugin": "^0.2.12"
   },
   "publishConfig": {
     "access": "public"
-  },
-  "jest": {
-    "transformIgnorePatterns": [
-      "node_modules/(?!(@sinoui|sinoui-components|lodash-es)/)",
-      "^.+\\.module\\.(css|sass|scss)$",
-      "^.+[/\\\\]dist[/\\\\]"
-    ]
   }
 }

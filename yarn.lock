@@ -11530,10 +11530,10 @@ ts-lib-scripts-utils@^0.2.2:
   dependencies:
     chalk "^2.4.2"
 
-ts-lib-tools@^0.2.14:
-  version "0.2.14"
-  resolved "https://registry.yarnpkg.com/ts-lib-tools/-/ts-lib-tools-0.2.14.tgz#d854621ec879517d25abf65e04e3f3ac19a81104"
-  integrity sha512-GpZgtr7r0W8JA0qApN/jq8p67tvyxMtcxzszup0BTLkiLAcPLdwXOHGCz+BB3AMZQe/UOPDLtidjYga5pWQ+Pg==
+ts-lib-tools@^0.2.15:
+  version "0.2.15"
+  resolved "https://registry.yarnpkg.com/ts-lib-tools/-/ts-lib-tools-0.2.15.tgz#0426633f1f02b0d0a26abe5b3ba37188a9d81825"
+  integrity sha512-ulr3Yz93PsNSO3ZfGGFIMm90Qr+k322jEd3AX9hP56lD0Af7biyGixR6kjDre/kOWHODm9JltAzcNuuVWBicvA==
   dependencies:
     "@svgr/rollup" "^4.3.0"
     "@types/jest" "^24.0.13"
