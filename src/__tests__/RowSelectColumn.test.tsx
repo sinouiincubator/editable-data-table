@@ -6,6 +6,7 @@ import useSimpleEditingList from '../useSimpleEditingList';
 import EditableDataTable from '../EditableDataTable';
 import RowSelectColumn from '../RowSelectColumn';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function SimpleDemo({ editingList }: { editingList: any }) {
   return (
     <ThemeProvider theme={defaultTheme}>

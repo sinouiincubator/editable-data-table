@@ -12,6 +12,7 @@ it('渲染表格行', () => {
   const Child = () => {
     const { type, data, index } = useContext(
       DataTableRowContext,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ) as BodyRowContextType<any>;
     return (
       <div>

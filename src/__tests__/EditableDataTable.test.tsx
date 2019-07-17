@@ -142,6 +142,7 @@ it('监听变更事件', () => {
   });
 });
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const validate = (rowData: any) => {
   const result: { [x: string]: string } = {};
 

@@ -14,6 +14,7 @@ jest.mock('@sinoui/http');
 
 afterEach(cleanup);
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function SimpleDemo({ editingList }: { editingList: any }) {
   const handleLoad = useCallback(() => {
     editingList.setItems([
@@ -38,6 +39,7 @@ function SimpleDemo({ editingList }: { editingList: any }) {
           type="button"
           onClick={() =>
             editingList.remove(
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               editingList.items.map((_: any, index: number) => index),
             )
           }
