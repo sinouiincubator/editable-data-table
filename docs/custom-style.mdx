@@ -133,6 +133,57 @@ const WrapperEditableDataTable = styled(EditableDataTable)`
 `;
 ```
 
-## 根据状态定制数据行、单元格的样式
+## 根据状态定制数据行的样式(0.6.0)
 
-暂不支持。计划中...
+我们可以通过给`EditableDataTable`组件一个 `rowClassName`属性来动态指定一个样式名称，从而达到根据状态定制数据行状态的目的。
+
+`SelectDemo.tsx`
+
+```tsx
+import React from 'react';
+import TextInput from 'sinoui-components/TextInput';
+import EditableDataTable, {
+  TableColumn,
+  useSimpleEditingList,
+  RowSelectColumn,
+} from '@sinouiincubator/editable-data-table';
+import './SelectRow.css';
+
+function SelectDemo() {
+  const { selectedRows } = useSimpleEditingList<Data>([], {
+    alwaysEditing: true,
+  });
+
+  /**
+   * 自定义数据行的样式，如果是选中行，设置一个class名称
+   * @param index 数据行的索引
+   */
+  const handleRowClassName = (index: number) => {
+    if (selectedRows.indexOf(index) !== -1) {
+      return 'sinoui-data-table-body-row_selected';
+    }
+    return '';
+  };
+
+  return (
+    <>
+      <EditableDataTable rowClassName={handleRowClassName}>
+        <RowSelectColumn selectedRows={selectedRows} />
+        <TableColumn title="序号" order />
+        <TableColumn title="标题" name="title" editor={TextInput} />
+        <TableColumn title="备注" name="note" editor={TextInput} />
+      </EditableDataTable>
+    </>
+  );
+}
+```
+
+`SelectRow.css`
+
+```css
+.sinoui-editable-data-table .sinoui-data-table-body-row_selected {
+  background-color: rgba(0, 0, 0, 0.12);
+}
+```
+
+当数据行被选中时，我们给其指定一个`sinoui-data-table-body-row_selected`样式类名称，然后在 css 文件中定义选其样式。

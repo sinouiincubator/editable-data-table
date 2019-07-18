@@ -7,6 +7,7 @@ import { Playground, Props } from 'docz';
 import TableColumn from '../src/TableColumn';
 import EditableDataTable from '../src/EditableDataTable';
 import useSimpleEditingList from '../src/useSimpleEditingList';
+import RowSelectColumn from '../src/RowSelectColumn';
 
 # 组件 API
 
@@ -17,6 +18,10 @@ import useSimpleEditingList from '../src/useSimpleEditingList';
 - useSimpleEditingList - 可编辑表格数据的状态管理 hook （不与后端交互，但包括校验状态）
 - useEditingList - 可编辑表格数据的状态管理 hook（与后端 API 交互，不包括校验状态）
 
+除此之外还有一个支持选中数据行的组件：
+
+- RowSelectColumn - 定义列表可选时的复选框
+
 ## EditableDataTable(0.1.0)
 
 <Props of={EditableDataTable} />
@@ -24,6 +29,10 @@ import useSimpleEditingList from '../src/useSimpleEditingList';
 ## TableColumn(0.1.0)
 
 <Props of={TableColumn} />
+
+## RowSelectColumn(0.6.0)
+
+<Props of={RowSelectColumn} />
 
 ## useSimpleEditingList(0.2.0)
 

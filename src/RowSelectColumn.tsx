@@ -2,7 +2,7 @@ import React from 'react';
 import Checkbox from 'sinoui-components/Checkbox';
 import TableColumn from './TableColumn';
 
-interface Props {
+export interface Props {
   /**
    * 选中行
    */
