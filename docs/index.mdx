@@ -470,7 +470,7 @@ function Demo() {
 
 ```tsx
 const dataSource = useRestListApi('/api/demo');
-const editingList = useSimpleEditingList([]);
+const editingList = useSimpleEditingList(dataSource.items);
 
 useEffect(() => {
   editingList.setItems(dataSource.items);
