@@ -36,7 +36,7 @@ const DataTableBody: React.SFC<{
           editing={editingRows[index]}
           error={errors ? errors[index] : undefined}
           touched={touched ? touched[index] : undefined}
-          rowClassName={rowClassName}
+          className={rowClassName && rowClassName(index)}
         >
           {children}
         </DataTableBodyRow>
