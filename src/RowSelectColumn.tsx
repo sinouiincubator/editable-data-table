@@ -26,6 +26,9 @@ export interface Props {
   startIndex?: number;
 }
 
+/**
+ * 选择行的列
+ */
 function RowSelectColumn(props: Props) {
   const {
     isAllSelected,
