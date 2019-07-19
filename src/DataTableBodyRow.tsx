@@ -36,7 +36,10 @@ interface Props<T> {
    * 单元格编辑器是否被点击过
    */
   touched?: TouchedState;
-  rowClassName?: (index: number) => string;
+  /**
+   * 样式类名称
+   */
+  className?: string;
 }
 
 type CompType<T = any> = React.SFC<Props<T>>;
@@ -45,15 +48,7 @@ type CompType<T = any> = React.SFC<Props<T>>;
  * 内容行
  */
 const DataTableBodyRow: CompType = (props) => {
-  const {
-    data,
-    index,
-    children,
-    editing,
-    error,
-    touched,
-    rowClassName,
-  } = props;
+  const { data, index, children, editing, error, touched, className } = props;
   const context: BodyRowContextType<any> = useMemo(
     () => ({
       type: RowType.Body,
@@ -70,10 +65,7 @@ const DataTableBodyRow: CompType = (props) => {
     <DataTableRowContext.Provider value={context}>
       <EditingBodyRowContainer.Provider>
         <tr
-          className={classNames(
-            'sinoui-data-table-body-row',
-            rowClassName ? rowClassName(index) : '',
-          )}
+          className={classNames('sinoui-data-table-body-row', className)}
           data-testid="bodyRow"
         >
           {children}
