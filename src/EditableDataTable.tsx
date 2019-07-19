@@ -79,7 +79,10 @@ export interface Props<T> {
    * 如果数据行没有错误，则返回`{}`或者`undefined`。
    */
   validate?: (rowData: T) => { [x: string]: string } | undefined;
-  rowClassName?: (index: number) => string;
+  /**
+   * 定制数据行样式的函数。
+   */
+  rowClassName?: (index: number) => string | undefined;
 }
 
 function useEditableDataTable<T>({

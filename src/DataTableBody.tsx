@@ -12,7 +12,7 @@ const DataTableBody: React.SFC<{
   editingRows?: boolean[];
   errors?: ErrorResult[];
   touched?: TouchedState[];
-  rowClassName?: (index: number) => string;
+  rowClassName?: (index: number) => string | undefined;
 }> = function DataTableBody({
   idPropertyName,
   data,

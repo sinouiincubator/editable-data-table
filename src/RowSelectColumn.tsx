@@ -23,6 +23,9 @@ export interface Props {
    * 选中一行时的回调函数
    */
   toggleRowSelected: (index: number) => void;
+  /**
+   * 开始的索引。默认从0开始。在分页展示数据时，此属性非常有用。
+   */
   startIndex?: number;
 }
 
