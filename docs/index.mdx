@@ -266,6 +266,217 @@ function validate(rowData) {
 
 </Playground>
 
+## 增删改查
+
+可以基于`EditableDataTable`实现增删改查。看看下面一个与后端 API 无法的增删改查示例：
+
+<Playground>
+  {() => {
+    const validate = (data) => {
+      const result = {};
+      if (!data.id) {
+        result.id = '必填';
+      }
+      if (data.title && data.title.startsWith('1')) {
+        result.title = '标题不能以1开头';
+      }
+      return result;
+    };
+
+    const [editingRows, setEditingRows] = useState([true, false]);
+    const [items, setItems] = useState([{ id: '1', title: '123' }, { id: '2', title: '1234' }]);
+
+    const handleSave = (row, index, context) => {
+      if (!context.validate()) {
+        alert('数据填写不完整');
+      } else {
+        setEditingRows(produce(editingRows, (draft) => {
+          draft[index] = false;
+        }));
+        alert('保存成功');
+      }
+    };
+
+    const handleEdit = (index) => {
+      setEditingRows(produce(editingRows, (draft) => {
+        draft[index] = true;
+      }));
+    };
+
+    const handleRemove = (index) => {
+      const removeByIndex = produce(draft => {
+        draft.splice(index, 1);
+      });
+      setEditingRows(removeByIndex);
+      setItems(removeByIndex);
+    };
+
+    const handleAdd = () => {
+      setEditingRows([...editingRows, true]);
+      setItems([...items, {}]);
+    };
+
+    return (<>
+      <Button onClick={handleAdd}>新增</Button>
+      <EditableDataTable
+        data={items}
+        editingRows={editingRows}
+        validate={validate}
+      >
+        <TableColumn title="序号" order />
+        <TableColumn title="id" name="id" editor={TextInput} />
+        <TableColumn title="标题" name="title" editor={TextInput} />
+        <TableColumn
+          title="操作"
+          name="id"
+          render={(value, row, index, id, context) => (<>
+            {
+              context.editing ?
+                <Button autoWidth onClick={() => handleSave(row, index, context)}>保存</Button> :
+                <Button autoWidth onClick={() => handleEdit(index)}>编辑</Button>
+            }
+            <Button autoWidth onClick={() => handleRemove(index)}>删除</Button>
+          </>)}
+        />
+      </EditableDataTable>
+    </>);
+
+}}
+
+</Playground>
+
+## 使用 useSimpleEditingList
+
+使用[useSimpleEditingList](components-api#usesimpleeditinglist020)可简化可编辑列表的开发。它会管理可编辑表格的外部状态管理，包括：
+
+- `items` - 列表数据维护
+- `editingRows` - 编辑状态维护
+- `errors`和`touched` - 校验状态维护，见[校验章节](validate)
+- `selectedRows` - 行选择状态维护，见[选择数据行](#选择数据行)
+
+但不包含与后端交互的部分。如果你需要与后端交互，请移步到：
+
+- [使用 useEditingList 加载并管理表格数据](#使用-useeditinglist)
+- [分页加载数据的可编辑数据表格](pagination)
+
+一个使用[useSimpleEditingList](components-api#usesimpleeditinglist020)来管理可编辑表格的数据和编辑状态的例子：
+
+```tsx
+import EditableDataTable, {
+  useEiditingList,
+  TableColumn,
+} from '@sinouiincubator/editable-data-table';
+import Button from 'sinoui-components/Button';
+import TextInput from 'sinoui-components/TextInput';
+
+function Demo() {
+  const {
+    items,
+    add,
+    remove,
+    edit,
+    editingRows,
+    setItems,
+    setReadonly,
+  } = useSimpleEditingList([]);
+
+  return (
+    <>
+      <Button onClick={() => add({})}>新增</Button>
+      <EditableDataTable data={items} editingRows={editingRows}>
+        <TableColumn title="序号" order />
+        <TableColumn title="标题" name="title" editor={TextInput} />
+        <TableColumn title="备注" name="note" editor={TextInput} />
+        <TableColumn
+          title="操作"
+          name="id"
+          render={(value, row, index, id, context) => (
+            <>
+              {context.editing ? (
+                <Button autoWidth onClick={() => setReadonly(index)}>
+                  保存
+                </Button>
+              ) : (
+                <Button autoWidth onClick={() => edit(index)}>
+                  编辑
+                </Button>
+              )}
+              <Button autoWidth onClick={() => remove(index)}>
+                删除
+              </Button>
+            </>
+          )}
+        />
+      </EditableDataTable>
+    </>
+  );
+}
+```
+
+示例：
+
+<Playground>
+  {() => {
+    const {
+      items,
+      add,
+      remove,
+      edit,
+      editingRows,
+      setReadonly,
+    } = useSimpleEditingList([]);
+
+    return (
+      <>
+        <Button onClick={() => add({})}>新增</Button>
+        <EditableDataTable data={items} editingRows={editingRows}>
+          <TableColumn title="序号" order />
+          <TableColumn title="标题" name="title" editor={TextInput} />
+          <TableColumn title="备注" name="note" editor={TextInput} />
+          <TableColumn
+            title="操作"
+            name="id"
+            render={(_value, _row, index, _id, context) => (
+              <>
+                {context.editing ? (
+                  <Button autoWidth onClick={() => setReadonly(index)}>
+                    保存
+                  </Button>
+                ) : (
+                  <Button autoWidth onClick={() => edit(index)}>
+                    编辑
+                  </Button>
+                )}
+                <Button autoWidth onClick={() => remove(index)}>
+                  删除
+                </Button>
+              </>
+            )}
+          />
+        </EditableDataTable>
+      </>
+    );
+
+}}
+
+</Playground>
+
+特别注意：
+
+- 只有使用`setItems`才能更换列表数据
+- `useSimpleEditingList(defaultItems)`只是指定默认数据
+
+如：
+
+```tsx
+const dataSource = useRestListApi('/api/demo');
+const editingList = useSimpleEditingList([]);
+
+useEffect(() => {
+  editingList.setItems(dataSource.items);
+}, [dataSource.items]);
+```
+
 ## 选择数据行
 
 - 可以使用`useSimpleEditingList`和`RowSelectColumn`组合实现选择数据行的功能
@@ -424,198 +635,12 @@ function SelectDemo() {
 
 </Playground>
 
-## 增删改查
-
-可以基于`EditableDataTable`实现增删改查。看看下面一个与后端 API 无法的增删改查示例：
-
-<Playground>
-  {() => {
-    const validate = (data) => {
-      const result = {};
-      if (!data.id) {
-        result.id = '必填';
-      }
-      if (data.title && data.title.startsWith('1')) {
-        result.title = '标题不能以1开头';
-      }
-      return result;
-    };
-
-    const [editingRows, setEditingRows] = useState([true, false]);
-    const [items, setItems] = useState([{ id: '1', title: '123' }, { id: '2', title: '1234' }]);
-
-    const handleSave = (row, index, context) => {
-      if (!context.validate()) {
-        alert('数据填写不完整');
-      } else {
-        setEditingRows(produce(editingRows, (draft) => {
-          draft[index] = false;
-        }));
-        alert('保存成功');
-      }
-    };
-
-    const handleEdit = (index) => {
-      setEditingRows(produce(editingRows, (draft) => {
-        draft[index] = true;
-      }));
-    };
-
-    const handleRemove = (index) => {
-      const removeByIndex = produce(draft => {
-        draft.splice(index, 1);
-      });
-      setEditingRows(removeByIndex);
-      setItems(removeByIndex);
-    };
-
-    const handleAdd = () => {
-      setEditingRows([...editingRows, true]);
-      setItems([...items, {}]);
-    };
-
-    return (<>
-      <Button onClick={handleAdd}>新增</Button>
-      <EditableDataTable
-        data={items}
-        editingRows={editingRows}
-        validate={validate}
-      >
-        <TableColumn title="序号" order />
-        <TableColumn title="id" name="id" editor={TextInput} />
-        <TableColumn title="标题" name="title" editor={TextInput} />
-        <TableColumn
-          title="操作"
-          name="id"
-          render={(value, row, index, id, context) => (<>
-            {
-              context.editing ?
-                <Button autoWidth onClick={() => handleSave(row, index, context)}>保存</Button> :
-                <Button autoWidth onClick={() => handleEdit(index)}>编辑</Button>
-            }
-            <Button autoWidth onClick={() => handleRemove(index)}>删除</Button>
-          </>)}
-        />
-      </EditableDataTable>
-    </>);
-
-}}
-
-</Playground>
-
-## 使用 useSimpleEditingList
-
-使用其简化可编辑列表的开发，不与后端交互，但包含校验。
-
-- 只有使用`setItems`才能更换列表数据
-- `useSimpleEditingList(defaultItems)`只是指定默认数据
-
-```tsx
-import EditableDataTable, {
-  useEiditingList,
-  TableColumn,
-} from '@sinouiincubator/editable-data-table';
-import Button from 'sinoui-components/Button';
-import TextInput from 'sinoui-components/TextInput';
-
-function Demo() {
-  const {
-    items,
-    add,
-    remove,
-    edit,
-    editingRows,
-    setItems,
-    setReadonly,
-  } = useSimpleEditingList([]);
-
-  return (
-    <>
-      <Button onClick={() => add({})}>新增</Button>
-      <EditableDataTable data={items} editingRows={editingRows}>
-        <TableColumn title="序号" order />
-        <TableColumn title="标题" name="title" editor={TextInput} />
-        <TableColumn title="备注" name="note" editor={TextInput} />
-        <TableColumn
-          title="操作"
-          name="id"
-          render={(value, row, index, id, context) => (
-            <>
-              {context.editing ? (
-                <Button autoWidth onClick={() => setReadonly(index)}>
-                  保存
-                </Button>
-              ) : (
-                <Button autoWidth onClick={() => edit(index)}>
-                  编辑
-                </Button>
-              )}
-              <Button autoWidth onClick={() => remove(index)}>
-                删除
-              </Button>
-            </>
-          )}
-        />
-      </EditableDataTable>
-    </>
-  );
-}
-```
-
-示例：
-
-<Playground>
-  {() => {
-    const {
-      items,
-      add,
-      remove,
-      edit,
-      editingRows,
-      setReadonly,
-    } = useSimpleEditingList([]);
-
-    return (
-      <>
-        <Button onClick={() => add({})}>新增</Button>
-        <EditableDataTable data={items} editingRows={editingRows}>
-          <TableColumn title="序号" order />
-          <TableColumn title="标题" name="title" editor={TextInput} />
-          <TableColumn title="备注" name="note" editor={TextInput} />
-          <TableColumn
-            title="操作"
-            name="id"
-            render={(_value, _row, index, _id, context) => (
-              <>
-                {context.editing ? (
-                  <Button autoWidth onClick={() => setReadonly(index)}>
-                    保存
-                  </Button>
-                ) : (
-                  <Button autoWidth onClick={() => edit(index)}>
-                    编辑
-                  </Button>
-                )}
-                <Button autoWidth onClick={() => remove(index)}>
-                  删除
-                </Button>
-              </>
-            )}
-          />
-        </EditableDataTable>
-      </>
-    );
-
-}}
-
-</Playground>
-
 ## 使用 useEditingList
 
 可以使用 useEditingList 简化增删改查场景的开发：
 
-- 内置继承了[useSimpleEditingList](https://sinouiincubator.github.io/editable-data-table/components-api#usesimpleeditinglist020)的方法和属性,
-  区别就是`useSimpleEditingList`的增删改方法不与后端交互，而`useEditingList`的增删改查均与后端交互，除此之外还有排序等功能。
+- 内置[useSimpleEditingList](https://sinouiincubator.github.io/editable-data-table/components-api#usesimpleeditinglist020)的方法和属性
+  区别就是`useSimpleEditingList`的增删改方法不与后端交互，而`useEditingList`的增删改查均与后端交互。
 - 集成了[@sinoui/use-rest-list-api](https://github.com/sinoui/use-rest-list-api)，与后端 API 做增删改查交互。
 
 ```tsx
