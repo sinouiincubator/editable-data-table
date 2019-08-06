@@ -71,7 +71,7 @@ useSimpleEditingList(defaultValue:T[],options:Options):editingList
 | updateItem             | (index: number, item: T) => void                       | 更新数据行                                                                                              |
 | errors                 | [fieldName: string]: string[]                          | 校验错误                                                                                                |
 | touched                | [fieldName: string]: boolean[]                         | 编辑器被点击状态                                                                                        |
-| validateField          | (index: number, fieldName: string, rowData: T) => void | 校验单个数据行                                                                                          |
+| validateField          | (index: number, fieldName: string, rowData: T) => void | 校验单元格                                                                                              |
 | validateAllEditingRows | () => boolean                                          | 校验所有编辑器中的行                                                                                    |
 | selectedRows           | number[]                                               | 选中行的索引                                                                                            |
 | isAllSelected          | boolean                                                | 是否全部选中                                                                                            |
@@ -127,7 +127,7 @@ useEditingList<T>(url:string,defaultValue:T[],options?:Options<T>):Response<T>
 | save                   | (item: T, index: number) => void                       | 更新数据行                                                                                              |
 | errors                 | [fieldName: string]: string[]                          | 校验错误                                                                                                |
 | touched                | [fieldName: string]: boolean[]                         | 编辑器被点击状态                                                                                        |
-| validateField          | (index: number, fieldName: string, rowData: T) => void | 校验单个数据行                                                                                          |
+| validateField          | (index: number, fieldName: string, rowData: T) => void | 校验单元格                                                                                              |
 | validateAllEditingRows | () => boolean                                          | 校验所有编辑器中的行                                                                                    |
 | idPropertyName         | string                                                 | 数据的 id 属性名。                                                                                      |
 | isLoading              | boolean                                                | 是否正在加载列表数据                                                                                    |
