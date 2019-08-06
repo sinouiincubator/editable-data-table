@@ -536,3 +536,24 @@ it('没有数据时，应不是全选状态', () => {
 
   expect(result.current.isAllSelected).toEqual(false);
 });
+
+it('校验单行数据', () => {
+  const { result } = renderHook(() =>
+    useSimpleEditingList(
+      [
+        { id: '1', title: '标题1' },
+        { id: '2', title: '标题2' },
+        { id: '3', title: '标题3' },
+      ],
+      { validate },
+    ),
+  );
+
+  expect(result.current.errors).toEqual([{}, {}, {}]);
+  expect(result.current.touched).toEqual([{}, {}, {}]);
+
+  result.current.validateRow(2, { id: '3', title: '1234' });
+
+  expect(result.current.errors).toEqual([{}, {}, { title: '标题不能以1开头' }]);
+  expect(result.current.touched).toEqual([{}, {}, { title: true }]);
+});

@@ -25,7 +25,6 @@ export interface SimpleEditingListOptions<T> {
  * * 单元格编辑器校验
  * * 行选择状态
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function useSimpleEditingList<T = any>(
   defaultItems: T[] = [],
   options: SimpleEditingListOptions<T> = {},
@@ -189,6 +188,33 @@ function useSimpleEditingList<T = any>(
   );
 
   /**
+   * 验证一行数据的值
+   *
+   * @param index 数据行索引位置
+   * @param rowData 数据行的数据对象
+   */
+  const validateRow = useCallback((index: number, rowData: T) => {
+    const { validate } = optionsRef.current;
+    if (validate) {
+      const rowError = validate(rowData) || {};
+      setErrors(
+        produce((draft) => {
+          draft[index] = rowError;
+        }),
+      );
+
+      const keys = Object.keys(rowError);
+      if (keys.length > 0) {
+        setTouched(
+          produce((draft) => {
+            draft[index][keys[0]] = true;
+          }),
+        );
+      }
+    }
+  }, []);
+
+  /**
    * 校验列表中正在编辑的数据
    */
   const validateAllEditingRows = () => {
@@ -315,6 +341,7 @@ function useSimpleEditingList<T = any>(
     toggleRowSelected,
     setSelectedRows,
     setRowsSelected,
+    validateRow,
   };
 }
 

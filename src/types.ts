@@ -102,4 +102,8 @@ export interface SimpleEditingListResult<T> {
    * 同时设置多行的选中状态
    */
   setRowsSelected: (rows: number[], selected: boolean) => void;
+  /**
+   * 校验一行数据
+   */
+  validateRow(index: number, rowData: T): void;
 }

@@ -72,6 +72,7 @@ function Demo() {
         <TableColumn order title="序号" />
         <TableColumn title="姓名" name="name" editor="input" />
         <TableColumn title="职务" name="duty" editor="input" />
+        <TableColumn name="id" render={() => <Button autoWidth>保存</Button>} />
       </EditableDataTable>
     </>
   );
@@ -128,6 +129,7 @@ function Demo() {
             <TableColumn order title="序号" />
             <TableColumn title="姓名" name="name" editor="input" />
             <TableColumn title="职务" name="duty" editor="input" />
+            <TableColumn name="id" render={(value,rowData,index)=><Button autoWidth onClick={()=>editingList.validateRow(index,rowData)}>保存</Button>}/>
           </EditableDataTable>
         </>
       );
