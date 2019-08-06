@@ -94,6 +94,8 @@ export default function useEditingList<T>(
 
   return {
     ...rest,
+    setItems,
+    updateItem,
     query,
     fetch,
     sortWith,

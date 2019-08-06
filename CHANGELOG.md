@@ -1,5 +1,9 @@
 # 版本变更说明
 
+## v0.7.0 - 2019.8.6
+
+- feat: useEditingList 对外导出`setItems`和`updateItem`
+
 ## v0.6.1 - 2019.7.16
 
 - fix: useSimpleEditingList，没有数据时，应不是全选状态
