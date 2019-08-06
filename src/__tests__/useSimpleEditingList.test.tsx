@@ -557,3 +557,30 @@ it('校验单行数据', () => {
   expect(result.current.errors).toEqual([{}, {}, { title: '标题不能以1开头' }]);
   expect(result.current.touched).toEqual([{}, {}, { title: true }]);
 });
+
+it('校验单行数据的多个字段', () => {
+  function validateRow(rowData: any) {
+    const errors: ErrorResult = {};
+
+    if (!rowData.title) {
+      errors.title = '必填';
+    }
+
+    if (rowData.name && rowData.name.startsWith('1')) {
+      errors.name = '标题不能以1开头';
+    }
+
+    return Object.keys(errors).length === 0 ? undefined : errors;
+  }
+
+  const { result } = renderHook(() =>
+    useSimpleEditingList([{}], { validate: validateRow }),
+  );
+
+  result.current.validateRow(0, { id: '1', name: '123', title: '' });
+
+  expect(result.current.errors).toEqual([
+    { name: '标题不能以1开头', title: '必填' },
+  ]);
+  expect(result.current.touched).toEqual([{ name: true, title: true }]);
+});

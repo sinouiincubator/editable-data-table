@@ -1,5 +1,9 @@
 # 版本变更说明
 
+## v0.8.0 - 2019.8.6
+
+- feat: useSimpleEditingList 支持单行数据校验`validateRow`
+
 ## v0.7.0 - 2019.8.6
 
 - feat: useEditingList 对外导出`setItems`和`updateItem`

@@ -203,14 +203,16 @@ function useSimpleEditingList<T = any>(
         }),
       );
 
-      const keys = Object.keys(rowError);
-      if (keys.length > 0) {
-        setTouched(
-          produce((draft) => {
-            draft[index][keys[0]] = true;
-          }),
-        );
-      }
+      const fieldTouched: TouchedState = {};
+      Object.keys(rowError).forEach((field) => {
+        fieldTouched[field] = true;
+      });
+
+      setTouched(
+        produce((draft) => {
+          draft[index] = fieldTouched;
+        }),
+      );
     }
   }, []);
 
