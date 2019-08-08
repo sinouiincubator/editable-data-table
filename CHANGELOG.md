@@ -1,5 +1,9 @@
 # 版本变更说明
 
+## v0.8.1 - 2019.8.8
+
+- fix: 修复 useEditingList 丢失`validateRow`的 ts 类型声明问题
+
 ## v0.8.0 - 2019.8.6
 
 - feat: useSimpleEditingList 支持单行数据校验`validateRow`
