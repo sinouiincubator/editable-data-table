@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
-import { ThemeProvider } from 'sinoui-components/styles';
+import { ThemeProvider } from 'styled-components';
 import defaultTheme from 'sinoui-components/styles/defaultTheme';
 import useSimpleEditingList from '../useSimpleEditingList';
 import EditableDataTable from '../EditableDataTable';

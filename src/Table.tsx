@@ -1,4 +1,4 @@
-import styled, { css } from 'sinoui-components/styles';
+import styled, { css } from 'styled-components';
 import Table from 'sinoui-components/Table';
 
 const captionTypeStyle = css`

@@ -1,5 +1,9 @@
 # 版本变更说明
 
+## -2019.9.12
+
+-feat: 升级 styled-components 版本号
+
 ## v0.8.1 - 2019.8.8
 
 - fix: 修复 useEditingList 丢失`validateRow`的 ts 类型声明问题

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { render, cleanup, fireEvent } from '@testing-library/react';
-import { ThemeProvider } from 'sinoui-components/styles';
+import { ThemeProvider } from 'styled-components';
 import defaultTheme from 'sinoui-components/styles/defaultTheme';
 import createTheme from 'sinoui-components/styles/theme';
 import createPalette from 'sinoui-components/styles/palette';

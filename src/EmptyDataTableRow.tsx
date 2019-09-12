@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from 'sinoui-components/styles';
+import styled from 'styled-components';
 
 const Wrapper = styled.div`
   text-align: center;

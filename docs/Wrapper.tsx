@@ -1,7 +1,7 @@
 import React from 'react';
-import { ThemeProvider } from 'sinoui-components/styles';
+import { ThemeProvider } from 'styled-components';
 import defaultTheme from 'sinoui-components/styles/defaultTheme';
-import './Wrapper.css'
+import './Wrapper.css';
 
 interface WrapperProps {
   children: React.ReactNode;
