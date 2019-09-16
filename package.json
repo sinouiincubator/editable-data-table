@@ -105,7 +105,7 @@
     "redux": "^4.0.2",
     "style-loader": "^0.23.1",
     "ts-lib-tools": "^0.2.15",
-    "typescript": "^3.5.2",
+    "typescript": "^3.6.3",
     "uuid": "^3.3.2",
     "webpack-docz-ghpages-plugin": "^0.2.12"
   },
