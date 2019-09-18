@@ -1,8 +1,8 @@
 # 版本变更说明
 
-## -2019.9.12
+## 0.9.0-alpha.1-2019.9.12
 
--feat: 升级 styled-components 版本号
+- feat: 升级 styled-components v5
 
 ## v0.8.1 - 2019.8.8
 
