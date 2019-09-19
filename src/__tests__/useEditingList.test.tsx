@@ -4,7 +4,7 @@ import http from '@sinoui/http';
 import { render, cleanup, fireEvent } from '@testing-library/react';
 import React from 'react';
 import useEdititngList from '../useEditingList';
-import 'jest-dom/extend-expect';
+import '@testing-library/jest-dom/extend-expect';
 
 jest.mock('@sinoui/http');
 

@@ -1,8 +1,9 @@
 # 版本变更说明
 
-## 0.9.0-alpha.1-2019.9.12
+## 1.0.0 - 2019.9.19
 
 - feat: 升级 styled-components v5
+- feat: 升级 @sinoui/http@1.0.0
 
 ## v0.8.1 - 2019.8.8
 

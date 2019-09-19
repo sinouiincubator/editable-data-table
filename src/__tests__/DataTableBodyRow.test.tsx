@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { render, cleanup } from '@testing-library/react';
-import 'jest-dom/extend-expect';
+import '@testing-library/jest-dom/extend-expect';
 import DataTableRowContext, {
   BodyRowContextType,
 } from '../shared/DataTableRowContext';

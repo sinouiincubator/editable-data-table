@@ -1,5 +1,8 @@
 # @sinouiincubator/editable-data-table
 
+[![npm version](https://img.shields.io/npm/v/@sinouiincubator/editable-data-table)](https://www.npmjs.com/package/@sinouiincubator/editable-data-table)
+[![downloads](https://img.shields.io/npm/dm/@sinouiincubator/editable-data-table)](https://www.npmjs.com/package/@sinouiincubator/editable-data-table)
+
 可编辑数据表格。
 
 可编辑列表（EditableDataTable）提供以下功能：

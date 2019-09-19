@@ -4,7 +4,7 @@ import { ThemeProvider } from 'styled-components';
 import defaultTheme from 'sinoui-components/styles/defaultTheme';
 import createTheme from 'sinoui-components/styles/theme';
 import createPalette from 'sinoui-components/styles/palette';
-import 'jest-dom/extend-expect';
+import '@testing-library/jest-dom/extend-expect';
 import { produce } from 'immer';
 import EditableDataTable from '../EditableDataTable';
 import TableColumn from '../TableColumn';

@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, fireEvent, cleanup } from '@testing-library/react';
-import 'jest-dom/extend-expect';
+import '@testing-library/jest-dom/extend-expect';
 import DataTableCellEditor from '../DataTableCellEditor';
 import DataTableRowContext from '../shared/DataTableRowContext';
 import { RowType } from '../shared/constants';

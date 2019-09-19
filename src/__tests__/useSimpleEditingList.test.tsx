@@ -3,7 +3,7 @@ import { renderHook } from '@testing-library/react-hooks';
 import { render, cleanup, fireEvent } from '@testing-library/react';
 import { ThemeProvider } from 'styled-components';
 import defaultTheme from 'sinoui-components/styles/defaultTheme';
-import 'jest-dom/extend-expect';
+import '@testing-library/jest-dom/extend-expect';
 import useSimpleEditingList from '../useSimpleEditingList';
 import EditableDataTable from '../EditableDataTable';
 import TableColumn from '../TableColumn';
