@@ -26,6 +26,8 @@
     "rootDir": "./src",
     "outDir": "./build",
     "resolveJsonModule": true,
-    "incremental": true
+    "incremental": true,
+    "types": ["theme-styled-components"],
+    "typeRoots": ["./@types"]
   }
 }

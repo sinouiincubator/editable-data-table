@@ -1,5 +1,5 @@
 {
-  "include": ["src", "types"],
+  "include": ["src", "@types"],
   "exclude": ["node_modules"],
   "compilerOptions": {
     "target": "es5",
@@ -27,6 +27,8 @@
     "rootDir": "./src",
     "outDir": "./build",
     "resolveJsonModule": true,
-    "incremental": true
+    "incremental": true,
+    "types": ["theme-styled-components"],
+    "typeRoots": ["./@types"]
   }
 }
